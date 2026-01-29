@@ -14,6 +14,7 @@ PanelWindow {
     property alias posX: root.menuX
     property alias posY: root.menuY
     property bool opened: false
+    property bool keepAlive: root.opened || openAnim.running || closeAnim.running
 
     focusable: opened
 
@@ -54,12 +55,19 @@ PanelWindow {
         id: panelContainer
         x: Utils.clampScreenX(root.menuX, width, 5)
         y: Utils.clampScreenY(root.menuY, height, 20)
-        width: quickLayoutStack.implicitWidth
-        height: quickLayoutStack.implicitHeight
+        implicitWidth: 400
         clip: true
 
         state: root.opened ? "open" : "closed"
         transformOrigin: Item.TopRight
+
+        Behavior on height {
+            enabled: root.opened && !openAnim.running && !closeAnim.running
+            NumberAnimation {
+                duration: 180
+                easing.type: Easing.OutCubic
+            }
+        }
 
         states: [
             State {
@@ -68,14 +76,14 @@ PanelWindow {
                     target: panelContainer
                     height: 0
                     opacity: 0
-                    scale: 0.94
+                    scale: 0.9
                 }
             },
             State {
                 name: "open"
                 PropertyChanges {
                     target: panelContainer
-                    height: quickLayoutStack.implicitHeight
+                    height: quickLayoutStack.height
                     opacity: 1
                     scale: 1
                 }
@@ -84,6 +92,7 @@ PanelWindow {
 
         transitions: [
             Transition {
+                id: openAnim
                 from: "closed"
                 to: "open"
                 ParallelAnimation {
@@ -95,6 +104,7 @@ PanelWindow {
                 }
             },
             Transition {
+                id: closeAnim
                 from: "open"
                 to: "closed"
                 SequentialAnimation {
@@ -107,9 +117,10 @@ PanelWindow {
                     }
                     ScriptAction {
                         script: {
-                            // runs AFTER the animation completes
-                            if (!root.opened)
-                                root.menuClosed();
+                            if (root.opened) {
+                                root.close();
+                            }
+                            root.menuClosed();
                         }
                     }
                 }
@@ -121,10 +132,10 @@ PanelWindow {
             currentIndex: 0
             clip: true
             implicitWidth: 800
-            implicitHeight: currentIndex === 0 ? 200 : 400
+            height: children[currentIndex].implicitHeight
 
             Loader {
-                active: quickLayoutStack.currentIndex === 0
+                active: root.keepAlive && quickLayoutStack.currentIndex === 0
                 asynchronous: false
                 sourceComponent: Rectangle {
                     id: togglePanel
@@ -141,7 +152,7 @@ PanelWindow {
                         columnSpacing: 8
                         rowSpacing: 8
                         anchors.centerIn: parent
-                        anchors.fill: parent + 20
+                        anchors.margins: 20
 
                         QuickToggle {
                             icon: {
@@ -276,7 +287,7 @@ PanelWindow {
             Loader {
                 id: wifiPanelPage
                 asynchronous: false
-                active: quickLayoutStack.currentIndex === 1
+                active: root.keepAlive && quickLayoutStack.currentIndex === 1
                 sourceComponent: NetworkListPanel {
                     wifi: NetworkService
                     onGoBack: quickLayoutStack.currentIndex = 0
@@ -286,7 +297,7 @@ PanelWindow {
             Loader {
                 id: bluetoothPanelPage
                 asynchronous: false
-                active: quickLayoutStack.currentIndex === 2
+                active: root.keepAlive && quickLayoutStack.currentIndex === 2
                 sourceComponent: BluetoothPanel {
                     bluetooth: BluetoothService
                     onGoBack: quickLayoutStack.currentIndex = 0

@@ -43,7 +43,7 @@ Item {
             Behavior on width {
                 enabled: !mouseArea.pressed
                 NumberAnimation {
-                    duration: 150
+                    duration: 220
                     easing.type: Easing.OutQuad
                 }
             }

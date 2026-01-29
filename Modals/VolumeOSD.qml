@@ -25,6 +25,8 @@ Scope {
     }
 
     property bool shouldShowOsd: false
+    property bool animating: false
+    property bool keepAlive: shouldShowOsd || animating
 
     Timer {
         id: hideTimer
@@ -33,26 +35,27 @@ Scope {
     }
 
     function open() {
-        closeAnimTimer.stop();
-        root.shouldShowOsd = true;
+        if (!osdLoader.active) {
+            animating = true;
+            shouldShowOsd = false;
+            Qt.callLater(() => {
+                shouldShowOsd = true;
+            });
+        } else {
+            shouldShowOsd = true;
+        }
+
         hideTimer.restart();
     }
 
     function close() {
-        if (osdLoader.item) {
-            osdLoader.item.animateClose();
-        }
-    }
-
-    Timer {
-        id: closeAnimTimer
-        interval: 250
-        onTriggered: root.shouldShowOsd = false
+        root.animating = true;
+        root.shouldShowOsd = false;
     }
 
     LazyLoader {
         id: osdLoader
-        active: root.shouldShowOsd
+        active: root.keepAlive
 
         PanelWindow {
             id: volumeOSDPanel
@@ -62,18 +65,6 @@ Scope {
             implicitHeight: 90
             color: "transparent"
             mask: Region {}
-
-            // Control animation state separately from shouldShowOsd
-            property bool isOpen: false
-
-            Component.onCompleted: {
-                isOpen = true;
-            }
-
-            function animateClose() {
-                isOpen = false;
-                closeAnimTimer.start();
-            }
 
             Rectangle {
                 id: osdContent
@@ -85,7 +76,7 @@ Scope {
                 layer.enabled: true
 
                 // Use panel's isOpen for state
-                state: volumeOSDPanel.isOpen ? "opened" : "closed"
+                state: root.shouldShowOsd ? "opened" : "closed"
 
                 states: [
                     State {
@@ -110,6 +101,7 @@ Scope {
 
                 transitions: [
                     Transition {
+                        id: openAnim
                         from: "closed"
                         to: "opened"
                         NumberAnimation {
@@ -117,8 +109,10 @@ Scope {
                             duration: 200
                             easing.type: Easing.OutCubic
                         }
+                        onRunningChanged: root.animating = openAnim.running || closeAnim.running
                     },
                     Transition {
+                        id: closeAnim
                         from: "opened"
                         to: "closed"
                         NumberAnimation {
@@ -126,6 +120,7 @@ Scope {
                             duration: 200
                             easing.type: Easing.InCubic
                         }
+                        onRunningChanged: root.animating = openAnim.running || closeAnim.running
                     }
                 ]
 

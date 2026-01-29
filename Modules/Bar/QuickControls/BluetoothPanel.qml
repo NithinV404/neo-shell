@@ -11,6 +11,7 @@ Item {
     id: root
     property var bs
     property alias bluetooth: root.bs
+    implicitHeight: 400
 
     signal goBack
 

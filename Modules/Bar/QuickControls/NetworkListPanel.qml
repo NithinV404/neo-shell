@@ -11,6 +11,7 @@ Item {
     property var wifiService
     property alias wifi: root.wifiService
     property var wifiModalInstace: null
+    implicitHeight: 400
 
     signal goBack
 

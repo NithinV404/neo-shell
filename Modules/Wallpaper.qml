@@ -14,12 +14,7 @@ Variants {
     model: Quickshell.screens
 
     PanelWindow {
-        property var modelData
         screen: modelData
-
-        WlrLayershell.layer: WlrLayer.Background
-        WlrLayershell.namespace: "wallpaper"
-
         anchors {
             top: true
             bottom: true
@@ -28,11 +23,15 @@ Variants {
         }
 
         exclusionMode: ExclusionMode.Ignore
+        aboveWindows: false
+        focusable: false
+
+        WlrLayershell.layer: WlrLayer.Background
+        WlrLayershell.namespace: "wallpaper"
 
         Rectangle {
             anchors.fill: parent
             color: root.color
-
             Image {
                 anchors.fill: parent
                 source: root.source
