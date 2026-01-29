@@ -1,0 +1,5 @@
+module qs.Modules.Bar.QuickControls
+QuickControls 1.0 QuickControls.qml
+QuickControlsPanel 1.0 QuickControlsPanel.qml
+NetworkListPanel 1.0 NetworkListPanel.qml
+BluetoothPanel 1.0 BluetoothPanel.qml

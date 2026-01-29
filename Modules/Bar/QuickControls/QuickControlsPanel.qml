@@ -1,0 +1,297 @@
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import qs.Services
+import qs.Common
+import qs.Components
+
+PanelWindow {
+    id: root
+
+    // Use real for coords (they're numbers, not "var")
+    property real menuX: 0
+    property real menuY: 0
+    property alias posX: root.menuX
+    property alias posY: root.menuY
+    property bool opened: false
+
+    focusable: opened
+
+    signal menuClosed
+
+    function openAt(x, y) {
+        root.menuX = x;
+        root.menuY = y;
+        root.opened = true;
+    }
+
+    function close() {
+        root.opened = false;
+    }
+
+    color: "transparent"
+
+    anchors {
+        left: true
+        right: true
+        top: true
+        bottom: true
+    }
+
+    // Click-outside-to-close
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton
+        onClicked: mouse => {
+            const p = mapToItem(quickLayoutStack, mouse.x, mouse.y);
+            const inside = (p.x >= 0 && p.x <= quickLayoutStack.width && p.y >= 0 && p.y <= quickLayoutStack.height);
+            if (!inside)
+                root.close();
+        }
+    }
+
+    Item {
+        id: panelContainer
+        x: Utils.clampScreenX(root.menuX, width, 5)
+        y: Utils.clampScreenY(root.menuY, height, 20)
+        width: quickLayoutStack.implicitWidth
+        height: quickLayoutStack.implicitHeight
+        clip: true
+
+        state: root.opened ? "open" : "closed"
+        transformOrigin: Item.TopRight
+
+        states: [
+            State {
+                name: "closed"
+                PropertyChanges {
+                    target: panelContainer
+                    height: 0
+                    opacity: 0
+                    scale: 0.94
+                }
+            },
+            State {
+                name: "open"
+                PropertyChanges {
+                    target: panelContainer
+                    height: quickLayoutStack.implicitHeight
+                    opacity: 1
+                    scale: 1
+                }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                from: "closed"
+                to: "open"
+                ParallelAnimation {
+                    NumberAnimation {
+                        properties: "height,opacity,scale"
+                        duration: 220
+                        easing.type: Easing.OutCubic
+                    }
+                }
+            },
+            Transition {
+                from: "open"
+                to: "closed"
+                SequentialAnimation {
+                    ParallelAnimation {
+                        NumberAnimation {
+                            properties: "height,opacity,scale"
+                            duration: 220
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    ScriptAction {
+                        script: {
+                            // runs AFTER the animation completes
+                            if (!root.opened)
+                                root.menuClosed();
+                        }
+                    }
+                }
+            }
+        ]
+
+        StackLayout {
+            id: quickLayoutStack
+            currentIndex: 0
+            clip: true
+            implicitWidth: 800
+            implicitHeight: currentIndex === 0 ? 200 : 400
+
+            Loader {
+                active: quickLayoutStack.currentIndex === 0
+                asynchronous: false
+                sourceComponent: Rectangle {
+                    id: togglePanel
+                    implicitHeight: togglesGrid.implicitHeight + 20
+                    implicitWidth: togglesGrid.implicitWidth + 20
+                    color: Theme.getColor("surface_container")
+                    radius: 12
+
+                    GridLayout {
+                        id: togglesGrid
+                        readonly property int quickToogleHeight: 50
+                        readonly property int quickToogleWidth: 180
+                        columns: 2
+                        columnSpacing: 8
+                        rowSpacing: 8
+                        anchors.centerIn: parent
+                        anchors.fill: parent + 20
+
+                        QuickToggle {
+                            icon: {
+                                name: {
+                                    var ns = NetworkService;
+                                    if (ns.ethernetConnected)
+                                        return "lan";
+                                    if (ns.wifiEnabled && !ns.wifiConnected)
+                                        return "signal_wifi_bad";
+                                    if (ns.wifiEnabled && ns.wifiConnected)
+                                        return ns.wifiSingalIcon;
+                                    return "signal_disconnected";
+                                }
+                            }
+                            title: {
+                                var name = NetworkService.networkStatus;
+                                return name.charAt(0).toUpperCase() + name.slice(1);
+                            }
+                            status: {
+                                var ns = NetworkService;
+                                if (ns.ethernetConnected)
+                                    return ns.ethernetInterface;
+                                if (ns.wifiEnabled && !ns.wifiConnected)
+                                    return "Wifi available";
+                                if (ns.wifiEnabled && ns.wifiConnected)
+                                    return ns.currentWifiSSID;
+                                return "No internet";
+                            }
+
+                            active: NetworkService.wifiEnabled || NetworkService.ethernetConnected
+                            onMenuClicked: quickLayoutStack.currentIndex = 1
+                            implicitWidth: togglesGrid.quickToogleWidth
+                            implicitHeight: togglesGrid.quickToogleHeight
+                        }
+
+                        QuickToggle {
+                            title: "Bluetooth"
+                            icon: {
+                                var devices = BluetoothService.connectedDevices;
+
+                                if (devices.length > 0) {
+                                    var device = devices[0];
+                                    var deviceIcon = BluetoothService.getDeviceIcon(device);
+
+                                    if (deviceIcon !== "bluetooth") {
+                                        return deviceIcon;
+                                    } else {
+                                        return "bluetooth_connected";
+                                    }
+                                } else {
+                                    return "bluetooth";
+                                }
+                            }
+
+                            status: {
+                                if (!BluetoothService.adapter || !BluetoothService.adapter.devices) {
+                                    return null;
+                                }
+                                let devices = [...BluetoothService.adapter.devices.values.filter(dev => dev && (dev.paired || dev.trusted))];
+                                for (let device of devices) {
+                                    if (device && device.connected) {
+                                        return device.name;
+                                    }
+                                }
+                                return null;
+                            }
+                            implicitWidth: togglesGrid.quickToogleWidth
+                            implicitHeight: togglesGrid.quickToogleHeight
+                            active: BluetoothService.enabled
+                            onMenuClicked: quickLayoutStack.currentIndex = 2
+                            onClicked: {
+                                BluetoothService.adapter.enabled = !BluetoothService.adapter.enabled;
+                            }
+                        }
+                        QuickToggle {
+                            icon: "dark_mode"
+                            title: "Dark mode"
+                            active: Settings.darkMode
+                            onClicked: Settings.setDarkMode(!Settings.darkMode)
+                            implicitWidth: togglesGrid.quickToogleWidth
+                            implicitHeight: togglesGrid.quickToogleHeight
+                        }
+                        QuickToggle {
+                            implicitWidth: togglesGrid.quickToogleWidth
+                            implicitHeight: togglesGrid.quickToogleHeight
+                        }
+                        RevealItems {
+                            id: reveal
+                            Layout.fillWidth: true
+                            Layout.columnSpan: 2
+                            Layout.topMargin: 4
+                            main: RowLayout {
+                                Layout.fillWidth: true
+                                implicitWidth: parent.width
+                                Rectangle {
+                                    implicitHeight: 48
+                                    implicitWidth: 48
+                                    color: Theme.getColor("surface_container_highest")
+                                    radius: 24
+                                    StyledText {
+                                        anchors.centerIn: parent
+                                        color: AudioService.muted ? Theme.getColor("on_surface_variant") : Theme.getColor("on_primary_container")
+                                        name: AudioService.getOutputIcon()
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: AudioService.toggleMute()  // ← This toggles mute
+                                    }
+                                }
+
+                                Slider {
+                                    Layout.fillWidth: true
+                                    value: AudioService.volume * 100
+                                    minValue: 0
+                                    maxValue: Settings.audioVolumeOverdrive ? 150 : 100
+                                    icon: ""  // Icon is separate
+                                    showValue: true
+
+                                    onMoved: newValue => {
+                                        AudioService.setVolume(newValue / 100);
+                                    }
+                                }
+                            }
+                            sub: ColumnLayout {}
+                        }
+                    }
+                }
+            }
+
+            Loader {
+                id: wifiPanelPage
+                asynchronous: false
+                active: quickLayoutStack.currentIndex === 1
+                sourceComponent: NetworkListPanel {
+                    wifi: NetworkService
+                    onGoBack: quickLayoutStack.currentIndex = 0
+                }
+            }
+
+            Loader {
+                id: bluetoothPanelPage
+                asynchronous: false
+                active: quickLayoutStack.currentIndex === 2
+                sourceComponent: BluetoothPanel {
+                    bluetooth: BluetoothService
+                    onGoBack: quickLayoutStack.currentIndex = 0
+                }
+            }
+        }
+    }
+}
