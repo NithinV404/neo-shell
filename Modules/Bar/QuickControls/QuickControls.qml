@@ -9,7 +9,7 @@ Rectangle {
     property var activePanel: null
     readonly property int iconSize: 16
     implicitWidth: layout.implicitWidth + 18
-    implicitHeight: parent.height * 0.7
+    height: parent.height * 0.7
     Layout.alignment: Qt.AlignVCenter
     color: quickControlsPanel.containsMouse ? Theme.getColor("tertiary_container") : Theme.getColor("surface_container_highest")
     border.width: 1
@@ -19,6 +19,13 @@ Rectangle {
     clip: true
 
     visible: layout.implicitWidth > 0
+
+    Behavior on implicitWidth {
+        NumberAnimation {
+            easing.type: Easing.OutBack
+            duration: 220
+        }
+    }
 
     Behavior on color {
         ColorAnimation {

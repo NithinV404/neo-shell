@@ -21,10 +21,10 @@ PanelWindow {
     }
 
     margins {
-        left: 2
-        right: 2
         top: 2
-        bottom: 0
+        bottom: -4
+        left: 4
+        right: 4
     }
 
     color: "transparent"
@@ -36,7 +36,7 @@ PanelWindow {
     Rectangle {
         implicitWidth: parent.width
         implicitHeight: parent.height
-        color: "transparent"// Theme.getColor("surface_container")
+        color: Theme.getColor("surface_container")
 
         Behavior on color {
             ColorAnimation {
