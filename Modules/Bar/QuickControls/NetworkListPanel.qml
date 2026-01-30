@@ -55,8 +55,7 @@ Item {
             root.wifiNetworks = root.getSortedNetworks();
         }
         function onWifiInterfaceChanged() {
-            console.log("SERVICE: wifiInterface changed to:", wifiInterface);
-            root.wifiService.scanWifi();
+            console.log(root.wifiService.wifiInterface);
         }
     }
 
@@ -155,7 +154,9 @@ Item {
                     id: wifiToggle
                     checked: root.wifiService.wifiEnabled
                     onToggled: {
-                        root.wifiService.toggleWifiRadio();
+                        if (!root.wifiService.wifiToggling) {
+                            root.wifiService.toggleWifiRadio();
+                        }
                     }
                 }
             }

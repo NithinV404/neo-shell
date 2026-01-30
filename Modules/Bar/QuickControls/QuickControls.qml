@@ -10,7 +10,7 @@ Rectangle {
     readonly property int iconSize: 16
     implicitWidth: layout.implicitWidth + 18
     implicitHeight: parent.height * 0.7
-    anchors.verticalCenter: parent.verticalCenter
+    Layout.alignment: Qt.AlignVCenter
     color: quickControlsPanel.containsMouse ? Theme.getColor("tertiary_container") : Theme.getColor("surface_container_highest")
     border.width: 1
     border.color: Qt.darker(Theme.getColor("outline"))

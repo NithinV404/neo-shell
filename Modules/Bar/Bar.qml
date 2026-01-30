@@ -21,9 +21,9 @@ PanelWindow {
     }
 
     margins {
-        left: 4
-        right: 4
-        top: 4
+        left: 2
+        right: 2
+        top: 2
         bottom: 0
     }
 
@@ -36,7 +36,7 @@ PanelWindow {
     Rectangle {
         implicitWidth: parent.width
         implicitHeight: parent.height
-        color: Theme.getColor("surface_container")
+        color: "transparent"// Theme.getColor("surface_container")
 
         Behavior on color {
             ColorAnimation {
@@ -45,15 +45,11 @@ PanelWindow {
             }
         }
 
-        anchors {
-            leftMargin: 4
-            rightMargin: 4
-        }
         radius: 24
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: 10
-            anchors.rightMargin: 10
+            anchors.leftMargin: 8
+            anchors.rightMargin: 8
 
             Item {
                 Layout.fillWidth: parent

@@ -190,7 +190,7 @@ Item {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 8
-                    visible: root.bs?.pairedDevice.count > 0
+                    visible: root.bs.enabled
 
                     Text {
                         visible: root.bs.enabled

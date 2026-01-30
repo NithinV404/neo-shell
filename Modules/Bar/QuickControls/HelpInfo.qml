@@ -14,8 +14,6 @@ Rectangle {
     color: "transparent"
     ColumnLayout {
         id: content
-        implicitWidth: childrenRect.width
-        implicitHeight: childrenRect.height
         anchors.centerIn: parent
         StyledText {
             Layout.alignment: Qt.AlignCenter
