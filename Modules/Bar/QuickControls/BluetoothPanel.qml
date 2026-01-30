@@ -190,10 +190,10 @@ Item {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 8
-                    visible: pairedDevicesRepeater.count > 0
+                    visible: root.bs?.pairedDevice.count > 0
 
                     Text {
-                        visible: root.bs.enabled && root.bs?.pairedDevice.count > 0
+                        visible: root.bs.enabled
                         Layout.leftMargin: 8
                         color: Qt.darker(Theme.getColor("on_surface"))
                         font.family: Settings.fontFamily
@@ -205,7 +205,7 @@ Item {
                     Column {
                         Layout.fillWidth: true
                         spacing: 2
-                        visible: root.bs.enabled && root.bs?.pairedDevice.count > 0
+                        visible: root.bs.enabled
 
                         Repeater {
                             id: pairedDevicesRepeater
