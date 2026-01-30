@@ -14,6 +14,8 @@ Rectangle {
     implicitWidth: layout.implicitWidth
 
     color: Theme.getColor("surface_container_highest")
+    border.width: 1
+    border.color: Qt.darker(Theme.getColor("outline"))
 
     radius: 12
 
@@ -25,9 +27,13 @@ Rectangle {
 
     readonly property bool hasContent: layout.implicitWidth > 0
 
-    // --- FIX 1: TIMING ADJUSTMENT ---
-    // The width must shrink SLOWER than the scale.
-    // Transition is 200ms. We make this 300ms.
+    Behavior on color {
+        ColorAnimation {
+            easing.type: Easing.OutBack
+            duration: 220
+        }
+    }
+
     Behavior on implicitWidth {
         NumberAnimation {
             duration: 300
@@ -110,13 +116,16 @@ Rectangle {
                     layer.enabled: true
                     layer.effect: MultiEffect {
                         colorization: 1
-                        colorizationColor: Theme.getColor("on_surface")
+                        colorizationColor: backgroundAppsMouse.containsMouse ? Theme.getColor("on_tertiary_container") : Theme.getColor("on_surface")
                     }
                 }
 
                 MouseArea {
+                    id: backgroundAppsMouse
+                    cursorShape: Qt.PointingHandCursor
                     anchors.fill: parent
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    hoverEnabled: true
                     onClicked: mouse => {
                         if (mouse.button === Qt.LeftButton) {
                             if (root.activeMenuInstance) {

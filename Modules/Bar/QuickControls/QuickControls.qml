@@ -8,14 +8,24 @@ Rectangle {
 
     property var activePanel: null
     readonly property int iconSize: 16
-    implicitWidth: layout.implicitWidth + 16
-    implicitHeight: parent.height - 8
-    color: Theme.getColor("surface_container_highest")
+    implicitWidth: layout.implicitWidth + 18
+    implicitHeight: parent.height * 0.7
+    anchors.verticalCenter: parent.verticalCenter
+    color: quickControlsPanel.containsMouse ? Theme.getColor("tertiary_container") : Theme.getColor("surface_container_highest")
+    border.width: 1
+    border.color: Qt.darker(Theme.getColor("outline"))
 
     radius: 12
     clip: true
 
     visible: layout.implicitWidth > 0
+
+    Behavior on color {
+        ColorAnimation {
+            easing.type: Easing.OutCubic
+            duration: 220
+        }
+    }
 
     function openPanel() {
         var getLocalPos = root.mapToItem(null, 0, 0);
@@ -37,6 +47,8 @@ Rectangle {
     MouseArea {
         id: quickControlsPanel
         anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
         onClicked: mouse => {
             if (mouse.button === Qt.LeftButton && root.activePanel == null) {
                 root.openPanel();
@@ -49,9 +61,7 @@ Rectangle {
     RowLayout {
         id: layout
         spacing: 1
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: 8
+        anchors.centerIn: parent
 
         // --- ICON - 1: Ethernet ---
         StyledText {
@@ -72,12 +82,12 @@ Rectangle {
             size: root.iconSize
 
             // Use "on_primary_container" so it is visible against the background
-            color: Theme.getColor("on_surface")
+            color: quickControlsPanel.containsMouse ? Theme.getColor("on_tertiary_container") : Theme.getColor("on_surface")
         }
         StyledText {
             visible: BluetoothService.enabled
             name: BluetoothService.connectedDevices.length > 0 ? "bluetooth_connected" : "bluetooth"
-            color: Theme.getColor("on_surface")
+            color: quickControlsPanel.containsMouse ? Theme.getColor("on_tertiary_container") : Theme.getColor("on_surface")
             size: root.iconSize
         }
     }

@@ -29,7 +29,7 @@ PanelWindow {
 
     color: "transparent"
 
-    implicitHeight: 30
+    implicitHeight: 35
     WlrLayershell.namespace: "quickshell:quickmenu"
     WlrLayershell.layer: WlrLayer.Top
 

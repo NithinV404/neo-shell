@@ -13,21 +13,22 @@ PanelWindow {
     property real menuY: 0
     property alias posX: root.menuX
     property alias posY: root.menuY
-    property bool opened: false
-    property bool keepAlive: root.opened || openAnim.running || closeAnim.running
+    property bool visible: false
+    property bool isVisible: false
 
-    focusable: opened
+    focusable: root.visible
 
     signal menuClosed
 
     function openAt(x, y) {
         root.menuX = x;
         root.menuY = y;
-        root.opened = true;
+        root.visible = true;
+        root.isVisible = true;
     }
 
     function close() {
-        root.opened = false;
+        root.visible = false;
     }
 
     color: "transparent"
@@ -46,8 +47,9 @@ PanelWindow {
         onClicked: mouse => {
             const p = mapToItem(quickLayoutStack, mouse.x, mouse.y);
             const inside = (p.x >= 0 && p.x <= quickLayoutStack.width && p.y >= 0 && p.y <= quickLayoutStack.height);
-            if (!inside)
+            if (!inside) {
                 root.close();
+            }
         }
     }
 
@@ -56,25 +58,17 @@ PanelWindow {
         x: Utils.clampScreenX(root.menuX, width, 5)
         y: Utils.clampScreenY(root.menuY, height, 20)
         implicitWidth: 400
+        implicitHeight: quickLayoutStack.height
         clip: true
 
-        state: root.opened ? "open" : "closed"
+        state: root.visible ? "open" : "closed"
         transformOrigin: Item.TopRight
-
-        Behavior on height {
-            enabled: root.opened && !openAnim.running && !closeAnim.running
-            NumberAnimation {
-                duration: 180
-                easing.type: Easing.OutCubic
-            }
-        }
 
         states: [
             State {
                 name: "closed"
                 PropertyChanges {
                     target: panelContainer
-                    height: 0
                     opacity: 0
                     scale: 0.9
                 }
@@ -83,7 +77,6 @@ PanelWindow {
                 name: "open"
                 PropertyChanges {
                     target: panelContainer
-                    height: quickLayoutStack.height
                     opacity: 1
                     scale: 1
                 }
@@ -95,32 +88,21 @@ PanelWindow {
                 id: openAnim
                 from: "closed"
                 to: "open"
-                ParallelAnimation {
-                    NumberAnimation {
-                        properties: "height,opacity,scale"
-                        duration: 220
-                        easing.type: Easing.OutCubic
-                    }
-                }
-            },
-            Transition {
-                id: closeAnim
-                from: "open"
-                to: "closed"
+                reversible: true
                 SequentialAnimation {
-                    ParallelAnimation {
-                        NumberAnimation {
-                            properties: "height,opacity,scale"
-                            duration: 220
-                            easing.type: Easing.OutCubic
-                        }
-                    }
                     ScriptAction {
                         script: {
-                            if (root.opened) {
-                                root.close();
+                            if (!root.visible) {
+                                root.isVisible = false;
+                                root.menuClosed();
                             }
-                            root.menuClosed();
+                        }
+                    }
+                    ParallelAnimation {
+                        NumberAnimation {
+                            properties: "opacity,scale"
+                            duration: 220
+                            easing.type: Easing.OutCubic
                         }
                     }
                 }
@@ -134,8 +116,16 @@ PanelWindow {
             implicitWidth: 800
             height: children[currentIndex].implicitHeight
 
+            Behavior on height {
+                enabled: root.isVisible
+                NumberAnimation {
+                    duration: 220
+                    easing.type: Easing.OutCubic
+                }
+            }
+
             Loader {
-                active: root.keepAlive && quickLayoutStack.currentIndex === 0
+                active: (root.visible || root.isVisible) && quickLayoutStack.currentIndex === 0
                 asynchronous: false
                 sourceComponent: Rectangle {
                     id: togglePanel
@@ -287,7 +277,7 @@ PanelWindow {
             Loader {
                 id: wifiPanelPage
                 asynchronous: false
-                active: root.keepAlive && quickLayoutStack.currentIndex === 1
+                active: (root.visible || root.isVisible) && quickLayoutStack.currentIndex === 1
                 sourceComponent: NetworkListPanel {
                     wifi: NetworkService
                     onGoBack: quickLayoutStack.currentIndex = 0
@@ -297,7 +287,7 @@ PanelWindow {
             Loader {
                 id: bluetoothPanelPage
                 asynchronous: false
-                active: root.keepAlive && quickLayoutStack.currentIndex === 2
+                active: (root.visible || root.isVisible) && quickLayoutStack.currentIndex === 2
                 sourceComponent: BluetoothPanel {
                     bluetooth: BluetoothService
                     onGoBack: quickLayoutStack.currentIndex = 0

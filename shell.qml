@@ -1,4 +1,8 @@
-// shell.qml
+//@ pragma Env QSG_RENDER_LOOP=threaded
+//@ pragma Env QT_QUICK_CONTROLS_STYLE=Material
+// //@ pragma Env QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+//@ pragma UseQApplication
+
 import Quickshell
 import Quickshell.Io
 import QtQuick

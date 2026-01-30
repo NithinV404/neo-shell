@@ -27,7 +27,7 @@ Rectangle {
     // Color Logic:
     // ON  = Primary Color (Colorful)
     // OFF = Surface Container Highest (Dark Grey/Neutral)
-    color: active ? Theme.getColor("primary") : Theme.getColor("surface_container_highest")
+    color: active ? Theme.getColor("primary") : Theme.getColor("secondary_container")
 
     // Smooth color transition
     Behavior on color {
@@ -84,7 +84,7 @@ Rectangle {
                 size: 20 // Slightly larger icon
 
                 // Icon Color: Contrast against the box
-                color: root.active ? Theme.getColor("on_primary") : toggleButton.containsMouse ? Theme.getColor("on_tertiary") : Theme.getColor("on_surface")
+                color: root.active ? Theme.getColor("on_primary") : toggleButton.containsMouse ? Theme.getColor("on_tertiary") : Theme.getColor("on_secondary_container")
             }
 
             MouseArea {
@@ -112,7 +112,7 @@ Rectangle {
                     text: "Title"
                     font.weight: 600
                     font.pixelSize: 14
-                    color: root.active ? Theme.getColor("on_primary") : Theme.getColor("on_surface")
+                    color: root.active ? Theme.getColor("on_primary") : Theme.getColor("on_secondary_container")
                     font.family: Settings.fontFamily
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignLeft
@@ -126,7 +126,7 @@ Rectangle {
                     font.weight: 400
                     font.pixelSize: 12
                     opacity: 0.8
-                    color: root.active ? Theme.getColor("on_primary") : Theme.getColor("on_surface")
+                    color: root.active ? Theme.getColor("on_primary") : Theme.getColor("on_secondary_container")
                     font.family: Settings.fontFamily
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignLeft

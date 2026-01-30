@@ -24,7 +24,7 @@ Rectangle {
 
     // Logic: Border visible only when OFF
     border.width: checked ? 0 : 2
-    border.color: Theme.getColor("outline")
+    border.color: toggleMouse.containsMouse ?  Theme.getColor("tertiary") :Theme.getColor("outline")
 
     // Smooth Color Transition
     Behavior on color {
@@ -51,7 +51,7 @@ Rectangle {
         radius: width / 2
 
         // Dynamic Color: On = OnPrimary, Off = Outline
-        color: root.checked ? Qt.darker(Theme.getColor("primary")) : Theme.getColor("outline")
+        color: root.checked ? Qt.darker(Theme.getColor("primary")) : toggleMouse.containsMouse ? Theme.getColor("tertiary") : Theme.getColor("outline")
 
         // --- POSITION CALCULATION ---
         // Off: Left side + padding
@@ -75,6 +75,8 @@ Rectangle {
 
     // --- INTERACTION ---
     MouseArea {
+        id: toggleMouse
+        hoverEnabled: true
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: {

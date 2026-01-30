@@ -48,7 +48,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.getColor("surface_container")
+        color: Theme.getColor("surface")
         radius: 12
     }
 
@@ -62,13 +62,13 @@ Item {
             Layout.fillWidth: true
             implicitHeight: 42
             radius: 28
-            color: Theme.getColor("surface_container_highest")
+            color: Theme.getColor("primary_container")
 
             Text {
                 anchors.centerIn: parent
                 text: "Bluetooth"
                 font.family: Settings.fontFamily
-                color: Theme.getColor("on_surface")
+                color: Theme.getColor("on_primary_container")
                 font.pixelSize: 16
             }
 
@@ -112,7 +112,7 @@ Item {
                     id: syncIcon
                     Layout.margins: 4
                     name: "sync"
-                    color: Theme.getColor("on_surface")
+                    color: Theme.getColor("on_primary_container")
                     rotation: 0
 
                     RotationAnimation on rotation {
@@ -150,6 +150,17 @@ Item {
             }
         }
 
+        // --- Empty State ---
+
+        HelpInfo {
+            visible: !root.bs.enabled
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignCenter
+            icon: "bluetooth_disabled"
+            title: "Turn on Bluetooth"
+        }
+
         // --- Scrollable Content ---
         Flickable {
             id: contentFlickable
@@ -182,8 +193,9 @@ Item {
                     visible: pairedDevicesRepeater.count > 0
 
                     Text {
+                        visible: root.bs.enabled && root.bs?.pairedDevice.count > 0
                         Layout.leftMargin: 8
-                        color: Qt.darker(Theme.getColor("primary"))
+                        color: Qt.darker(Theme.getColor("on_surface"))
                         font.family: Settings.fontFamily
                         text: "Paired Devices"
                         font.pixelSize: 12
@@ -193,6 +205,7 @@ Item {
                     Column {
                         Layout.fillWidth: true
                         spacing: 2
+                        visible: root.bs.enabled && root.bs?.pairedDevice.count > 0
 
                         Repeater {
                             id: pairedDevicesRepeater
@@ -215,7 +228,7 @@ Item {
                                 bottomLeftRadius: isLast ? 12 : 4
                                 bottomRightRadius: isLast ? 12 : 4
 
-                                color: pairedDeviceHover.containsMouse ? Qt.lighter(Theme.getColor("surface_container_highest"), 1.1) : Theme.getColor("surface_container_highest")
+                                color: pairedDeviceHover.containsMouse ? Qt.lighter(Theme.getColor("primary_container"), 1.1) : Theme.getColor("primary_container")
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -231,7 +244,7 @@ Item {
 
                                     StyledText {
                                         name: root.bs.getDeviceIcon(pairedDeviceDelegate.modelData)
-                                        color: Theme.getColor("on_surface")
+                                        color: Theme.getColor("on_primary_container")
                                     }
 
                                     ColumnLayout {
@@ -241,8 +254,9 @@ Item {
                                         Text {
                                             Layout.fillWidth: true
                                             text: pairedDeviceDelegate.modelData.name || "Unknown Device"
-                                            color: Theme.getColor("on_surface")
+                                            color: Theme.getColor("on_primary_container")
                                             font.pixelSize: 14
+                                            font.family: Settings.fontFamily
                                             elide: Text.ElideRight
                                         }
 
@@ -263,7 +277,7 @@ Item {
                                                     return "";
                                                 }
                                             }
-                                            color: text == "Connected" ? "green" : text.includes("failed") ? "red" : Qt.lighter(Theme.getColor("on_surface"))
+                                            color: text == "Connected" ? "green" : text.includes("failed") ? "red" : Qt.lighter(Theme.getColor("on_primary_container"))
                                             font.pixelSize: 11
                                         }
                                     }
@@ -340,7 +354,7 @@ Item {
                                 bottomLeftRadius: isLast ? 12 : 4
                                 bottomRightRadius: isLast ? 12 : 4
 
-                                color: availableDeviceHover.containsMouse ? Qt.lighter(Theme.getColor("surface_container_highest"), 1.1) : Theme.getColor("surface_container_highest")
+                                color: availableDeviceHover.containsMouse ? Qt.lighter(Theme.getColor("primary_container"), 1.1) : Theme.getColor("primary_container")
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -356,20 +370,20 @@ Item {
 
                                     StyledText {
                                         name: root.bs.getDeviceIcon(availableDeviceDelegate.modelData)
-                                        color: Theme.getColor("on_surface")
+                                        color: Theme.getColor("on_primary_container")
                                     }
 
                                     Text {
                                         Layout.fillWidth: true
                                         text: availableDeviceDelegate.modelData.name || "Unknown Device"
-                                        color: Theme.getColor("on_surface")
+                                        color: Theme.getColor("on_primary_container")
                                         font.pixelSize: 14
                                         elide: Text.ElideRight
                                     }
 
                                     StyledText {
                                         name: root.bs.getSignalIcon(availableDeviceDelegate.modelData)
-                                        color: Theme.getColor("on_surface_variant")
+                                        color: Theme.getColor("on_primary_container")
                                         size: 16
                                     }
                                 }
@@ -385,21 +399,6 @@ Item {
                                 }
                             }
                         }
-                    }
-                }
-
-                // --- Empty State ---
-                Item {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 100
-                    visible: pairedDevicesRepeater.count === 0 && availableDevicesRepeater.count === 0
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: root.bs.enabled ? "No devices found" : "Bluetooth is disabled"
-                        font.family: Settings.fontFamily
-                        color: Theme.getColor("on_surface_variant")
-                        font.pixelSize: 14
                     }
                 }
             }

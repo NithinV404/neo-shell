@@ -9,21 +9,22 @@ import qs.Common
 Item {
     id: root
     property var wifiService
-    property alias wifi: root.wifiService
     property var wifiModalInstace: null
+    property alias wifi: root.wifiService
+    property var wifiNetworks: root.getSortedNetworks()
     implicitHeight: 400
 
     signal goBack
 
     Component.onCompleted: {
-        NetworkService.addRef();
-        if (NetworkService.wifiEnabled) {
-            NetworkService.scanWifi();
+        root.wifiService.addRef();
+        if (root.wifiService.wifiEnabled) {
+            root.wifiService.scanWifi();
         }
     }
 
     Component.onDestruction: {
-        NetworkService.removeRef();
+        root.wifiService.removeRef();
     }
 
     Rectangle {
@@ -32,10 +33,30 @@ Item {
         radius: 12
     }
 
+    // Sorted network list
+    function getSortedNetworks() {
+        let networks = [...root.wifiService.wifiNetworks];
+        networks.sort((a, b) => {
+            if (a.ssid === root.wifiService.currentWifiSSID)
+                return -1;
+            if (b.ssid === root.wifiService.currentWifiSSID)
+                return 1;
+            return b.signal - a.signal;
+        });
+        return networks;
+    }
+
     Connections {
-        target: root.wifiService
+        target: NetworkService
         function onPasswordDialogShouldReopenChanged() {
             wifiModalLoader.open("Invalid Password", wifiListContainer.lastAttemptSSID);
+        }
+        function onNetworksUpdated() {
+            root.wifiNetworks = root.getSortedNetworks();
+        }
+        function onWifiInterfaceChanged() {
+            console.log("SERVICE: wifiInterface changed to:", wifiInterface);
+            root.wifiService.scanWifi();
         }
     }
 
@@ -48,7 +69,7 @@ Item {
             Layout.fillWidth: true
             implicitHeight: 42
             radius: 28
-            color: Theme.getColor("surface_container_highest")
+            color: Theme.getColor("primary_container")
 
             RowLayout {
                 Layout.alignment: Qt.AlignTop
@@ -91,30 +112,64 @@ Item {
 
                     Text {
                         text: "Wifi"
-                        color: Theme.getColor("on_surface")
+                        color: Theme.getColor("on_primary_container")
                         font.family: Settings.fontFamily
                         font.pixelSize: 16
                         anchors.centerIn: parent
                     }
                 }
 
-                Toggle {
-                    checked: root.wifiService.wifiEnabled
-                    onToggled: {
-                        root.wifiService.toggleWifiRadio();
-                        delayedWifiScanToggle.start();
+                StyledText {
+                    id: syncIcon
+                    Layout.margins: 4
+                    name: "sync"
+                    color: Theme.getColor("on_primary_container")
+                    rotation: 0
+
+                    RotationAnimation on rotation {
+                        id: rotationAnim
+                        running: root.wifiService.isScanning
+                        from: 0
+                        to: 360
+                        duration: 1000
+                        loops: Animation.Infinite
+
+                        // Reset rotation when animation stops
+                        onRunningChanged: {
+                            if (!running) {
+                                syncIcon.rotation = 0;
+                            }
+                        }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            root.wifiService.scanWifi();
+                        }
                     }
                 }
 
-                Timer {
-                    id: delayedWifiScanToggle
-                    repeat: false
-                    interval: 3000
-                    onTriggered: {
-                        root.wifiService.startAutoScan();
+                Toggle {
+                    id: wifiToggle
+                    checked: root.wifiService.wifiEnabled
+                    onToggled: {
+                        root.wifiService.toggleWifiRadio();
                     }
                 }
             }
+        }
+
+        // --- Empty State ---
+
+        HelpInfo {
+            visible: !root.wifiService.wifiEnabled
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignCenter
+            icon: "wifi_off"
+            title: "Turn on Wifi"
         }
 
         // --- Scrollable Wifi List ---
@@ -142,19 +197,6 @@ Item {
                 property string activeInputSSID: ""
                 property string lastAttemptSSID: ""
 
-                // Sorted network list
-                readonly property var sortedNetworks: {
-                    let networks = [...root.wifiService.wifiNetworks];
-                    networks.sort((a, b) => {
-                        if (a.ssid === root.wifiService.currentWifiSSID)
-                            return -1;
-                        if (b.ssid === root.wifiService.currentWifiSSID)
-                            return 1;
-                        return b.signal - a.signal;
-                    });
-                    return networks;
-                }
-
                 Column {
                     id: wifiColumn
                     width: parent.width
@@ -162,7 +204,7 @@ Item {
 
                     Repeater {
                         id: wifiRepeater
-                        model: wifiListContainer.sortedNetworks
+                        model: root.wifiNetworks
 
                         delegate: FocusScope {
                             id: delegateScope
@@ -196,7 +238,7 @@ Item {
                                 id: bgRect
                                 width: parent.width
                                 height: contentCol.implicitHeight + 20
-                                color: Theme.getColor("surface_container_highest")
+                                color: Theme.getColor("primary_container")
 
                                 topLeftRadius: delegateScope.isFirst ? 12 : 4
                                 topRightRadius: delegateScope.isFirst ? 12 : 4
@@ -231,7 +273,7 @@ Item {
 
                                         StyledText {
                                             name: delegateScope.signal >= 50 ? "wifi" : "wifi_1_bar"
-                                            color: Theme.getColor("on_surface")
+                                            color: Theme.getColor("on_primary_container")
                                         }
 
                                         ColumnLayout {
@@ -250,7 +292,7 @@ Item {
                                                         return ssid;
                                                 }
                                                 elide: Text.ElideRight
-                                                color: Theme.getColor("on_surface")
+                                                color: Theme.getColor("on_primary_container")
                                                 font.pixelSize: 14
                                             }
 
@@ -266,7 +308,7 @@ Item {
                                                     }
                                                 }
                                                 font.pixelSize: 11
-                                                color: Qt.rgba(Theme.getColor("on_surface").r, Theme.getColor("on_surface").g, Theme.getColor("on_surface").b, 0.7)
+                                                color: Qt.rgba(Theme.getColor("on_primary_container").r, Theme.getColor("on_primary_container").g, Theme.getColor("on_primary_container").b, 0.7)
                                             }
                                         }
 
@@ -341,7 +383,7 @@ Item {
                                     Rectangle {
                                         anchors.fill: parent
                                         radius: 12
-                                        color: delegateScope.saved ? Theme.getColor("secondary") : Qt.lighter(Theme.getColor("secondary"))
+                                        color: delegateScope.saved ? Theme.getColor("secondary_container") : Qt.lighter(Theme.getColor("secondary_container"))
                                         border.width: 1
                                         border.color: Qt.rgba(1, 1, 1, 0.08)
                                     }
@@ -360,7 +402,7 @@ Item {
                                     }
                                     contentItem: Text {
                                         text: forgetItem.text
-                                        color: parent.enabled ? Theme.getColor("on_tertiary") : Qt.lighter(Theme.getColor("on_secondary"))
+                                        color: parent.enabled ? Theme.getColor("on_tertiary") : Qt.rgba(Theme.getColor("on_secondary").r, Theme.getColor("on_secondary").g, Theme.getColor("on_secondary").b, 0.5)
                                         font.pixelSize: 13
                                         verticalAlignment: Text.AlignVCenter
                                         elide: Text.ElideRight
