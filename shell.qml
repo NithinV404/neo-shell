@@ -50,6 +50,7 @@ ShellRoot {
 
     VolumeOSD {}
     Launcher {}
+    PowerMenu {}
 
     // Bar on each screen
     Variants {

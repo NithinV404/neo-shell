@@ -3,15 +3,13 @@ import QtQuick.Layouts
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 import qs.Services
-import qs.Components
 import QtQuick.Effects
 
 Rectangle {
     id: root
     Layout.alignment: Qt.AlignRight
-
-    implicitHeight: layout.implicitHeight
-    implicitWidth: layout.implicitWidth
+    implicitHeight: parent.height * 0.85
+    implicitWidth: layout.implicitWidth + 8
 
     color: Theme.getColor("surface_container_highest")
     border.width: 1

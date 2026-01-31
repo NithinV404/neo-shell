@@ -324,9 +324,9 @@ Singleton {
 
     function getInputIcon() {
         if (inputMuted || inputVolume <= Number.EPSILON) {
-            return "microphone-mute";
+            return "mic";
         }
-        return "microphone";
+        return "mic_off";
     }
 
     // Device Selection

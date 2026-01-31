@@ -13,6 +13,8 @@ Text {
     property int grade: Theme.isLightMode ? 0 : -25
     property int weight: filled ? 500 : 400
 
+    signal clicked
+
     font.family: "Material Symbols Rounded"
     font.pixelSize: 24
     font.weight: 100
@@ -41,4 +43,6 @@ Text {
             easing.type: Theme.standardEasing
         }
     }
+
+
 }

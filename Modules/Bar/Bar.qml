@@ -5,6 +5,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Modules.Bar.BackgroundApps
 import qs.Modules.Bar.QuickControls
+import qs.Modules.Bar
 import qs.Services
 import Quickshell.Wayland
 import qs.Common
@@ -22,21 +23,21 @@ PanelWindow {
 
     margins {
         top: 2
-        bottom: -4
+        bottom: 0
         left: 4
         right: 4
     }
 
     color: "transparent"
 
-    implicitHeight: 35
+    implicitHeight: 38
     WlrLayershell.namespace: "quickshell:quickmenu"
     WlrLayershell.layer: WlrLayer.Top
 
     Rectangle {
-        implicitWidth: parent.width
-        implicitHeight: parent.height
-        color: Theme.getColor("surface_container")
+        anchors.fill: parent
+        color: Theme.getColor("surface")
+        radius: 24
 
         Behavior on color {
             ColorAnimation {
@@ -45,23 +46,31 @@ PanelWindow {
             }
         }
 
-        radius: 24
+        // Clock - Absolutely centered
+        Clock {
+            anchors.centerIn: parent
+        }
+
+        // Right side items
         RowLayout {
+            id: layoutItems
             anchors.fill: parent
             anchors.leftMargin: 8
             anchors.rightMargin: 8
+            spacing: 8
 
+            // Spacer - pushes items to right
             Item {
-                Layout.fillWidth: parent
+                Layout.fillWidth: true
             }
-            // 3. The System Tray
-            // Icon {
-            //     name: "signal_wifi_bad"
-            //     size: 18
-            //     color: Theme.getColor("inverse_primary")
-            // }
-            BackgroundApps {}
-            QuickControls {}
+
+            BackgroundApps {
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            QuickControls {
+                Layout.alignment: Qt.AlignVCenter
+            }
         }
     }
 }

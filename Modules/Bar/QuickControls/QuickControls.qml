@@ -9,8 +9,8 @@ Rectangle {
     property var activePanel: null
     readonly property int iconSize: 16
     implicitWidth: layout.implicitWidth + 18
-    height: parent.height * 0.7
-    Layout.alignment: Qt.AlignVCenter
+    implicitHeight: parent.height * 0.85
+    Layout.alignment: Qt.AlignRight
     color: quickControlsPanel.containsMouse ? Theme.getColor("tertiary_container") : Theme.getColor("surface_container_highest")
     border.width: 1
     border.color: Qt.darker(Theme.getColor("outline"))
@@ -67,7 +67,7 @@ Rectangle {
 
     RowLayout {
         id: layout
-        spacing: 1
+        spacing: 2
         anchors.centerIn: parent
 
         // --- ICON - 1: Ethernet ---
@@ -96,6 +96,26 @@ Rectangle {
             name: BluetoothService.connectedDevices.length > 0 ? "bluetooth_connected" : "bluetooth"
             color: quickControlsPanel.containsMouse ? Theme.getColor("on_tertiary_container") : Theme.getColor("on_surface")
             size: root.iconSize
+        }
+        StyledText {
+            name: AudioService.getOutputIcon()
+            color: quickControlsPanel.containsMouse ? Theme.getColor("on_tertiary_container") : Theme.getColor("on_surface")
+            size: root.iconSize
+            MouseArea {
+                cursorShape: Qt.PointingHandCursor
+                anchors.fill: parent
+                onClicked: AudioService.toggleMute()
+            }
+        }
+        StyledText {
+            name: AudioService.getInputIcon()
+            color: quickControlsPanel.containsMouse ? Theme.getColor("on_tertiary_container") : Theme.getColor("on_surface")
+            size: root.iconSize
+            MouseArea {
+                cursorShape: Qt.PointingHandCursor
+                anchors.fill: parent
+                onClicked: AudioService.toggleMicMute()
+            }
         }
     }
     Loader {
