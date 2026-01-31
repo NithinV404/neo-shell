@@ -42,7 +42,7 @@ Scope {
         case "Restart":
             SessionService.reboot();
             break;
-        case "Logout":
+        case "Log out":
             SessionService.logout();
             break;
         case "Suspend":
@@ -82,7 +82,7 @@ Scope {
     IpcHandler {
         target: "wlogout"
 
-        function toggleWLogout() {
+        function toggleWlogoutMenu() {
             root.toggle();
         }
 

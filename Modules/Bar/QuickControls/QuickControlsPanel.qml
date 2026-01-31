@@ -4,6 +4,7 @@ import Quickshell
 import qs.Services
 import qs.Common
 import qs.Components
+import qs.Modals
 
 PanelWindow {
     id: root
@@ -143,6 +144,46 @@ PanelWindow {
                         rowSpacing: 8
                         anchors.centerIn: parent
                         anchors.margins: 20
+
+                        Rectangle {
+                            Layout.columnSpan: 2
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 46
+                            Layout.bottomMargin: 8
+                            radius: 24
+                            color: Theme.getColor("surface_container_highest")
+                            border.width: 1
+                            border.color: Qt.darker(Theme.getColor("outline"))
+
+                            RowLayout {
+                                anchors.fill: parent
+                                Rectangle {
+                                    radius: 12
+                                    Layout.rightMargin: 12
+                                    Layout.alignment: Qt.AlignRight
+                                    color: powerBtnMouse.containsMouse ? Theme.getColor("tertiary_container") : Theme.getColor("surface")
+                                    border.width: 1
+                                    border.color: Qt.darker(Theme.getColor("outline"))
+                                    implicitWidth: 30
+                                    implicitHeight: 30
+                                    StyledText {
+                                        anchors.centerIn: parent
+                                        name: "power_settings_new"
+                                        font.pixelSize: 15
+                                        color: Theme.getColor("on_primary_container")
+                                    }
+                                    MouseArea {
+                                        id: powerBtnMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            powerMenu.open();
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
                         QuickToggle {
                             icon: {
@@ -294,5 +335,9 @@ PanelWindow {
                 }
             }
         }
+    }
+
+    PowerMenu {
+        id: powerMenu
     }
 }
