@@ -15,7 +15,7 @@ PanelWindow {
     Rectangle {
         implicitWidth: root.text.length * 2
         implicitHeight: root.text
-        color: Theme.getColor("primary_container")
-        border: Theme.getColor("on_primary_container")
+        color: Theme.primaryContainer
+        border: Theme.primaryContainerFg
     }
 }

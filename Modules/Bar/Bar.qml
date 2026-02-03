@@ -37,7 +37,7 @@ PanelWindow {
     Rectangle {
         anchors.fill: parent
         anchors.centerIn: parent
-        color: Theme.getColor("surface")
+        color: Theme.surface
         radius: 24
 
         Behavior on color {

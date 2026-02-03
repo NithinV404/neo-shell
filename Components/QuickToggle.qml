@@ -27,7 +27,7 @@ Rectangle {
     // Color Logic:
     // ON  = Primary Color (Colorful)
     // OFF = Surface Container Highest (Dark Grey/Neutral)
-    color: active ? Theme.getColor("primary") : Theme.getColor("secondary_container")
+    color: active ? Theme.primary : Theme.secondaryContainer
 
     // Smooth color transition
     Behavior on color {
@@ -67,8 +67,8 @@ Rectangle {
             // Color Logic:
             // ON  = Dark Text on Bright Background -> Icon Box becomes transparent or slightly darkened
             // OFF = Grey Background -> Icon Box becomes the "Primary" accent
-            color: root.active ? Qt.darker(Theme.getColor("primary"), 1.2) // Subtle highlight on active
-            : toggleButton.containsMouse ? Theme.getColor("tertiary") : Theme.getColor("surface_dim")
+            color: root.active ? Qt.darker(Theme.primary, 1.2) // Subtle highlight on active
+            : toggleButton.containsMouse ? Theme.tertiary : Theme.surfaceDim
 
             radius: root.radius - root.setPadding
 
@@ -84,7 +84,7 @@ Rectangle {
                 size: 20 // Slightly larger icon
 
                 // Icon Color: Contrast against the box
-                color: root.active ? Theme.getColor("on_primary") : toggleButton.containsMouse ? Theme.getColor("on_tertiary") : Theme.getColor("on_secondary_container")
+                color: root.active ? Theme.primaryFg : toggleButton.containsMouse ? Theme.tertiaryFg : Theme.secondaryContainerFg
             }
 
             MouseArea {
@@ -112,7 +112,7 @@ Rectangle {
                     text: "Title"
                     font.weight: 600
                     font.pixelSize: 14
-                    color: root.active ? Theme.getColor("on_primary") : Theme.getColor("on_secondary_container")
+                    color: root.active ? Theme.primaryFg : Theme.secondaryContainerFg
                     font.family: Settings.fontFamily
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignLeft
@@ -126,7 +126,7 @@ Rectangle {
                     font.weight: 400
                     font.pixelSize: 12
                     opacity: 0.8
-                    color: root.active ? Theme.getColor("on_primary") : Theme.getColor("on_secondary_container")
+                    color: root.active ? Theme.primaryFg : Theme.secondaryContainerFg
                     font.family: Settings.fontFamily
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignLeft

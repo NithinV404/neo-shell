@@ -27,8 +27,8 @@ Rectangle {
     implicitWidth: 300
     implicitHeight: 56
     radius: 12
-    color: Theme.getColor("surface_container")
-    border.color: inputField.activeFocus ? Theme.getColor("primary") : Theme.getColor("outline")
+    color: Theme.surfaceContainer
+    border.color: inputField.activeFocus ? Theme.primary : Theme.outline
     border.width: inputField.activeFocus ? 2 : 1
 
     RowLayout {
@@ -41,14 +41,14 @@ Rectangle {
             id: inputField
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
-            color: Theme.getColor("on_surface")
+            color: Theme.surfaceFg
             font.pixelSize: 16
             font.family: Settings.fontFamily
             clip: true
             echoMode: root.password && !root.showPassword ? TextInput.Password : TextInput.Normal
             selectByMouse: true
-            selectionColor: Theme.getColor("primary")
-            selectedTextColor: Theme.getColor("on_primary")
+            selectionColor: Theme.primary
+            selectedTextColor: Theme.primaryFg
             onTextChanged: root.textChanged
             onAccepted: root.accepted()
 
@@ -57,7 +57,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 font.family: Settings.fontFamily
                 text: root.placeholder
-                color: Theme.getColor("on_surface_variant")
+                color: Theme.surfaceVariantFg
                 font.pixelSize: 16
                 visible: !inputField.text && !inputField.activeFocus
                 verticalAlignment: Text.AlignVCenter
@@ -71,13 +71,13 @@ Rectangle {
             Layout.preferredHeight: 32
             Layout.alignment: Qt.AlignVCenter
             radius: 16
-            color: toggleMouse.containsMouse ? Theme.getColor("surface_container_high") : "transparent"
+            color: toggleMouse.containsMouse ? Theme.surfaceContainerHigh : "transparent"
 
             StyledText {
                 anchors.centerIn: parent
                 text: root.showPassword ? "visibility_off" : "visibility"  // Nerd font icons (eye / eye-off)
                 size: 20
-                color: Theme.getColor("on_surface_variant")
+                color: Theme.surfaceVariantFg
             }
 
             MouseArea {

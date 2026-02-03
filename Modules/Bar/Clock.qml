@@ -13,10 +13,10 @@ Rectangle {
     Layout.alignment: Qt.AlignVCenter
     implicitWidth: timeRow.implicitWidth + 24
     implicitHeight: parent.height * 0.75
-    color: clockMouse.containsMouse ? Theme.getColor("tertiary_container") : Theme.getColor("surface_container_highest")
+    color: clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
     radius: 12
     border.width: 1
-    border.color: Qt.darker(Theme.getColor("outline"))
+    border.color: Qt.darker(Theme.outline)
 
     Behavior on color {
         ColorAnimation {
@@ -71,14 +71,14 @@ Rectangle {
         StyledText {
             name: "schedule"
             size: 16
-            color: clockMouse.containsMouse ? Theme.getColor("on_tertiary_container") : Theme.getColor("on_surface")
+            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
             Layout.alignment: Qt.AlignVCenter
         }
 
         // Time
         Text {
             text: Qt.formatDateTime(root.currentTime, "hh:mm")
-            color: clockMouse.containsMouse ? Theme.getColor("on_tertiary_container") : Theme.getColor("on_surface")
+            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
             font.pixelSize: 14
             font.family: Settings.fontFamily
             font.bold: true
@@ -89,7 +89,7 @@ Rectangle {
         Rectangle {
             width: 1
             height: 14
-            color: clockMouse.containsMouse ? Theme.getColor("on_tertiary_container") : Theme.getColor("outline")
+            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.outline
             opacity: 0.5
             Layout.alignment: Qt.AlignVCenter
         }
@@ -97,7 +97,7 @@ Rectangle {
         // Date
         Text {
             text: Qt.formatDateTime(root.currentTime, "ddd, MMM d")
-            color: clockMouse.containsMouse ? Theme.getColor("on_tertiary_container") : Theme.getColor("on_surface_variant")
+            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceVariantFg
             font.pixelSize: 12
             font.family: Settings.fontFamily
             Layout.alignment: Qt.AlignVCenter

@@ -7,6 +7,7 @@ QtObject {
 
     property var currentScreen: Quickshell.screens[0]
 
+    readonly property url config: `${StandardPaths.standardLocations(StandardPaths.GenericConfigLocation)[0]}`
     readonly property url cache: `${StandardPaths.standardLocations(StandardPaths.GenericCacheLocation)[0]}/neoshell`
     readonly property url imagecache: `${cache}/imagecache`
 

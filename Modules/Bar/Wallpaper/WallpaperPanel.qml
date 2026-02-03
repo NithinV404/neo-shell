@@ -109,7 +109,7 @@ PanelWindow {
         ]
         Rectangle {
             id: contentRect
-            color: Theme.getColor("surface")
+            color: Theme.surface
             radius: 12
             implicitWidth: wallpaperGrid.implicitWidth + 40
             implicitHeight: wallpaperGrid.implicitHeight + 40

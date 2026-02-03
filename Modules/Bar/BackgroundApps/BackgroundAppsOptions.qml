@@ -115,7 +115,7 @@ PanelWindow {
         // Ensure height is never 0 to prevent drawing errors
         height: Math.max(layout.implicitHeight + 10, 20)
 
-        color: Theme.getColor("surface")
+        color: Theme.surface
         radius: 12
         border.width: 1
 
@@ -149,7 +149,7 @@ PanelWindow {
                         Rectangle {
                             implicitHeight: 30
                             Layout.fillWidth: true
-                            color: hoverHandler.hovered ? Theme.getColor("primary") : Theme.getColor("surface")
+                            color: hoverHandler.hovered ? Theme.primary : Theme.surface
                             radius: 6
 
                             Behavior on color {
@@ -178,7 +178,7 @@ PanelWindow {
                                 Text {
                                     text: modelData.text
                                     font.family: Settings.fontFamily
-                                    color: !hoverHandler.hovered ? Theme.getColor("on_surface") : Theme.getColor("on_primary")
+                                    color: !hoverHandler.hovered ? Theme.surfaceFg : Theme.primaryFg
                                     Layout.fillWidth: true
                                     elide: Text.ElideRight
                                     antialiasing: true
@@ -193,7 +193,7 @@ PanelWindow {
                             implicitHeight: 1
                             Layout.fillWidth: true
                             Layout.margins: 4
-                            color: Theme.getColor("on_surface")
+                            color: Theme.surfaceFg
                             opacity: 0.5
                         }
                     }

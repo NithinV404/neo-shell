@@ -18,13 +18,13 @@ Rectangle {
     radius: 22
     color: {
         if (!root.enabled)
-            return Theme.getColor("surface_container");
+            return Theme.surfaceContainer;
         if (root.primary) {
-            return buttonMouse.containsPress ? Theme.getColor("primary_container") : buttonMouse.containsMouse ? Qt.lighter(Theme.getColor("primary"), 1.1) : Theme.getColor("primary");
+            return buttonMouse.containsPress ? Theme.primaryContainer : buttonMouse.containsMouse ? Qt.lighter(Theme.primary, 1.1) : Theme.primary;
         }
-        return buttonMouse.containsPress ? Theme.getColor("surface_container_high") : buttonMouse.containsMouse ? Theme.getColor("surface_container_highest") : Theme.getColor("surface");
+        return buttonMouse.containsPress ? Theme.surfaceContainerHigh : buttonMouse.containsMouse ? Theme.surfaceContainerHighest : Theme.surface;
     }
-    border.color: root.primary ? "transparent" : Theme.getColor("outline")
+    border.color: root.primary ? "transparent" : Theme.outline
     border.width: root.primary ? 0 : 1
 
     Behavior on color {
@@ -58,8 +58,8 @@ Rectangle {
             font.pixelSize: 18
             color: {
                 if (!root.enabled)
-                    return Theme.getColor("on_surface_variant");
-                return root.primary ? Theme.getColor("on_primary") : Theme.getColor("primary");
+                    return Theme.surfaceVariantFg;
+                return root.primary ? Theme.primaryFg : Theme.primary;
             }
         }
 
@@ -71,8 +71,8 @@ Rectangle {
 
             color: {
                 if (!root.enabled)
-                    return Theme.getColor("on_surface_variant");
-                return root.primary ? Theme.getColor("on_primary") : Theme.getColor("primary");
+                    return Theme.surfaceVariantFg;
+                return root.primary ? Theme.primaryFg : Theme.primary;
             }
         }
     }

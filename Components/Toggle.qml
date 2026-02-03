@@ -20,11 +20,11 @@ Rectangle {
     radius: height / 2
 
     // Logic: Filled Primary when ON, Transparent/Surface when OFF
-    color: checked ? Theme.getColor("primary") : Theme.getColor("surface_container_highest")
+    color: checked ? Theme.primary : Theme.surfaceContainerHighest
 
     // Logic: Border visible only when OFF
     border.width: checked ? 0 : 2
-    border.color: toggleMouse.containsMouse ?  Theme.getColor("tertiary") :Theme.getColor("outline")
+    border.color: toggleMouse.containsMouse ? Theme.tertiary : Theme.outline
 
     // Smooth Color Transition
     Behavior on color {
@@ -51,7 +51,7 @@ Rectangle {
         radius: width / 2
 
         // Dynamic Color: On = OnPrimary, Off = Outline
-        color: root.checked ? Qt.darker(Theme.getColor("primary")) : toggleMouse.containsMouse ? Theme.getColor("tertiary") : Theme.getColor("outline")
+        color: root.checked ? Qt.darker(Theme.primary) : toggleMouse.containsMouse ? Theme.tertiary : Theme.outline
 
         // --- POSITION CALCULATION ---
         // Off: Left side + padding

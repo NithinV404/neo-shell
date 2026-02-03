@@ -9,7 +9,7 @@ Rectangle {
     property alias main: mainComponent.children
     property alias sub: subComponent.children
 
-    color: Theme.getColor("surface")
+    color: Theme.surface
     radius: 8
 
     // Proper size calculation
@@ -41,7 +41,7 @@ Rectangle {
                 name: "keyboard_arrow_down"
                 rotation: root.expanded ? 180 : 0
                 Layout.margins: 4
-                color: Theme.getColor("on_surface")
+                color: Theme.surfaceFg
 
                 Behavior on rotation {
                     NumberAnimation {

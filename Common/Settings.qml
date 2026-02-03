@@ -31,7 +31,10 @@ Singleton {
 
     onDarkModeChanged: saveSettings()
     onWallpaperFolderImagesChanged: saveSettings()
-    onWallpaperImageChanged: saveSettings()
+    onWallpaperImageChanged: {
+        saveSettings();
+        updateMatugenColors();
+    }
 
     // Function for different Settings
     function saveSettings() {
@@ -53,7 +56,7 @@ Singleton {
         _loading = true;
         try {
             _loading = true;
-            console.log("Parsed");
+
             if (content && content.trim()) {
                 var settings = JSON.parse(content);
                 darkMode = settings.darkMode !== undefined ? settings.darkMode : "light";
@@ -145,10 +148,19 @@ Singleton {
         saveSettings();
     }
 
+    function updateMatugenColors() {
+        if (_loading || !wallpaperImage)
+            return;
+
+        const imagePath = Utils.strip(wallpaperImage);
+        matugenProcess.command = ["matugen", "image", "-c", Utils.strip(Utils.config) + "/quickshell/matugen/config/neoshell.toml"  // Your config path
+            , imagePath];
+        matugenProcess.running = true;
+    }
+
     // FileView for Storing and parsing the settings File
     FileView {
         id: settingsFile
-
         path: `${StandardPaths.writableLocation(StandardPaths.ConfigLocation)}/quickshell/settings.json`
         blockLoading: true
         blockWrites: true
@@ -196,6 +208,24 @@ Singleton {
             else
                 root.defaultIconTheme = "";
             iconThemeDetectionProcess.running = true;
+        }
+    }
+
+    Process {
+        id: matugenProcess
+        running: false
+
+        onExited: exitCode => {
+            if (exitCode === 0) {
+                console.log("Theme generated");
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text)
+                    console.error("Matugen error:", text);
+            }
         }
     }
 }

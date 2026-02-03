@@ -77,8 +77,10 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.getColor("surface_container_highest")
+        color: Theme.surfaceContainerHighest
         radius: 12
+        border.width: 1
+        border.color: Qt.darker(Theme.outline)
     }
 
     GridView {
@@ -95,7 +97,7 @@ Item {
             id: imageCell
             width: root.cellWidth
             height: root.cellHeight
-            color: Theme.getColor("surface_container")
+            color: Theme.surfaceContainer
             radius: 12
             clip: true
             readonly property bool isSelected: Utils.strip(Settings.wallpaperImage) == modelData
@@ -117,7 +119,7 @@ Item {
                 id: mask
                 anchors.fill: img
                 border.width: Utils.strip(Settings.wallpaperImage) == imageCell.modelData ? 2 : 0
-                border.color: Theme.getColor("primary")
+                border.color: Theme.primary
                 radius: 12
                 clip: true
                 visible: false
@@ -134,7 +136,7 @@ Item {
                 radius: 12
                 color: "transparent"
                 border.width: imageCell.isSelected ? 2 : 0
-                border.color: Theme.getColor("primary")
+                border.color: Theme.primary
             }
 
             MouseArea {

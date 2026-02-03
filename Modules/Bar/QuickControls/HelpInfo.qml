@@ -20,7 +20,7 @@ Rectangle {
             text: {
                 root.icon;
             }
-            color: Theme.getColor("on_surface")
+            color: Theme.surfaceFg
             size: 32
         }
         Text {
@@ -28,14 +28,14 @@ Rectangle {
             text: root.title
             font.pixelSize: 20
             font.family: Settings.fontFamily
-            color: Theme.getColor("on_surface")
+            color: Theme.surfaceFg
         }
         Text {
             Layout.alignment: Qt.AlignCenter
             text: root.description
             font.pixelSize: 12
             font.family: Settings.fontFamily
-            color: Theme.getColor("on_surface")
+            color: Theme.surfaceFg
         }
     }
 }

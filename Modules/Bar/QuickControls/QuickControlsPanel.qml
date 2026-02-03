@@ -130,7 +130,7 @@ PanelWindow {
                     id: togglePanel
                     implicitHeight: togglesGrid.implicitHeight + 20
                     implicitWidth: togglesGrid.implicitWidth + 20
-                    color: Theme.getColor("surface_container")
+                    color: Theme.surfaceContainer
                     radius: 12
 
                     GridLayout {
@@ -149,9 +149,9 @@ PanelWindow {
                             Layout.preferredHeight: 46
                             Layout.bottomMargin: 8
                             radius: 24
-                            color: Theme.getColor("surface_container_highest")
+                            color: Theme.surfaceContainerHighest
                             border.width: 1
-                            border.color: Qt.darker(Theme.getColor("outline"))
+                            border.color: Qt.darker(Theme.outline)
 
                             RowLayout {
                                 anchors.fill: parent
@@ -159,16 +159,16 @@ PanelWindow {
                                     radius: 12
                                     Layout.rightMargin: 12
                                     Layout.alignment: Qt.AlignRight
-                                    color: powerBtnMouse.containsMouse ? Theme.getColor("tertiary_container") : Theme.getColor("surface")
+                                    color: powerBtnMouse.containsMouse ? Theme.tertiaryContainer : Theme.surface
                                     border.width: 1
-                                    border.color: Qt.darker(Theme.getColor("outline"))
+                                    border.color: Qt.darker(Theme.outline)
                                     implicitWidth: 30
                                     implicitHeight: 30
                                     StyledText {
                                         anchors.centerIn: parent
                                         name: "power_settings_new"
                                         font.pixelSize: 15
-                                        color: Theme.getColor("on_primary_container")
+                                        color: Theme.primaryContainerFg
                                     }
                                     MouseArea {
                                         id: powerBtnMouse
@@ -279,11 +279,11 @@ PanelWindow {
                                 Rectangle {
                                     implicitHeight: 48
                                     implicitWidth: 48
-                                    color: Theme.getColor("surface_container_highest")
+                                    color: Theme.surfaceContainerHighest
                                     radius: 24
                                     StyledText {
                                         anchors.centerIn: parent
-                                        color: AudioService.muted ? Theme.getColor("on_surface_variant") : Theme.getColor("on_primary_container")
+                                        color: AudioService.muted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
                                         name: AudioService.getOutputIcon()
                                     }
 

@@ -20,7 +20,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: size * 0.22
-        color: Theme.getColor("primary_container")
+        color: Theme.primaryContainer
         visible: !root.iconLoaded
 
         Text {
@@ -29,7 +29,7 @@ Item {
             font.pixelSize: root.size * 0.45
             font.family: Settings.fontFamily
             font.weight: Font.Medium
-            color: Theme.getColor("on_primary_container")
+            color: Theme.primaryContainerFg
         }
     }
 

@@ -143,7 +143,7 @@ Scope {
                 width: 450
                 height: root.showContainer ? 600 : 0
                 radius: 16
-                color: Theme.getColor("surface")
+                color: Theme.surface
                 clip: true
 
                 opacity: root.showContainer ? 1 : 0
@@ -189,7 +189,7 @@ Scope {
                             StyledText {
                                 name: "apps"
                                 font.pixelSize: 20
-                                color: Theme.getColor("primary")
+                                color: Theme.primary
                             }
 
                             Text {
@@ -197,7 +197,7 @@ Scope {
                                 font.pixelSize: 16
                                 font.family: Settings.fontFamily
                                 font.weight: Font.Medium
-                                color: Theme.getColor("on_surface")
+                                color: Theme.surfaceFg
                             }
 
                             Item {
@@ -208,7 +208,7 @@ Scope {
                                 text: `${root.apps.length} apps`
                                 font.pixelSize: 12
                                 font.family: Settings.fontFamily
-                                color: Theme.getColor("on_surface_variant")
+                                color: Theme.surfaceVariantFg
                             }
                         }
                     }
@@ -254,7 +254,7 @@ Scope {
                         Layout.leftMargin: 16
                         Layout.rightMargin: 16
                         Layout.topMargin: 8
-                        color: Theme.getColor("outline_variant")
+                        color: Theme.outlineVariant
                     }
 
                     // App list
@@ -283,7 +283,7 @@ Scope {
                             readonly property bool isSelected: index === root.selectedIndex
                             readonly property bool isHovered: delegateMouse.containsMouse
 
-                            color: isSelected ? Theme.getColor("surface_container_highest") : isHovered ? Theme.getColor("surface_container_high") : "transparent"
+                            color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : "transparent"
 
                             Behavior on color {
                                 ColorAnimation {
@@ -313,7 +313,7 @@ Scope {
                                         font.pixelSize: 14
                                         font.family: Settings.fontFamily
                                         font.weight: appDelegate.isSelected ? Font.Medium : Font.Normal
-                                        color: Theme.getColor("on_surface")
+                                        color: Theme.surfaceFg
                                         elide: Text.ElideRight
                                         width: parent.width
                                     }
@@ -323,7 +323,7 @@ Scope {
                                         text: appDelegate.modelData.comment ?? ""
                                         font.pixelSize: 11
                                         font.family: Settings.fontFamily
-                                        color: Theme.getColor("on_surface_variant")
+                                        color: Theme.surfaceVariantFg
                                         elide: Text.ElideRight
                                         width: parent.width
                                     }
@@ -347,7 +347,7 @@ Scope {
                             text: root.searchQuery ? "No matching applications" : "No applications found"
                             font.pixelSize: 14
                             font.family: Settings.fontFamily
-                            color: Theme.getColor("on_surface_variant")
+                            color: Theme.surfaceVariantFg
                         }
                     }
                 }

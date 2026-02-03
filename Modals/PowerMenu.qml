@@ -155,7 +155,7 @@ Scope {
                     anchors.centerIn: parent
                     implicitHeight: root.visible ? (root.items.length * 50) + 40 : 0
                     implicitWidth: 300
-                    color: Theme.getColor("surface")
+                    color: Theme.surface
                     radius: 12
                     clip: true
 
@@ -187,7 +187,7 @@ Scope {
                                 required property var modelData
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 42
-                                color: Theme.getColor("surface_container_highest")
+                                color: Theme.surfaceContainerHighest
                                 radius: 12
 
                                 property real progress: 0.0
@@ -206,7 +206,7 @@ Scope {
                                         anchors.top: parent.top
                                         anchors.bottom: parent.bottom
                                         width: buttonDelegate.width
-                                        color: Theme.getColor("primary")
+                                        color: Theme.primary
                                         opacity: 0.8
                                         radius: 12
                                     }
@@ -255,13 +255,13 @@ Scope {
                                     StyledText {
                                         name: modelData.icon
                                         font.pixelSize: 24
-                                        color: Theme.getColor("on_surface")
+                                        color: Theme.surfaceFg
                                         Layout.leftMargin: 12
                                     }
 
                                     Text {
                                         text: modelData.name
-                                        color: Theme.getColor("on_surface")
+                                        color: Theme.surfaceFg
                                         font.pixelSize: 14
                                         font.family: Settings.fontFamily
                                         Layout.fillWidth: true
@@ -270,7 +270,7 @@ Scope {
 
                                     Text {
                                         text: "Hold"
-                                        color: Theme.getColor("on_surface")
+                                        color: Theme.surfaceFg
                                         font.pixelSize: 10
                                         opacity: 0.6
                                         font.family: Settings.fontFamily

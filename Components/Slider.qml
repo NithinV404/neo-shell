@@ -15,7 +15,7 @@ Item {
     property real maxValue: 1.0
     property string icon: ""
     property bool showValue: true
-    property color accentColor: Theme.getColor("primary")
+    property color accentColor: Theme.primary
 
     signal moved(real newValue)
 
@@ -29,7 +29,7 @@ Item {
         id: background
         anchors.fill: parent
         radius: height / 4
-        color: Theme.getColor("surface_container_highest")
+        color: Theme.surfaceContainerHighest
 
         // Clipping container - this is the key!
         Item {
@@ -64,7 +64,7 @@ Item {
             width: 12
             height: parent.height + 18
             radius: 5
-            color: Theme.getColor("surface")
+            color: Theme.surface
             anchors.verticalCenter: parent.verticalCenter
             x: (parent.width - 10) * root.normalizedValue
             Behavior on x {
@@ -77,7 +77,7 @@ Item {
 
             Rectangle {
                 id: handleFill
-                color: Theme.getColor("primary")
+                color: Theme.primary
                 height: parent.height - 1
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -95,7 +95,7 @@ Item {
                 visible: root.icon !== ""
                 name: root.icon
                 size: 18
-                color: root.normalizedValue > 0.15 ? Theme.getColor("on_primary") : Theme.getColor("on_surface_variant")
+                color: root.normalizedValue > 0.15 ? Theme.primaryFg : Theme.surfaceVariantFg
 
                 Behavior on color {
                     ColorAnimation {
@@ -114,7 +114,7 @@ Item {
                 font.family: Settings.fontFamily
                 font.pixelSize: 13
                 font.weight: Font.Medium
-                color: root.normalizedValue > 0.85 ? Theme.getColor("on_primary") : Theme.getColor("on_surface")
+                color: root.normalizedValue > 0.85 ? Theme.primaryFg : Theme.surfaceFg
 
                 Behavior on color {
                     ColorAnimation {
@@ -127,7 +127,7 @@ Item {
                 visible: !root.showValue && root.normalizedValue < 0.9
                 height: 4
                 width: 4
-                color: Theme.getColor("primary")
+                color: Theme.primary
                 radius: background.height / 2
                 Behavior on color {
                     ColorAnimation {

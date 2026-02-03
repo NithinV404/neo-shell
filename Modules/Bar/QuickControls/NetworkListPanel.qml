@@ -29,7 +29,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.getColor("surface_container")
+        color: Theme.surfaceContainer
         radius: 12
     }
 
@@ -68,7 +68,7 @@ Item {
             Layout.fillWidth: true
             implicitHeight: 42
             radius: 28
-            color: Theme.getColor("primary_container")
+            color: Theme.primaryContainer
 
             RowLayout {
                 Layout.alignment: Qt.AlignTop
@@ -79,7 +79,7 @@ Item {
                     implicitWidth: 35
                     implicitHeight: 35
                     radius: 20
-                    color: !backButtonHover.containsMouse ? Theme.getColor("primary") : Qt.darker(Theme.getColor("primary"))
+                    color: !backButtonHover.containsMouse ? Theme.primary : Qt.darker(Theme.primary)
                     Layout.topMargin: 3.5
                     Layout.leftMargin: 4
                     Layout.rightMargin: 8
@@ -94,7 +94,7 @@ Item {
                     StyledText {
                         name: "chevron_backward"
                         anchors.centerIn: parent
-                        color: Theme.getColor("on_primary")
+                        color: Theme.primaryFg
                     }
 
                     MouseArea {
@@ -111,7 +111,7 @@ Item {
 
                     Text {
                         text: "Wifi"
-                        color: Theme.getColor("on_primary_container")
+                        color: Theme.primaryContainerFg
                         font.family: Settings.fontFamily
                         font.pixelSize: 16
                         anchors.centerIn: parent
@@ -122,7 +122,7 @@ Item {
                     id: syncIcon
                     Layout.margins: 4
                     name: "sync"
-                    color: Theme.getColor("on_primary_container")
+                    color: Theme.primaryContainerFg
                     rotation: 0
 
                     RotationAnimation on rotation {
@@ -239,7 +239,7 @@ Item {
                                 id: bgRect
                                 width: parent.width
                                 height: contentCol.implicitHeight + 20
-                                color: Theme.getColor("primary_container")
+                                color: Theme.primaryContainer
 
                                 topLeftRadius: delegateScope.isFirst ? 12 : 4
                                 topRightRadius: delegateScope.isFirst ? 12 : 4
@@ -274,7 +274,7 @@ Item {
 
                                         StyledText {
                                             name: delegateScope.signal >= 50 ? "wifi" : "wifi_1_bar"
-                                            color: Theme.getColor("on_primary_container")
+                                            color: Theme.primaryContainerFg
                                         }
 
                                         ColumnLayout {
@@ -293,7 +293,7 @@ Item {
                                                         return ssid;
                                                 }
                                                 elide: Text.ElideRight
-                                                color: Theme.getColor("on_primary_container")
+                                                color: Theme.primaryContainerFg
                                                 font.pixelSize: 14
                                             }
 
@@ -309,7 +309,7 @@ Item {
                                                     }
                                                 }
                                                 font.pixelSize: 11
-                                                color: Qt.rgba(Theme.getColor("on_primary_container").r, Theme.getColor("on_primary_container").g, Theme.getColor("on_primary_container").b, 0.7)
+                                                color: Qt.rgba(Theme.primaryContainerFg.r, Theme.primaryContainerFg.g, Theme.primaryContainerFg.b, 0.7)
                                             }
                                         }
 
@@ -319,14 +319,14 @@ Item {
 
                                         Loading {
                                             visible: delegateScope.isConnecting
-                                            dotColor: Theme.getColor("on_secondary")
+                                            dotColor: Theme.secondaryFg
                                             size: 18
                                             running: root.wifiService.isConnecting
                                             Layout.rightMargin: 8
                                         }
 
                                         Rectangle {
-                                            color: connectBtnMouse.containsMouse ? Qt.darker(Theme.getColor("primary")) : Theme.getColor("primary")
+                                            color: connectBtnMouse.containsMouse ? Qt.darker(Theme.primary) : Theme.primary
                                             radius: 15
                                             implicitWidth: connectBtnText.text.length * 10
                                             implicitHeight: 30
@@ -342,7 +342,7 @@ Item {
                                                 id: connectBtnText
                                                 anchors.centerIn: parent
                                                 text: delegateScope.isCurrent ? "Disconnect" : "Connect"
-                                                color: Theme.getColor("on_primary")
+                                                color: Theme.primaryFg
                                                 font.pixelSize: 12
                                             }
 
@@ -384,7 +384,7 @@ Item {
                                     Rectangle {
                                         anchors.fill: parent
                                         radius: 12
-                                        color: delegateScope.saved ? Theme.getColor("secondary_container") : Qt.lighter(Theme.getColor("secondary_container"))
+                                        color: delegateScope.saved ? Theme.secondaryContainer : Qt.lighter(Theme.secondaryContainer)
                                         border.width: 1
                                         border.color: Qt.rgba(1, 1, 1, 0.08)
                                     }
@@ -399,11 +399,11 @@ Item {
                                     rightPadding: 8
                                     background: Rectangle {
                                         radius: 10
-                                        color: forgetItem.highlighted ? Qt.rgba(Theme.getColor("tertiary").r, Theme.getColor("tertiary").g, Theme.getColor("tertiary").b, 0.5) : "transparent"
+                                        color: forgetItem.highlighted ? Qt.rgba(Theme.tertiary.r, Theme.tertiary.g, Theme.tertiary.b, 0.5) : "transparent"
                                     }
                                     contentItem: Text {
                                         text: forgetItem.text
-                                        color: parent.enabled ? Theme.getColor("on_tertiary") : Qt.rgba(Theme.getColor("on_secondary").r, Theme.getColor("on_secondary").g, Theme.getColor("on_secondary").b, 0.5)
+                                        color: parent.enabled ? Theme.tertiaryFg : Qt.rgba(Theme.secondaryFg.r, Theme.secondaryFg.g, Theme.secondaryFg.b, 0.5)
                                         font.pixelSize: 13
                                         verticalAlignment: Text.AlignVCenter
                                         elide: Text.ElideRight

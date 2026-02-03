@@ -74,7 +74,7 @@ Scope {
                 anchors.horizontalCenter: parent.horizontalCenter
                 implicitHeight: volumeOSDLayout.height + 20
                 implicitWidth: volumeOSDLayout.width + 20
-                color: Theme.getColor("surface")
+                color: Theme.surface
                 radius: 12
                 layer.enabled: true
 
@@ -136,12 +136,12 @@ Scope {
                         Layout.alignment: Qt.AlignVCenter
                         implicitHeight: 48
                         implicitWidth: 48
-                        color: Theme.getColor("surface_container_highest")
+                        color: Theme.surfaceContainerHighest
                         radius: 24
 
                         StyledText {
                             anchors.centerIn: parent
-                            color: AudioService.muted ? Theme.getColor("on_surface_variant") : Theme.getColor("on_primary_container")
+                            color: AudioService.muted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
                             name: AudioService.getOutputIcon()
                         }
 

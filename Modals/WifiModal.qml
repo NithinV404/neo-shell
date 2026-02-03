@@ -86,7 +86,7 @@ PanelWindow {
         id: modalContainer
         implicitWidth: 420
         implicitHeight: contentColumn.implicitHeight + 48
-        color: Theme.getColor("surface")
+        color: Theme.surface
         anchors.centerIn: parent
         radius: 12
         state: root.opened ? "open" : "closed"
@@ -154,14 +154,14 @@ PanelWindow {
                     font.family: Settings.fontFamily
                     font.pixelSize: 24
                     font.weight: Font.Medium
-                    color: Theme.getColor("on_surface")
+                    color: Theme.surfaceFg
                 }
 
                 Text {
                     text: root.ssid
                     font.pixelSize: 14
                     font.family: Settings.fontFamily
-                    color: Theme.getColor("on_surface_variant")
+                    color: Theme.surfaceVariantFg
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
@@ -177,7 +177,7 @@ PanelWindow {
                     font.pixelSize: 12
                     font.family: Settings.fontFamily
                     font.weight: Font.Medium
-                    color: Theme.getColor("on_surface_variant")
+                    color: Theme.surfaceVariantFg
                 }
 
                 TextField {
