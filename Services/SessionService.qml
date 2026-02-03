@@ -99,8 +99,6 @@ Singleton {
             NiriService.quit();
             return;
         }
-
-        Hyprland.dispatch("exit");
     }
 
     function suspend() {

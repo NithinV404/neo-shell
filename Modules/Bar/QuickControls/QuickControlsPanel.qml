@@ -17,8 +17,6 @@ PanelWindow {
     property bool visible: false
     property bool isVisible: false
 
-    focusable: root.visible
-
     signal menuClosed
 
     function openAt(x, y) {
@@ -63,7 +61,7 @@ PanelWindow {
         clip: true
 
         state: root.visible ? "open" : "closed"
-        transformOrigin: Item.TopRight
+        transformOrigin: Item.Top
 
         states: [
             State {

@@ -7,6 +7,9 @@ QtObject {
 
     property var currentScreen: Quickshell.screens[0]
 
+    readonly property url cache: `${StandardPaths.standardLocations(StandardPaths.GenericCacheLocation)[0]}/neoshell`
+    readonly property url imagecache: `${cache}/imagecache`
+
     function clampScreenX(x, width, padding) {
         var screenWidth = currentScreen.width;
         var edge = x + width;
@@ -31,6 +34,14 @@ QtObject {
     }
 
     function strip(path: url): string {
-        return toString(path).replace("file://", "");
+        return path.toString(path).replace("file://", "");
+    }
+
+    function stringify(path: url): string {
+        return path.toString().replace(/%20/g, " ").replace(/^file:\/\//, "");
+    }
+
+    function mkdir(path: url): void {
+        Quickshell.execDetached(["mkdir", "-p", strip(path)]);
     }
 }

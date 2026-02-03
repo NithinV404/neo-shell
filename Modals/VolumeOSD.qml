@@ -5,6 +5,7 @@ import Quickshell.Services.Pipewire
 import qs.Components
 import qs.Services
 import qs.Common
+import Quickshell.Wayland
 
 Scope {
     id: root
@@ -65,6 +66,8 @@ Scope {
             implicitHeight: 90
             color: "transparent"
             mask: Region {}
+
+            WlrLayershell.layer: WlrLayer.Overlay
 
             Rectangle {
                 id: osdContent

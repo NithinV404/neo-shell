@@ -1,0 +1,4 @@
+module qs.Modules.Bar.Wallpaper
+
+WallpaperPanel 1.0 WallpaperPanel.qml
+WallpaperGrid 1.0 WallpaperGrid.qml

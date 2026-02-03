@@ -8,7 +8,7 @@ import QtQuick.Effects
 Rectangle {
     id: root
     Layout.alignment: Qt.AlignRight
-    implicitHeight: parent.height * 0.85
+    implicitHeight: parent.height * 0.75
     implicitWidth: layout.implicitWidth + 8
 
     color: Theme.getColor("surface_container_highest")

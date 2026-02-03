@@ -1,5 +1,23 @@
 {
   "darkMode": true,
   "fontFamily": "Adwaita Sans",
-  "iconTheme": "System Default"
+  "iconTheme": "System Default",
+  "wallpaperFolderImages": [
+    "/home/nithin/Pictures/Wallpapers/wallhaven-8gg3lo_3840x2160.png",
+    "/home/nithin/Pictures/Wallpapers/wallhaven-e88yjo_3840x2160.png",
+    "/home/nithin/Pictures/Wallpapers/wallhaven-e8xml8_3840x2160.png",
+    "/home/nithin/Pictures/Wallpapers/wallhaven-ly8l7p_3840x2160.png",
+    "/home/nithin/Pictures/Wallpapers/wallhaven-lyyypr_3840x2160.png",
+    "/home/nithin/Pictures/Wallpapers/wallhaven-mlldj8_3840x2160.png",
+    "/home/nithin/Pictures/Wallpapers/wallhaven-mlz9j8_3840x2160.png",
+    "/home/nithin/Pictures/Wallpapers/wallhaven-polk63_3840x2160.png",
+    "/home/nithin/Pictures/Wallpapers/wallhaven-vpq1z5_3840x2160.png",
+    "/home/nithin/Pictures/Wallpapers/wallhaven-w5ee76_3840x2160.png",
+    "/home/nithin/Pictures/Wallpapers/wallhaven-w5eq57_3840x2160.png",
+    "/home/nithin/Pictures/Wallpapers/wallhaven-zppmly_3840x2160.png",
+    "/home/nithin/Pictures/Wallpapers/wallhaven-zpywmj_3840x2160.png"
+  ],
+  "audioVolumeStep": 2,
+  "audioVolumeOverdrive": true,
+  "wallpaperImage": "file:///home/nithin/Pictures/Wallpapers/wallhaven-mlldj8_3840x2160.png"
 }

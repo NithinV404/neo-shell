@@ -30,12 +30,13 @@ PanelWindow {
 
     color: "transparent"
 
-    implicitHeight: 38
+    implicitHeight: 40
     WlrLayershell.namespace: "quickshell:quickmenu"
     WlrLayershell.layer: WlrLayer.Top
 
     Rectangle {
         anchors.fill: parent
+        anchors.centerIn: parent
         color: Theme.getColor("surface")
         radius: 24
 
@@ -57,7 +58,7 @@ PanelWindow {
             anchors.fill: parent
             anchors.leftMargin: 8
             anchors.rightMargin: 8
-            spacing: 8
+            spacing: 4
 
             // Spacer - pushes items to right
             Item {

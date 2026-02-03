@@ -1,5 +1,5 @@
-pragma ComponentBehavior: Bound
 pragma Singleton
+pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Io
@@ -10,7 +10,7 @@ import qs.Common
 Singleton {
     id: root
 
-    property bool _loading: false
+    property bool _loading: true
     property bool darkMode: true
     property string fontFamily: "Adwaita Sans"
     property string iconTheme: "System Default"
@@ -19,35 +19,41 @@ Singleton {
     property var availableIconThemes: []
     property bool audioVolumeOverdrive: true
     property int audioVolumeStep: 2
+    property string wallpaperImage: ""
+    property var wallpaperFolderImages: []
     readonly property string _homeUrl: StandardPaths.writableLocation(StandardPaths.HomeLocation)
     readonly property string _configUrl: StandardPaths.writableLocation(StandardPaths.ConfigLocation)
     readonly property string _configDir: Utils.strip(_configUrl)
 
     Component.onCompleted: {
-        parseSettings();
+        loadSettings();
     }
 
-    onDarkModeChanged: updateAppsColorScheme()
+    onDarkModeChanged: saveSettings()
+    onWallpaperFolderImagesChanged: saveSettings()
+    onWallpaperImageChanged: saveSettings()
 
     // Function for different Settings
     function saveSettings() {
         if (_loading) {
             return;
         }
-        _loading = true;
         settingsFile.setText(JSON.stringify({
             "darkMode": darkMode,
             "fontFamily": fontFamily,
-            "iconTheme": iconTheme
+            "iconTheme": iconTheme,
+            "wallpaperFolderImages": wallpaperFolderImages,
+            "audioVolumeStep": audioVolumeStep,
+            "audioVolumeOverdrive": audioVolumeOverdrive,
+            "wallpaperImage": wallpaperImage
         }, null, 2));
-        _loading = false;
     }
 
     function parseSettings(content) {
-        if (_loading) {
-            return;
-        }
+        _loading = true;
         try {
+            _loading = true;
+            console.log("Parsed");
             if (content && content.trim()) {
                 var settings = JSON.parse(content);
                 darkMode = settings.darkMode !== undefined ? settings.darkMode : "light";
@@ -55,6 +61,8 @@ Singleton {
                 iconTheme = settings.iconTheme !== undefined ? settings.iconTheme : "System Default";
                 audioVolumeOverdrive = settings.audioVolumeOverdrive !== undefined ? settings.audioVolumeOverdrive : false;
                 audioVolumeStep = settings.audioVolumeStep !== undefined ? settings.audioVolumeStep : 1;
+                wallpaperFolderImages = settings.wallpaperFolderImages !== undefined ? settings.wallpaperFolderImages : [];
+                wallpaperImage = settings.wallpaperImage !== undefined ? settings.wallpaperImage : "";
                 loadAvailableIcons();
                 detectDefault();
             }
@@ -121,6 +129,20 @@ Singleton {
     function updateGtkColorScheme() {
         Quickshell.execDetached(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", root.darkMode ? "prefer-dark" : "prefer-light"]);
         Quickshell.execDetached(["gsettings", "set", "org.gnome.desktop.interface", "gtk-theme", root.darkMode ? "adw-gtk3-dark" : "adw-gtk3"]);
+    }
+
+    function updateWallpaperFolderImages(images) {
+        if (images) {
+            wallpaperFolderImages = images;
+        }
+        saveSettings();
+    }
+
+    function updateWallpaperImage(image) {
+        if (image) {
+            wallpaperImage = image;
+        }
+        saveSettings();
     }
 
     // FileView for Storing and parsing the settings File

@@ -9,7 +9,7 @@ Rectangle {
     property var activePanel: null
     readonly property int iconSize: 16
     implicitWidth: layout.implicitWidth + 18
-    implicitHeight: parent.height * 0.85
+    implicitHeight: parent.height * 0.75
     Layout.alignment: Qt.AlignRight
     color: quickControlsPanel.containsMouse ? Theme.getColor("tertiary_container") : Theme.getColor("surface_container_highest")
     border.width: 1

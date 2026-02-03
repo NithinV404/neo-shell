@@ -21,10 +21,6 @@ Scope {
             icon: "restart_alt"
         },
         {
-            name: "Sleep",
-            icon: "bedtime"
-        },
-        {
             name: "Suspend",
             icon: "pause"
         },
@@ -42,7 +38,7 @@ Scope {
         case "Restart":
             SessionService.reboot();
             break;
-        case "Log out":
+        case "Log Out":
             SessionService.logout();
             break;
         case "Suspend":
@@ -102,7 +98,8 @@ Scope {
         PanelWindow {
             id: wLogoutMenu
 
-            WlrLayershell.layer: WlrLayer.Top
+            exclusionMode: ExclusionMode.Ignore
+            WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
             anchors {
