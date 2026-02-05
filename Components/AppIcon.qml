@@ -12,9 +12,23 @@ Item {
     implicitWidth: size
     implicitHeight: size
 
-    property string iconName: root.icon?.icon ?? ""
+    // Look up the desktop entry to get the correct icon
+    readonly property var desktopEntry: {
+        const appId = root.icon?.icon ?? "";
+        if (!appId)
+            return null;
+
+        return DesktopEntries.byId(appId) ?? DesktopEntries.byId(appId.toLowerCase()) ?? DesktopEntries.byId(appId + ".desktop") ?? DesktopEntries.byId(appId.toLowerCase() + ".desktop") ?? null;
+    }
+
+    // Use icon from desktop entry, otherwise try app_id directly
+    property string iconName: desktopEntry?.icon ?? root.icon?.icon ?? ""
     property bool hasIcon: iconName !== "" && iconName !== null
     property bool iconLoaded: hasIcon && iconImage.status === Image.Ready
+
+    Component.onCompleted: {
+        console.log("app_id:", root.icon?.icon, "→ iconName:", iconName, "→ desktopEntry:", desktopEntry);
+    }
 
     // Fallback
     Rectangle {
@@ -38,12 +52,18 @@ Item {
         id: iconImage
         anchors.fill: parent
         visible: root.iconLoaded
-        source: Quickshell.iconPath(root.icon?.icon ?? "", true)
+        source: root.hasIcon ? Quickshell.iconPath(root.iconName, true) : ""
         sourceSize: Qt.size(root.size, root.size)
         fillMode: Image.PreserveAspectFit
         smooth: true
         mipmap: true
         asynchronous: true
         cache: true
+
+        onStatusChanged: {
+            if (status === Image.Error) {
+                console.log("Failed to load icon:", root.iconName, "for app:", root.icon?.icon);
+            }
+        }
     }
 }

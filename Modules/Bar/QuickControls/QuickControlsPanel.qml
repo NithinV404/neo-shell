@@ -176,7 +176,7 @@ PanelWindow {
                                         hoverEnabled: true
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: {
-                                            powerMenu.open();
+                                            PowerMenuService.toggle();
                                         }
                                     }
                                 }
@@ -333,9 +333,5 @@ PanelWindow {
                 }
             }
         }
-    }
-
-    PowerMenu {
-        id: powerMenu
     }
 }

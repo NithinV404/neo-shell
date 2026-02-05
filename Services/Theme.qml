@@ -117,8 +117,6 @@ Singleton {
         inverseSurface = Qt.color(c["inverse_surface"] || "#E6E1E5");
         inverseSurfaceFg = Qt.color(c["inverse_on_surface"] || "#313033");
         inversePrimary = Qt.color(c["inverse_primary"] || "#6750A4");
-
-        console.log("[Theme] Colors updated");
     }
 
     function getColor(key, fallback) {
@@ -150,7 +148,6 @@ Singleton {
             try {
                 var json = JSON.parse(content.trim());
                 root.colors = json.colors || {};
-                root.wallpaperPath = json.image || "";
                 root.updateColorProperties();
             } catch (e) {
                 console.warn("[Theme] Parse error:", e);

@@ -11,7 +11,7 @@ Rectangle {
     id: root
     property var activePanel: null
     Layout.alignment: Qt.AlignVCenter
-    implicitWidth: timeRow.implicitWidth + 24
+    implicitWidth: timeRow.implicitWidth + 16
     implicitHeight: parent.height * 0.75
     color: clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
     radius: 12
@@ -25,13 +25,9 @@ Rectangle {
         }
     }
 
-    property date currentTime: new Date()
-
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-        onTriggered: root.currentTime = new Date()
+    SystemClock {
+        id: clock
+        precision: SystemClock.Seconds
     }
 
     function openPanel() {
@@ -77,7 +73,7 @@ Rectangle {
 
         // Time
         Text {
-            text: Qt.formatDateTime(root.currentTime, "hh:mm")
+            text: Qt.formatDateTime(clock.date, "hh:mm ap")
             color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
             font.pixelSize: 14
             font.family: Settings.fontFamily
@@ -96,7 +92,7 @@ Rectangle {
 
         // Date
         Text {
-            text: Qt.formatDateTime(root.currentTime, "ddd, MMM d")
+            text: Qt.formatDateTime(clock.date, "ddd, MMM d")
             color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceVariantFg
             font.pixelSize: 12
             font.family: Settings.fontFamily

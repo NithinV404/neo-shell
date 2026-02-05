@@ -75,18 +75,15 @@ Scope {
         root.visible = false;
     }
 
-    IpcHandler {
-        target: "wlogout"
-
-        function toggleWlogoutMenu() {
+    Connections {
+        target: PowerMenuService
+        function onToggleRequested() {
             root.toggle();
         }
-
-        function showWLogout() {
+        function onOpenRequested() {
             root.open();
         }
-
-        function hideWLogout() {
+        function onCloseRequested() {
             root.close();
         }
     }

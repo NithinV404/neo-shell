@@ -47,8 +47,15 @@ PanelWindow {
             }
         }
 
+        Workspaces {
+            anchors.left: parent.left
+            anchors.leftMargin: 8
+            anchors.verticalCenter: parent.verticalCenter
+        }
+
         // Clock - Absolutely centered
         Clock {
+
             anchors.centerIn: parent
         }
 

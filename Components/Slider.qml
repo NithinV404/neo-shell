@@ -62,7 +62,7 @@ Item {
         Rectangle {
             id: handle
             width: 12
-            height: parent.height + 18
+            height: parent.height + 28
             radius: 5
             color: Theme.surface
             anchors.verticalCenter: parent.verticalCenter
@@ -78,7 +78,7 @@ Item {
             Rectangle {
                 id: handleFill
                 color: Theme.primary
-                height: parent.height - 1
+                height: parent.height - 8
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: parent.width - 8

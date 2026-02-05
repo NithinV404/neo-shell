@@ -15,7 +15,7 @@ Scope {
     }
 
     Connections {
-        target: Pipewire.defaultAudioSink?.audio
+        target: Pipewire.defaultAudioSink?.audio ?? null
 
         function onVolumeChanged() {
             root.open();
@@ -61,6 +61,8 @@ Scope {
         PanelWindow {
             id: volumeOSDPanel
             anchors.bottom: true
+            anchors.left: true
+            anchors.right: true
             exclusiveZone: 0
             implicitWidth: 260
             implicitHeight: 90
