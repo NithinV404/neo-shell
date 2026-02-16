@@ -10,12 +10,19 @@ import qs.Common
 PanelWindow {
     id: root
 
+
     property var menuHandler: null
     property int menuX: 0
     property int menuY: 0
 
     Component.onCompleted: {
         // Automatically animate IN when created
+       open()
+    }
+
+    function open()
+    {
+
         menuContainer.opacity = 0;
         menuContainer.scale = 0.9;
         visible = true;
@@ -115,10 +122,10 @@ PanelWindow {
         // Ensure height is never 0 to prevent drawing errors
         height: Math.max(layout.implicitHeight + 10, 20)
 
-        color: Theme.surface
+        color: Theme.surfaceContainer
         radius: 12
         border.width: 1
-
+        border.color: Theme.outline
         clip: true
 
         MouseArea {
@@ -149,17 +156,18 @@ PanelWindow {
                         Rectangle {
                             implicitHeight: 30
                             Layout.fillWidth: true
-                            color: hoverHandler.hovered ? Theme.primary : Theme.surface
+                            color: optionsHover.containsMouse ? Theme.primary : Theme.surface
                             radius: 6
 
                             Behavior on color {
                                 ColorAnimation {
-                                    duration: 300
+                                    duration: 100
                                     easing.type: Easing.OutCubic
                                 }
                             }
 
                             MouseArea {
+                                id: optionsHover
                                 anchors.fill: parent
                                 onClicked: {
                                     modelData.triggered();
@@ -168,17 +176,13 @@ PanelWindow {
                                 hoverEnabled: true
                             }
 
-                            HoverHandler {
-                                id: hoverHandler
-                            }
-
                             RowLayout {
                                 anchors.fill: parent
                                 anchors.margins: 5
                                 Text {
                                     text: modelData.text
                                     font.family: Settings.fontFamily
-                                    color: !hoverHandler.hovered ? Theme.surfaceFg : Theme.primaryFg
+                                    color: !optionsHover.containsMouse ? Theme.surfaceFg : Theme.primaryFg
                                     Layout.fillWidth: true
                                     elide: Text.ElideRight
                                     antialiasing: true

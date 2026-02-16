@@ -11,9 +11,9 @@ Rectangle {
     implicitHeight: parent.height * 0.75
     implicitWidth: layout.implicitWidth + 8
 
-    color: Theme.surfaceContainerHighest
-    border.width: 1
-    border.color: Qt.darker(Theme.outline)
+    color: Theme.secondaryContainer
+    // border.width: 1
+    // border.color: Qt.darker(Theme.outline)
 
     radius: 12
 
@@ -114,7 +114,7 @@ Rectangle {
                     layer.enabled: true
                     layer.effect: MultiEffect {
                         colorization: 1
-                        colorizationColor: backgroundAppsMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
+                        colorizationColor: backgroundAppsMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
                     }
                 }
 

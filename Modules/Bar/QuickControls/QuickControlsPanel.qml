@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Services.Pipewire
 import qs.Services
 import qs.Common
 import qs.Components
@@ -273,6 +274,7 @@ PanelWindow {
                             Layout.fillWidth: true
                             Layout.columnSpan: 2
                             Layout.topMargin: 4
+                            subItems: (AppAudioService.applicationStreams?.length ?? 0) > 0
                             main: RowLayout {
                                 Layout.fillWidth: true
                                 implicitWidth: parent.width
@@ -307,7 +309,78 @@ PanelWindow {
                                     }
                                 }
                             }
-                            sub: ColumnLayout {}
+                            sub: ColumnLayout {
+                                Layout.fillWidth: true
+                                width: parent.width
+
+                                Repeater {
+                                    model: AppAudioService.applicationStreams
+
+                                    delegate: RowLayout {
+                                        id: streamDelegate
+
+                                        required property var modelData
+                                        required property int index
+
+                                        PwObjectTracker {
+                                            objects: streamDelegate.modelData && streamDelegate.modelData.ready ? [streamDelegate.modelData] : []
+                                        }
+
+                                        // ← ADD THIS: Properly typed audio property
+                                        property PwNode node: (modelData && modelData.ready) ? modelData : null
+
+                                        // ← Now these will work correctly
+                                        readonly property real appVolume: (streamDelegate.node?.audio && streamDelegate.node.audio.volume !== undefined) ? streamDelegate.node.audio.volume : 0.0
+                                        readonly property bool appMuted: (streamDelegate.node?.audio && streamDelegate.node.audio.muted !== undefined) ? streamDelegate.node.audio.muted : false
+
+                                        Layout.fillWidth: true
+                                        implicitWidth: parent.width
+
+                                        Rectangle {
+                                            implicitHeight: 48
+                                            implicitWidth: 48
+                                            color: Theme.surfaceContainerHighest
+                                            radius: 24
+
+                                            StyledText {
+                                                anchors.centerIn: parent
+                                                color: streamDelegate.appMuted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
+                                                name: AppAudioService.getApplicationVolumeIcon(streamDelegate.node)
+                                            }
+
+                                            MouseArea {
+                                                anchors.fill: parent
+                                                cursorShape: Qt.PointingHandCursor
+                                                onClicked: {
+                                                    AppAudioService.toggleApplicationMute(streamDelegate.node);
+                                                }
+                                            }
+                                        }
+
+                                        Slider {
+                                            Layout.fillWidth: true
+                                            implicitHeight: 30
+                                            // ← Use the properly bound property
+                                            value: Math.round(streamDelegate.appVolume * 100)
+                                            minValue: 0
+                                            maxValue: 100
+                                            icon: ""
+                                            showValue: true
+
+                                            onMoved: newValue => {
+                                                AppAudioService.setApplicationVolume(streamDelegate.node, newValue);
+                                            }
+                                        }
+
+                                        AppIcon {
+                                            icon: {
+                                                AppAudioService.getApplicationIconName(streamDelegate.node);
+                                            }
+                                            size: 40
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

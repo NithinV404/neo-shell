@@ -18,7 +18,24 @@ Item {
         if (!appId)
             return null;
 
-        return DesktopEntries.byId(appId) ?? DesktopEntries.byId(appId.toLowerCase()) ?? DesktopEntries.byId(appId + ".desktop") ?? DesktopEntries.byId(appId.toLowerCase() + ".desktop") ?? null;
+        const lastPart = appId.toLowerCase().split(".").slice(-1)[0];  // e.g., "org.kde.dolphin" → "dolphin"
+
+        /*
+        - Checks with just app_id
+        - Checks with app_id toLowerCase
+        - Checks by replacing _ to -
+        - Checks by replacing - to _
+        */
+        const lookups = [appId, appId.toLowerCase(), lastPart, lastPart.replace("_", "-"), lastPart.replace("-", "_")];
+
+        for (const id of lookups) {
+            const entry = DesktopEntries.byId(id);
+            if (entry) {
+                return entry;
+            }
+        }
+
+        return null;
     }
 
     // Use icon from desktop entry, otherwise try app_id directly
@@ -26,14 +43,10 @@ Item {
     property bool hasIcon: iconName !== "" && iconName !== null
     property bool iconLoaded: hasIcon && iconImage.status === Image.Ready
 
-    Component.onCompleted: {
-        console.log("app_id:", root.icon?.icon, "→ iconName:", iconName, "→ desktopEntry:", desktopEntry);
-    }
-
     // Fallback
     Rectangle {
         anchors.fill: parent
-        radius: size * 0.22
+        radius: 24
         color: Theme.primaryContainer
         visible: !root.iconLoaded
 

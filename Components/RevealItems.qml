@@ -8,6 +8,7 @@ Rectangle {
     property bool expanded: false
     property alias main: mainComponent.children
     property alias sub: subComponent.children
+    property bool subItems: true
 
     color: Theme.surface
     radius: 8
@@ -42,6 +43,7 @@ Rectangle {
                 rotation: root.expanded ? 180 : 0
                 Layout.margins: 4
                 color: Theme.surfaceFg
+                visible: root.subItems
 
                 Behavior on rotation {
                     NumberAnimation {
@@ -61,11 +63,20 @@ Rectangle {
         Item {
             id: subComponent
             Layout.fillWidth: true
+            clip: true
             visible: root.expanded
-            implicitHeight: visible ? childrenRect.height : 0
+            opacity: root.expanded ? 1 : 0
+            implicitHeight: childrenRect.height
             implicitWidth: childrenRect.width
 
             Behavior on implicitHeight {
+                NumberAnimation {
+                    duration: 200
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            Behavior on opacity {
                 NumberAnimation {
                     duration: 200
                     easing.type: Easing.OutCubic

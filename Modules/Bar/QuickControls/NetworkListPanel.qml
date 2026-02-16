@@ -68,7 +68,7 @@ Item {
             Layout.fillWidth: true
             implicitHeight: 42
             radius: 28
-            color: Theme.primaryContainer
+            color: Theme.surfaceContainerHighest
 
             RowLayout {
                 Layout.alignment: Qt.AlignTop
@@ -111,7 +111,7 @@ Item {
 
                     Text {
                         text: "Wifi"
-                        color: Theme.primaryContainerFg
+                        color: Theme.surfaceFg
                         font.family: Settings.fontFamily
                         font.pixelSize: 16
                         anchors.centerIn: parent
@@ -122,7 +122,7 @@ Item {
                     id: syncIcon
                     Layout.margins: 4
                     name: "sync"
-                    color: Theme.primaryContainerFg
+                    color: Theme.surfaceFg
                     rotation: 0
 
                     RotationAnimation on rotation {
@@ -239,7 +239,7 @@ Item {
                                 id: bgRect
                                 width: parent.width
                                 height: contentCol.implicitHeight + 20
-                                color: Theme.primaryContainer
+                                color: Theme.surfaceContainerHighest
 
                                 topLeftRadius: delegateScope.isFirst ? 12 : 4
                                 topRightRadius: delegateScope.isFirst ? 12 : 4
@@ -274,7 +274,7 @@ Item {
 
                                         StyledText {
                                             name: delegateScope.signal >= 50 ? "wifi" : "wifi_1_bar"
-                                            color: Theme.primaryContainerFg
+                                            color: Theme.surfaceFg
                                         }
 
                                         ColumnLayout {
@@ -293,7 +293,7 @@ Item {
                                                         return ssid;
                                                 }
                                                 elide: Text.ElideRight
-                                                color: Theme.primaryContainerFg
+                                                color: Theme.surfaceFg
                                                 font.pixelSize: 14
                                             }
 

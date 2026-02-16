@@ -1,19 +1,18 @@
 // Workspaces.qml
 import QtQuick
 import QtQuick.Layouts
-import qs.Common
 import qs.Components
 import qs.Services
-import Quickshell
 
 Rectangle {
     id: root
-    implicitWidth: workspaceRow.implicitWidth + 16
+    implicitWidth: workspaceRow.implicitWidth + 10
     implicitHeight: parent.height * 0.75
-    color: Theme.surfaceContainerHighest
-    radius: 12
-    border.width: 1
-    border.color: Qt.darker(Theme.outline)
+    color: Theme.secondaryContainer
+    radius: 24
+    Layout.alignment: Qt.AlignLeft
+    // border.width: 1
+    // border.color: Qt.darker(Theme.outline)
 
     RowLayout {
         id: workspaceRow
@@ -34,33 +33,37 @@ Rectangle {
                 readonly property var workspaceWindows: getWorkspaceWindows(modelData.id)
 
                 Layout.alignment: Qt.AlignVCenter
-                implicitWidth: workspacePill.workspaceWindows.length > 0 ? pillContent.implicitWidth + 10 : pillContent.implicitWidth + 20
+                implicitWidth: workspacePill.workspaceWindows.length > 0 ? pillContent.implicitWidth + 15 : 20
                 implicitHeight: 20
-                radius: 8
+                radius: workspacePill.workspaceWindows.length > 0 ? 24 : 10
 
                 color: {
                     if (isFocused) {
-                        return pillMouse.containsMouse ? Qt.darker(Theme.primary, 1.1) : Theme.primary;
+                        return pillMouse.containsMouse ? Qt.darker(Theme.primary) : Theme.primary;
                     } else if (isActive) {
-                        return pillMouse.containsMouse ? Theme.tertiary : Theme.secondaryContainer;
+                        return pillMouse.containsMouse ? Theme.tertiary : Theme.surface;
                     } else {
-                        return pillMouse.containsMouse ? Theme.tertiary : Theme.secondary;
+                        return pillMouse.containsMouse ? Theme.tertiary : Theme.surface;
                     }
                 }
 
-                border.width: isFocused ? 0 : 1
-                border.color: isActive ? Theme.outline : Qt.darker(Theme.outline)
-
                 Behavior on color {
                     ColorAnimation {
-                        duration: 150
+                        duration: 220
                         easing.type: Easing.OutCubic
                     }
                 }
 
                 Behavior on implicitWidth {
                     NumberAnimation {
-                        duration: 150
+                        duration: 220
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                Behavior on implicitHeight {
+                    NumberAnimation {
+                        duration: 220
                         easing.type: Easing.OutCubic
                     }
                 }

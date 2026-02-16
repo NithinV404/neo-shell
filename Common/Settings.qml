@@ -29,7 +29,10 @@ Singleton {
         loadSettings();
     }
 
-    onDarkModeChanged: saveSettings()
+    onDarkModeChanged: {
+        saveSettings();
+        updateAppsColorScheme();
+    }
     onWallpaperFolderImagesChanged: saveSettings()
     onWallpaperImageChanged: {
         saveSettings();

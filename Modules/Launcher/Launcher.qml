@@ -31,7 +31,7 @@ Scope {
     property int selectedIndex: 0  // Track selected item
 
     // All apps from service
-    readonly property var allApps: AppService.applications
+    readonly property var allApps: AppService.applications.sort((a, b) => a.name.localeCompare(b.name))
 
     // Search query
     property string searchQuery: ""
@@ -283,7 +283,7 @@ Scope {
                             readonly property bool isSelected: index === root.selectedIndex
                             readonly property bool isHovered: delegateMouse.containsMouse
 
-                            color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : "transparent"
+                            color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Theme.surface
 
                             Behavior on color {
                                 ColorAnimation {

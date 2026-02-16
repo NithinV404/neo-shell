@@ -14,6 +14,8 @@ PanelWindow {
     id: bar
 
     property var modelData
+    property var barPanelsManager: null
+
     screen: modelData
     anchors {
         top: true
@@ -47,31 +49,34 @@ PanelWindow {
             }
         }
 
-        Workspaces {
-            anchors.left: parent.left
-            anchors.leftMargin: 8
-            anchors.verticalCenter: parent.verticalCenter
-        }
-
-        // Clock - Absolutely centered
-        Clock {
-
-            anchors.centerIn: parent
-        }
-
-        // Right side items
+        // Use a single RowLayout for everything
         RowLayout {
-            id: layoutItems
             anchors.fill: parent
-            anchors.leftMargin: 8
-            anchors.rightMargin: 8
+            anchors.leftMargin: 4
+            anchors.rightMargin: 4  // Same as left!
             spacing: 4
 
-            // Spacer - pushes items to right
+            // Left side
+            Workspaces {
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            // Spacer
             Item {
                 Layout.fillWidth: true
             }
 
+            // Clock - centered using fillWidth spacers
+            Clock {
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            // Spacer
+            Item {
+                Layout.fillWidth: true
+            }
+
+            // Right side items
             BackgroundApps {
                 Layout.alignment: Qt.AlignVCenter
             }

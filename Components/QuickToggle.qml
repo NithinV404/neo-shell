@@ -27,7 +27,7 @@ Rectangle {
     // Color Logic:
     // ON  = Primary Color (Colorful)
     // OFF = Surface Container Highest (Dark Grey/Neutral)
-    color: active ? Theme.primary : Theme.secondaryContainer
+    color: Theme.surfaceContainerHighest
 
     // Smooth color transition
     Behavior on color {
@@ -112,7 +112,7 @@ Rectangle {
                     text: "Title"
                     font.weight: 600
                     font.pixelSize: 14
-                    color: root.active ? Theme.primaryFg : Theme.secondaryContainerFg
+                    color: Theme.surfaceFg
                     font.family: Settings.fontFamily
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignLeft
@@ -126,7 +126,7 @@ Rectangle {
                     font.weight: 400
                     font.pixelSize: 12
                     opacity: 0.8
-                    color: root.active ? Theme.primaryFg : Theme.secondaryContainerFg
+                    color: Theme.surfaceFg
                     font.family: Settings.fontFamily
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignLeft

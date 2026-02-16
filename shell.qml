@@ -7,7 +7,6 @@
 //@ pragma UseQApplication
 
 import Quickshell
-import Quickshell.Io
 import QtQuick
 import Quickshell.Wayland
 import qs.Modules.Bar
@@ -15,7 +14,6 @@ import qs.Modules
 import qs.Modals
 import qs.Common
 import qs.Modules.Launcher
-import qs.Services
 
 // import Niri
 

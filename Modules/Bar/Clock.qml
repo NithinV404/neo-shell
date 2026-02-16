@@ -13,10 +13,10 @@ Rectangle {
     Layout.alignment: Qt.AlignVCenter
     implicitWidth: timeRow.implicitWidth + 16
     implicitHeight: parent.height * 0.75
-    color: clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
-    radius: 12
-    border.width: 1
-    border.color: Qt.darker(Theme.outline)
+    color: clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.secondaryContainer
+    radius: 24
+    // border.width: 1
+    // border.color: Qt.darker(Theme.outline)
 
     Behavior on color {
         ColorAnimation {
@@ -67,14 +67,14 @@ Rectangle {
         StyledText {
             name: "schedule"
             size: 16
-            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
+            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
             Layout.alignment: Qt.AlignVCenter
         }
 
         // Time
         Text {
             text: Qt.formatDateTime(clock.date, "hh:mm ap")
-            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
+            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
             font.pixelSize: 14
             font.family: Settings.fontFamily
             font.bold: true
@@ -93,7 +93,7 @@ Rectangle {
         // Date
         Text {
             text: Qt.formatDateTime(clock.date, "ddd, MMM d")
-            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceVariantFg
+            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
             font.pixelSize: 12
             font.family: Settings.fontFamily
             Layout.alignment: Qt.AlignVCenter

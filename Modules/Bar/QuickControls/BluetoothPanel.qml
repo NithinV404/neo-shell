@@ -62,13 +62,13 @@ Item {
             Layout.fillWidth: true
             implicitHeight: 42
             radius: 28
-            color: Theme.primaryContainer
+            color: Theme.surfaceContainerHighest
 
             Text {
                 anchors.centerIn: parent
                 text: "Bluetooth"
                 font.family: Settings.fontFamily
-                color: Theme.primaryContainerFg
+                color: Theme.surfaceFg
                 font.pixelSize: 16
             }
 
@@ -112,7 +112,7 @@ Item {
                     id: syncIcon
                     Layout.margins: 4
                     name: "sync"
-                    color: Theme.primaryContainerFg
+                    color: Theme.surfaceContainerHighest
                     rotation: 0
 
                     RotationAnimation on rotation {
@@ -228,7 +228,7 @@ Item {
                                 bottomLeftRadius: isLast ? 12 : 4
                                 bottomRightRadius: isLast ? 12 : 4
 
-                                color: pairedDeviceHover.containsMouse ? Qt.lighter(Theme.primaryContainer, 1.1) : Theme.primaryContainer
+                                color: pairedDeviceHover.containsMouse ? Qt.lighter(Theme.surfaceContainerHighest, 1.1) : Theme.surfaceContainerHighest
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -244,7 +244,7 @@ Item {
 
                                     StyledText {
                                         name: root.bs.getDeviceIcon(pairedDeviceDelegate.modelData)
-                                        color: Theme.primaryContainerFg
+                                        color: Theme.surfaceFg
                                     }
 
                                     ColumnLayout {
@@ -254,7 +254,7 @@ Item {
                                         Text {
                                             Layout.fillWidth: true
                                             text: pairedDeviceDelegate.modelData.name || "Unknown Device"
-                                            color: Theme.primaryContainerFg
+                                            color: Theme.surfaceFg
                                             font.pixelSize: 14
                                             font.family: Settings.fontFamily
                                             elide: Text.ElideRight
@@ -277,7 +277,7 @@ Item {
                                                     return "";
                                                 }
                                             }
-                                            color: text == "Connected" ? "green" : text.includes("failed") ? "red" : Qt.lighter(Theme.primaryContainerFg)
+                                            color: text == "Connected" ? "green" : text.includes("failed") ? "red" : Qt.lighter(Theme.surfaceFg)
                                             font.pixelSize: 11
                                         }
                                     }
@@ -354,7 +354,7 @@ Item {
                                 bottomLeftRadius: isLast ? 12 : 4
                                 bottomRightRadius: isLast ? 12 : 4
 
-                                color: availableDeviceHover.containsMouse ? Qt.lighter(Theme.primaryContainer, 1.1) : Theme.primaryContainer
+                                color: availableDeviceHover.containsMouse ? Qt.lighter(Theme.surfaceContainerHighest, 1.1) : Theme.surfaceContainerHighest
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -370,20 +370,20 @@ Item {
 
                                     StyledText {
                                         name: root.bs.getDeviceIcon(availableDeviceDelegate.modelData)
-                                        color: Theme.primaryContainerFg
+                                        color: Theme.surfaceFg
                                     }
 
                                     Text {
                                         Layout.fillWidth: true
                                         text: availableDeviceDelegate.modelData.name || "Unknown Device"
-                                        color: Theme.primaryContainerFg
+                                        color: Theme.surfaceFg
                                         font.pixelSize: 14
                                         elide: Text.ElideRight
                                     }
 
                                     StyledText {
                                         name: root.bs.getSignalIcon(availableDeviceDelegate.modelData)
-                                        color: Theme.primaryContainerFg
+                                        color: Theme.surfaceFg
                                         size: 16
                                     }
                                 }

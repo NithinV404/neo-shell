@@ -11,11 +11,11 @@ Rectangle {
     implicitWidth: layout.implicitWidth + 18
     implicitHeight: parent.height * 0.75
     Layout.alignment: Qt.AlignRight
-    color: quickControlsPanel.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
-    border.width: 1
-    border.color: Qt.darker(Theme.outline)
+    color: quickControlsPanel.containsMouse ? Theme.tertiaryContainer : Theme.secondaryContainer
+    // border.width: 1
+    // border.color: Qt.darker(Theme.outline)
 
-    radius: 12
+    radius: 24
     clip: true
 
     visible: layout.implicitWidth > 0
@@ -89,17 +89,17 @@ Rectangle {
             size: root.iconSize
 
             // Use "on_primary_container" so it is visible against the background
-            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
+            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
         }
         StyledText {
             visible: BluetoothService.enabled
             name: BluetoothService.connectedDevices.length > 0 ? "bluetooth_connected" : "bluetooth"
-            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
+            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
             size: root.iconSize
         }
         StyledText {
             name: AudioService.getOutputIcon()
-            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
+            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
             size: root.iconSize
             MouseArea {
                 cursorShape: Qt.PointingHandCursor
@@ -109,7 +109,7 @@ Rectangle {
         }
         StyledText {
             name: AudioService.getInputIcon()
-            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
+            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
             size: root.iconSize
             MouseArea {
                 cursorShape: Qt.PointingHandCursor
