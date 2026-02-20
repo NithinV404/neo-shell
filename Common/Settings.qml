@@ -13,7 +13,7 @@ Singleton {
     property bool _loading: true
     property bool darkMode: true
     property string fontFamily: "Adwaita Sans"
-    property string iconTheme: "Papirus"
+    property string iconTheme: "System Default"
     property string defaultIconTheme: ""
     property bool hasTriedDefaultSettings: false
     property var availableIconThemes: []
@@ -28,17 +28,20 @@ Singleton {
     Component.onCompleted: {
         loadSettings();
         detectDefault();
-        if (defaultIconTheme != iconTheme) {
-            setIconTheme();
-        }
-        console.log(defaultIconTheme);
+        setIconTheme();
     }
 
     onDarkModeChanged: {
         saveSettings();
         updateAppsColorScheme();
     }
+    onIconThemeChanged: {
+        setIconTheme();
+    }
     onWallpaperFolderImagesChanged: saveSettings()
+    onDefaultIconThemeChanged: {
+        saveSettings();
+    }
     onWallpaperImageChanged: {
         saveSettings();
         updateMatugenColors();
@@ -56,7 +59,8 @@ Singleton {
             "wallpaperFolderImages": wallpaperFolderImages,
             "audioVolumeStep": audioVolumeStep,
             "audioVolumeOverdrive": audioVolumeOverdrive,
-            "wallpaperImage": wallpaperImage
+            "wallpaperImage": wallpaperImage,
+            "defaultIconTheme": defaultIconTheme
         }, null, 2));
     }
 
@@ -74,6 +78,7 @@ Singleton {
                 audioVolumeStep = settings.audioVolumeStep !== undefined ? settings.audioVolumeStep : 1;
                 wallpaperFolderImages = settings.wallpaperFolderImages !== undefined ? settings.wallpaperFolderImages : [];
                 wallpaperImage = settings.wallpaperImage !== undefined ? settings.wallpaperImage : "";
+                defaultIconTheme = settings.defaultIconTheme !== undefined ? settings.defaultIconTheme : "";
                 loadAvailableIcons();
                 detectDefault();
             }
@@ -97,7 +102,7 @@ Singleton {
     function setFont() {
     }
 
-    function setIconTheme(theme) {
+    function setIconTheme() {
         setGtkIconTheme();
     }
 
@@ -106,7 +111,14 @@ Singleton {
     }
 
     function detectDefault() {
-        systemDefaultDetectionProcess.running = true;
+        detectDefaultIconThemeGtk();
+    }
+
+    function detectDefaultIconThemeGtk() {
+        Proc.runCommand("detectDefaultIconThemeGtk", ["sh", "-c", "gsettings get org.gnome.desktop.interface icon-theme"], function (safeOutput) {
+            console.log(defaultIconTheme);
+            defaultIconTheme = safeOutput.strip();
+        }, 500, 3000);
     }
 
     function setDarkMode(value) {
@@ -197,20 +209,6 @@ Singleton {
                 root.availableIconThemes = detectedThemes;
                 root.saveSettings();
             }
-        }
-    }
-
-    Process {
-        id: systemDefaultDetectionProcess
-
-        command: ["sh", "-c", "gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | sed \"s/'//g\" || echo ''"]
-        running: false
-        onExited: exitCode => {
-            if (exitCode === 0 && stdout && stdout.length > 0)
-                root.defaultIconTheme = stdout.trim();
-            else
-                root.defaultIconTheme = "";
-            iconThemeDetectionProcess.running = true;
         }
     }
 }

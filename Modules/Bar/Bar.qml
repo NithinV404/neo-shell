@@ -53,30 +53,31 @@ PanelWindow {
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 4
-            anchors.rightMargin: 4  // Same as left!
+            anchors.rightMargin: 4
             spacing: 4
 
-            // Left side
             Workspaces {
                 Layout.alignment: Qt.AlignVCenter
+                screenName: bar.modelData?.name ?? ""
             }
 
-            // Spacer
-            Item {
-                Layout.fillWidth: true
-            }
-
-            // Clock - centered using fillWidth spacers
-            Clock {
+            Apps {
                 Layout.alignment: Qt.AlignVCenter
+                screenName: bar.modelData?.name ?? ""
             }
 
-            // Spacer
             Item {
                 Layout.fillWidth: true
             }
 
-            // Right side items
+            Clock {
+                anchors.centerIn: parent
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
+
             BackgroundApps {
                 Layout.alignment: Qt.AlignVCenter
             }
