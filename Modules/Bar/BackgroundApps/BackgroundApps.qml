@@ -15,7 +15,7 @@ Rectangle {
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
 
-    radius: 12
+    radius: 24
 
     // 1. Keep visible until scale hits 0
     visible: scale > 0

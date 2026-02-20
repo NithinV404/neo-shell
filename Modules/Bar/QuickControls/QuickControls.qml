@@ -35,7 +35,6 @@ Rectangle {
     }
 
     function openPanel() {
-        var getLocalPos = root.mapToItem(null, 0, 0);
         if (root.activePanel === null) {
             panel.active = true;
             activePanel = panel.item;
@@ -129,7 +128,7 @@ Rectangle {
         }
         onLoaded: {
             var getLocalPos = root.mapToItem(null, 0, 0);
-            item.openAt(getLocalPos.x, getLocalPos.y);
+            item.openAt(getLocalPos.x + (root.width / 2), getLocalPos.y);
         }
     }
 }

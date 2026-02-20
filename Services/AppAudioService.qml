@@ -9,14 +9,13 @@ import Quickshell.Services.Pipewire
 Singleton {
     id: root
     readonly property int totalNodeCount: (Pipewire.nodes?.values || []).length
+    property var resolvedIcons: ({})
 
     signal applicationVolumeChanged
     signal applicationMuteChanged
     signal streamsChanged
 
     Component.onCompleted: {
-        if (Pipewire.nodes) {}
-
         if (Pipewire.nodes) {
             Pipewire.nodes.valuesChanged.connect(() => {
                 streamsChanged();
@@ -107,7 +106,7 @@ Singleton {
         }
     })
 
-    function getApplicationName(node) {
+    function getApplicationName(node, debug = false) {
         if (!node) {
             return "Unknown Application";
         }
@@ -120,7 +119,7 @@ Singleton {
         const appName = props["application.name"] || "";
         const binaryName = props["application.process.binary"] || "";
 
-        if (binaryName.includes("chromium") || binaryName.includes("electron") || appName.toLowerCase().includes("cider")) {
+        if (debug && (binaryName.includes("chromium") || binaryName.includes("electron") || appName.toLowerCase().includes("cider"))) {
             console.log("AudioService Debug - Node:", name, "App:", appName, "Binary:", binaryName, "Props:", JSON.stringify(props));
         }
 
@@ -201,56 +200,67 @@ Singleton {
         return result || "Unknown Application";
     }
 
-    function getApplicationIconName(node) {
-        if (!node)
-            return "application-x-executable";
-        const props = node.properties || {};
+    function resolveAppName(node, callback) {
+        let props = node.properties;
+        let procId = props["application.process.id"].toString();
 
-        // 1. Use Application ID (Best for Flatpaks and modern apps)
-        // Maps "io.cider.Cider" -> "io.cider.Cider" (which exists in your icon theme)
-        if (props["application.id"]) {
-            return props["application.id"];
+        // If resolvedIcons already contains cache of the icon name return it
+        if (root.resolvedIcons[procId]) {
+            if (callback)
+                callback(root.resolvedIcons[procId]);
+            return;
         }
 
-        // 2. Use the Binary Name (if not generic)
-        const binaryPath = props["application.process.binary"] || "";
-        const binName = binaryPath.split("/").pop()?.toLowerCase();
-
-        if (binName && binName !== "electron" && binName !== "chromium") {
-            return binName;
-        }
-
-        // 3. Last resort: check if "cider" is mentioned anywhere in the properties
-        // We stringify the props and search for common app names
-        const propsString = JSON.stringify(props).toLowerCase();
-        if (propsString.includes("cider"))
-            return "cider";
-        if (propsString.includes("discord"))
-            return "discord";
-        if (propsString.includes("spotify"))
-            return "spotify";
-
-        return props["application.icon-name"] || "application-x-executable";
+        let proc = resolverComponent.createObject(root, {
+            "command": ["cat", "/proc/" + procId + "/environ"],
+            "pid": procId,
+            "callback": callback
+        });
+        proc.running = true;
     }
 
-    function getApplicationIcon(node, debug = false) {
-        const iconName = getApplicationIconName(node);
-        if (iconName) {
-            try {
-                const iconPath = Quickshell.iconPath(iconName, "application-x-executable");
-                // Debug logging
-                const appName = node?.properties?.["application.name"] || "";
-                if (appName.toLowerCase().includes("cider") || iconName.includes("chromium")) {
-                    if (debug) {
-                        console.log("AudioService Debug - Resolved icon:", iconName, "->", iconPath, "for app:", appName);
-                    }
+    Component {
+        id: resolverComponent
+        Process {
+            id: procResolver
+            property var callback: null
+            property string result: ""
+            property string pid
+
+            stdout: SplitParser {
+                splitMarker: ""
+                onRead: data => {
+                    result += data;
                 }
-                return iconPath;
-            } catch (e) {
-                return "";
+            }
+
+            onExited: (exitCode, exitStatus) => {
+                let appName = "unknown";
+                if (exitCode === 0 && result.length > 0) {
+                    let data = result.trim().split("\0");
+                    for (let part of data) {
+                        if (part.startsWith("CHROME_DESKTOP=")) {
+                            appName = part.split("=").slice(1).join("=");
+                            appName = appName.replace(".desktop", "");
+                            break;
+                        }
+                        if (part.startsWith("GDK_PROGRAM_CLASS=")) {
+                            appName = part.split("=").slice(1).join("=");
+                            break;
+                        }
+                    }
+                    let newCache = root.resolvedIcons;
+                    newCache[procResolver.pid] = appName;
+                    root.resolvedIcons = newCache;
+
+                    if (procResolver.callback && typeof procResolver.callback === "function") {
+                        procResolver.callback(appName);
+                    }
+
+                    procResolver.destroy();
+                }
             }
         }
-        return "";
     }
 
     function getApplicationVolumeIcon(node) {
@@ -551,7 +561,9 @@ Singleton {
 
             onExited: function (exitCode) {
                 if (exitCode === 0 && callback) {
-                    callback();
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
                 } else {
                     if (typeof LoggingService !== 'undefined') {
                         LoggingService.warn("ApplicationAudioService", "Alternative input connection process failed", {
@@ -561,7 +573,9 @@ Singleton {
                         });
                     }
                 }
-                destroy();
+                Qt.callLater(() => {
+                    destroy();
+                });
             }
         }
     }
@@ -603,8 +617,7 @@ Singleton {
     }
 
     PwObjectTracker {
-        objects: root.getTrackableNodes()
-        Component.onCompleted: {}
+        objects: Pipewire.nodes?.values ?? []
     }
 
     function debugAllNodes() {

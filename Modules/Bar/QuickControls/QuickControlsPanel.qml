@@ -21,7 +21,7 @@ PanelWindow {
     signal menuClosed
 
     function openAt(x, y) {
-        root.menuX = x;
+        root.menuX = x - root.width / 2;
         root.menuY = y;
         root.visible = true;
         root.isVisible = true;
@@ -254,7 +254,7 @@ PanelWindow {
                             active: BluetoothService.enabled
                             onMenuClicked: quickLayoutStack.currentIndex = 2
                             onClicked: {
-                                BluetoothService.adapter.enabled = !BluetoothService.adapter.enabled;
+                                BluetoothService.toggleBluetooth();
                             }
                         }
                         QuickToggle {
@@ -310,28 +310,41 @@ PanelWindow {
                                 }
                             }
                             sub: ColumnLayout {
+                                id: appStreamCol
                                 Layout.fillWidth: true
                                 width: parent.width
 
                                 Repeater {
                                     model: AppAudioService.applicationStreams
-
                                     delegate: RowLayout {
                                         id: streamDelegate
-
                                         required property var modelData
-                                        required property int index
+                                        readonly property PwNode node: modelData && modelData.ready ? modelData : null
+                                        readonly property real appVolume: node?.audio.volume ?? 0
+                                        readonly property bool appMuted: node?.audio.muted ?? true
 
-                                        PwObjectTracker {
-                                            objects: streamDelegate.modelData && streamDelegate.modelData.ready ? [streamDelegate.modelData] : []
+                                        property string resolvedIcon: ""
+
+                                        Component.onCompleted: resolveIcon()
+
+                                        onNodeChanged: resolveIcon()
+
+                                        function resolveIcon() {
+                                            let appName = AppAudioService.getApplicationName(node).toLowerCase();
+
+                                            if (appName.includes("electron") || appName.includes("chromium")) {
+                                                // Async resolve
+                                                AppAudioService.resolveAppName(node, function (name) {
+                                                    streamDelegate.resolvedIcon = name;
+                                                });
+                                                if (!appName.includes("electron") || !appName.includes("chromium")) {
+                                                    return;
+                                                }
+                                                resolvedIcon = appName;
+                                            } else {
+                                                resolvedIcon = appName;
+                                            }
                                         }
-
-                                        // ← ADD THIS: Properly typed audio property
-                                        property PwNode node: (modelData && modelData.ready) ? modelData : null
-
-                                        // ← Now these will work correctly
-                                        readonly property real appVolume: (streamDelegate.node?.audio && streamDelegate.node.audio.volume !== undefined) ? streamDelegate.node.audio.volume : 0.0
-                                        readonly property bool appMuted: (streamDelegate.node?.audio && streamDelegate.node.audio.muted !== undefined) ? streamDelegate.node.audio.muted : false
 
                                         Layout.fillWidth: true
                                         implicitWidth: parent.width
@@ -345,15 +358,13 @@ PanelWindow {
                                             StyledText {
                                                 anchors.centerIn: parent
                                                 color: streamDelegate.appMuted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
-                                                name: AppAudioService.getApplicationVolumeIcon(streamDelegate.node)
+                                                name: streamDelegate.node && AppAudioService.getApplicationVolumeIcon(streamDelegate.node)
                                             }
 
                                             MouseArea {
                                                 anchors.fill: parent
                                                 cursorShape: Qt.PointingHandCursor
-                                                onClicked: {
-                                                    AppAudioService.toggleApplicationMute(streamDelegate.node);
-                                                }
+                                                onClicked: streamDelegate.node && AppAudioService.toggleApplicationMute(streamDelegate.node)
                                             }
                                         }
 
@@ -368,15 +379,13 @@ PanelWindow {
                                             showValue: true
 
                                             onMoved: newValue => {
-                                                AppAudioService.setApplicationVolume(streamDelegate.node, newValue);
+                                                streamDelegate.node ? AppAudioService.setApplicationVolume(streamDelegate.node, newValue) : "";
                                             }
                                         }
 
                                         AppIcon {
-                                            icon: {
-                                                AppAudioService.getApplicationIconName(streamDelegate.node);
-                                            }
-                                            size: 40
+                                            icon: streamDelegate.resolvedIcon
+                                            size: 30
                                         }
                                     }
                                 }

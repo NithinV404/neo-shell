@@ -14,6 +14,13 @@ Rectangle {
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
 
+    Behavior on implicitWidth {
+        NumberAnimation {
+            duration: 220
+            easing.type: Easing.OutBack
+        }
+    }
+
     RowLayout {
         id: workspaceRow
         anchors.centerIn: parent
@@ -33,8 +40,8 @@ Rectangle {
                 readonly property var workspaceWindows: getWorkspaceWindows(modelData.id)
 
                 Layout.alignment: Qt.AlignVCenter
-                implicitWidth: workspacePill.workspaceWindows.length > 0 ? pillContent.implicitWidth + 15 : 20
-                implicitHeight: 20
+                implicitWidth: workspacePill.workspaceWindows.length > 0 ? pillContent.implicitWidth + 13 : 25
+                implicitHeight: workspacePill.workspaceWindows.length > 0 ? pillContent.implicitHeight + 6 : 20
                 radius: workspacePill.workspaceWindows.length > 0 ? 24 : 10
 
                 color: {
@@ -57,7 +64,7 @@ Rectangle {
                 Behavior on implicitWidth {
                     NumberAnimation {
                         duration: 220
-                        easing.type: Easing.OutCubic
+                        easing.type: Easing.OutBack
                     }
                 }
 
@@ -101,10 +108,8 @@ Rectangle {
                                 required property var modelData
                                 required property int index
                                 size: 14
-                                icon: ({
-                                        icon: modelData.app_id || "",
-                                        name: modelData.title || modelData.app_id || "App"
-                                    })
+                                icon: modelData.app_id || modelData.title || modelData.app_id || "App"
+
                                 Layout.alignment: Qt.AlignVCenter
                             }
                         }

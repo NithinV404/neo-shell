@@ -20,6 +20,8 @@ PanelWindow {
 
     WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+    focusable: true
+
     required property var onConnect
     required property var onCancel
     property string ssid

@@ -10,7 +10,6 @@ import Quickshell
 Rectangle {
     id: root
     property var activePanel: null
-    Layout.alignment: Qt.AlignVCenter
     implicitWidth: timeRow.implicitWidth + 16
     implicitHeight: parent.height * 0.75
     color: clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.secondaryContainer
@@ -31,7 +30,6 @@ Rectangle {
     }
 
     function openPanel() {
-        var getLocalPos = root.mapToItem(null, 0, 0);
         if (root.activePanel === null) {
             panel.active = true;
             activePanel = panel.item;

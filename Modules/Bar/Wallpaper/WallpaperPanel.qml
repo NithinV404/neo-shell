@@ -50,7 +50,7 @@ PanelWindow {
 
     Item {
         id: panelContainer
-        x: Utils.clampScreenX(root.menuX, width, 5)
+        x: Utils.clampScreenX(root.menuX, width, 2)
         y: Utils.clampScreenY(root.menuY, height, 20)
         height: contentRect.height
         width: contentRect.width
@@ -110,9 +110,9 @@ PanelWindow {
         Rectangle {
             id: contentRect
             color: Theme.surface
-            radius: 12
-            implicitWidth: wallpaperGrid.implicitWidth + 40
-            implicitHeight: wallpaperGrid.implicitHeight + 40
+            radius: 26
+            implicitWidth: wallpaperGrid.implicitWidth + 20
+            implicitHeight: wallpaperGrid.implicitHeight + 20
             WallpaperGrid {
                 id: wallpaperGrid
                 anchors.centerIn: parent

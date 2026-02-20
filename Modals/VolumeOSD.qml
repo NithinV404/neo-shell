@@ -77,7 +77,7 @@ Scope {
                 implicitHeight: volumeOSDLayout.height + 20
                 implicitWidth: volumeOSDLayout.width + 20
                 color: Theme.surface
-                radius: 12
+                radius: 24
                 layer.enabled: true
 
                 // Use panel's isOpen for state

@@ -9,6 +9,7 @@ import Quickshell.Bluetooth
 Singleton {
     id: root
 
+    property Bluetooth blue: Bluetooth
     readonly property BluetoothAdapter adapter: Bluetooth.defaultAdapter
     readonly property bool available: adapter !== null
     readonly property bool enabled: (adapter && adapter.enabled) ?? false
@@ -43,6 +44,15 @@ Singleton {
         return adapter.devices.values.filter(dev => {
             return dev && dev.batteryAvailable && dev.battery > 0;
         });
+    }
+
+    function toggleBluetooth() {
+        if (!root.adapter) {
+            console.warn("No Bluetooth adapter found");
+            return;
+        }
+
+        root.adapter.enabled = !root.adapter.enabled;
     }
 
     function sortDevices(devices) {

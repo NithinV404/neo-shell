@@ -31,7 +31,7 @@ Scope {
     property int selectedIndex: 0  // Track selected item
 
     // All apps from service
-    readonly property var allApps: AppService.applications.sort((a, b) => a.name.localeCompare(b.name))
+    readonly property var allApps: AppService.applications.slice().sort((a, b) => a.name.localeCompare(b.name))
 
     // Search query
     property string searchQuery: ""
@@ -120,12 +120,15 @@ Scope {
                 }
             }
 
-            // Keyboard navigation
-            Keys.onUpPressed: moveSelectionUp()
-            Keys.onDownPressed: moveSelectionDown()
-            Keys.onReturnPressed: root.launchSelected()
-            Keys.onEnterPressed: root.launchSelected()
-            Keys.onEscapePressed: root.close()
+            Item {
+                id: keybinds
+                Keys.onUpPressed: launcherWindow.moveSelectionUp()
+                Keys.onDownPressed: launcherWindow.moveSelectionDown()
+                Keys.onReturnPressed: root.launchSelected()
+                Keys.onEnterPressed: root.launchSelected()
+                Keys.onEscapePressed: root.close()
+                Keys.forwardTo: [searchContainer]
+            }
 
             MouseArea {
                 anchors.fill: parent
@@ -226,17 +229,13 @@ Scope {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             password: false
+
                             onTextChanged: {
                                 root.searchQuery = text;
                                 root.selectedIndex = 0;  // Reset to first on search
                             }
 
-                            // Forward navigation keys to window
-                            Keys.onUpPressed: moveSelectionUp()
-                            Keys.onDownPressed: moveSelectionDown()
-                            Keys.onReturnPressed: root.launchSelected()
-                            Keys.onEnterPressed: root.launchSelected()
-                            Keys.onEscapePressed: root.close()
+                            Keys.forwardTo: [keybinds]
                         }
 
                         Timer {
@@ -298,7 +297,7 @@ Scope {
                                 spacing: 12
 
                                 AppIcon {
-                                    icon: appDelegate.modelData
+                                    icon: appDelegate.modelData.icon
                                     size: 40
                                     Layout.preferredWidth: 40
                                     Layout.preferredHeight: 40

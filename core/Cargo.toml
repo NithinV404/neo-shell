@@ -2,7 +2,3 @@
 name = "core"
 version = "0.1.0"
 edition = "2021"
-
-[dependencies]
-niri-ipc = "25.11.0"
-qmetaobject = "0.2.10"

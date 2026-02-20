@@ -78,7 +78,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         color: Theme.surfaceContainerHighest
-        radius: 12
+        radius: 24
         border.width: 1
         border.color: Qt.darker(Theme.outline)
     }
@@ -98,7 +98,7 @@ Item {
             width: root.cellWidth
             height: root.cellHeight
             color: Theme.surfaceContainer
-            radius: 12
+            radius: 24
             clip: true
             readonly property bool isSelected: Utils.strip(Settings.wallpaperImage) == modelData
 
@@ -120,7 +120,7 @@ Item {
                 anchors.fill: img
                 border.width: Utils.strip(Settings.wallpaperImage) == imageCell.modelData ? 2 : 0
                 border.color: Theme.primary
-                radius: 12
+                radius: 24
                 clip: true
                 visible: false
             }
@@ -133,7 +133,7 @@ Item {
 
             Rectangle {
                 anchors.fill: parent
-                radius: 12
+                radius: 24
                 color: "transparent"
                 border.width: imageCell.isSelected ? 2 : 0
                 border.color: Theme.primary

@@ -28,7 +28,7 @@ Item {
     Rectangle {
         id: background
         anchors.fill: parent
-        radius: height / 4
+        radius: 24
         color: Theme.surfaceContainerHighest
 
         // Clipping container - this is the key!

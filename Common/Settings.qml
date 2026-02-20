@@ -13,7 +13,7 @@ Singleton {
     property bool _loading: true
     property bool darkMode: true
     property string fontFamily: "Adwaita Sans"
-    property string iconTheme: "System Default"
+    property string iconTheme: "Papirus"
     property string defaultIconTheme: ""
     property bool hasTriedDefaultSettings: false
     property var availableIconThemes: []
@@ -27,6 +27,11 @@ Singleton {
 
     Component.onCompleted: {
         loadSettings();
+        detectDefault();
+        if (defaultIconTheme != iconTheme) {
+            setIconTheme();
+        }
+        console.log(defaultIconTheme);
     }
 
     onDarkModeChanged: {
@@ -93,16 +98,11 @@ Singleton {
     }
 
     function setIconTheme(theme) {
-        if (theme == "System Default") {
-            if (defaultIconTheme != "") {
-                setIconTheme(defaultIconTheme);
-            } else {
-                setIconTheme(availableIconThemes[1]);
-            }
-        } else {
-            iconTheme = theme;
-            setIconTheme(iconTheme);
-        }
+        setGtkIconTheme();
+    }
+
+    function setGtkIconTheme() {
+        Proc.runCommand("gtkIconTheme", ["gsettings", "set", "org.gnome.desktop.interface", "icon-theme", iconTheme == "System Default" ? defaultIconTheme : iconTheme], null, 500, 3000);
     }
 
     function detectDefault() {
@@ -115,26 +115,26 @@ Singleton {
     }
 
     function updateAppsColorScheme() {
-        updateGtkColorScheme();
-        updateQtColorScheme();
+        setGtkColorScheme();
+        setQtColorScheme();
     }
 
-    function updateQtColorScheme() {
+    function setQtColorScheme() {
         const scheme = root.darkMode ? "BreezeDark" : "BreezeLight";
         const kvTheme = root.darkMode ? "KvArcDark" : "KvArc";
 
-        Quickshell.execDetached(["sh", "-c", `
+        Proc.runCommand("setQtTheme", ["sh", "-c", `
         kwriteconfig6 --file kdeglobals --group General   --key ColorScheme '${scheme}' && \
         kwriteconfig6 --file kdeglobals --group UiSettings --key ColorScheme '${scheme}' && \
         kvantummanager --set '${kvTheme}' && \
         dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:0 int32:0 && \
         dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:2 int32:0
-      `]);
+      `], null, 500, 5000);
     }
 
-    function updateGtkColorScheme() {
-        Quickshell.execDetached(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", root.darkMode ? "prefer-dark" : "prefer-light"]);
-        Quickshell.execDetached(["gsettings", "set", "org.gnome.desktop.interface", "gtk-theme", root.darkMode ? "adw-gtk3-dark" : "adw-gtk3"]);
+    function setGtkColorScheme() {
+        Proc.runCommand("setGtk4Theme", ["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", root.darkMode ? "prefer-dark" : "prefer-light"], null, 300, 5000);
+        Proc.runCommand("setGtk3Theme", ["gsettings", "set", "org.gnome.desktop.interface", "gtk-theme", root.darkMode ? "adw-gtk3-dark" : "adw-gtk3"], null, 300, 5000);
     }
 
     function updateWallpaperFolderImages(images) {
@@ -156,9 +156,8 @@ Singleton {
             return;
 
         const imagePath = Utils.strip(wallpaperImage);
-        matugenProcess.command = ["matugen", "image", "-c", Utils.strip(Utils.config) + "/quickshell/matugen/config/neoshell.toml"  // Your config path
-            , imagePath];
-        matugenProcess.running = true;
+        Quickshell.execDetached(["matugen", "image", "-c", Utils.strip(Utils.config) + "/quickshell/matugen/config/neoshell.toml"  // Your config path
+            , imagePath]);
     }
 
     // FileView for Storing and parsing the settings File
@@ -196,6 +195,7 @@ Singleton {
                     }
                 }
                 root.availableIconThemes = detectedThemes;
+                root.saveSettings();
             }
         }
     }
@@ -211,24 +211,6 @@ Singleton {
             else
                 root.defaultIconTheme = "";
             iconThemeDetectionProcess.running = true;
-        }
-    }
-
-    Process {
-        id: matugenProcess
-        running: false
-
-        onExited: exitCode => {
-            if (exitCode === 0) {
-                console.log("Theme generated");
-            }
-        }
-
-        stderr: StdioCollector {
-            onStreamFinished: {
-                if (text)
-                    console.error("Matugen error:", text);
-            }
         }
     }
 }

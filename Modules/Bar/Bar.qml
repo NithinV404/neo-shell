@@ -8,7 +8,7 @@ import qs.Modules.Bar.QuickControls
 import qs.Modules.Bar
 import qs.Services
 import Quickshell.Wayland
-import qs.Common
+import qs.Components
 
 PanelWindow {
     id: bar
