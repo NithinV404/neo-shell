@@ -4,7 +4,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import qs.Common
 
 Singleton {
     id: root
@@ -30,7 +29,7 @@ Singleton {
     property int wifiSignalStrength: 0
     property var wifiNetworks: []
     property var savedConnections: []
-    property var ssidToConnectionName: {}
+    property var ssidToConnectionName: ({})
     property var wifiSignalIcon: {
         if (!wifiConnected || networkStatus !== "wifi") {
             return "wifi_off";
@@ -180,7 +179,7 @@ Singleton {
 
     Timer {
         id: refreshDebounceTimer
-        interval: 100
+        interval: 200
         running: false
         onTriggered: doRefreshNetworkState()
     }
@@ -205,9 +204,6 @@ Singleton {
         updateDeviceStates();
         updateActiveConnections();
         updateWifiState();
-        if (root.refCount > 0 && root.wifiEnabled) {
-            scanWifiNetworks();
-        }
     }
 
     function updatePrimaryConnection() {
@@ -562,6 +558,28 @@ Singleton {
             onStreamFinished: {
                 root.wifiEnabled = text.includes("true");
                 root.wifiAvailable = true;
+                if (root.wifiEnabled && root.refCount > 0) {
+                    initialScanTimer.start();
+                }
+            }
+        }
+    }
+
+    Timer {
+        id: initialScanTimer
+        interval: 1500
+        running: false
+        repeat: true
+        property int attempts: 0
+
+        onTriggered: {
+            attempts++;
+
+            if (root.wifiNetworks.length === 0 && root.wifiInterface && attempts < 5) {
+                root.scanWifi();
+            } else {
+                initialScanTimer.stop();
+                attempts = 0;
             }
         }
     }
@@ -570,6 +588,11 @@ Singleton {
         if (root.isScanning || !root.wifiEnabled) {
             return;
         }
+        if (!root.wifiInterface) {
+            updateDeviceStates();
+            return;
+        }
+        requestWifiScan.command = lowPriorityCmd.concat(["nmcli", "dev", "wifi", "rescan", "ifname", root.wifiInterface]);
 
         root.isScanning = true;
         requestWifiScan.running = true;
@@ -577,15 +600,11 @@ Singleton {
 
     Process {
         id: requestWifiScan
-        command: root.wifiInterface ? lowPriorityCmd.concat(["nmcli", "dev", "wifi", "rescan", "ifname", root.wifiInterface]) : []
         running: false
 
         onExited: exitCode => {
-            if (exitCode === 0) {
-                scanWifiNetworks();
-            } else {
-                root.isScanning = false;
-            }
+            // Always list networks even if rescan failed
+            scanWifiNetworks();
         }
     }
 
@@ -635,6 +654,9 @@ Singleton {
                 root.isScanning = false;
                 root.networksUpdated();
             }
+        }
+        onExited: exitCode => {
+            root.isScanning = false;
         }
     }
 
