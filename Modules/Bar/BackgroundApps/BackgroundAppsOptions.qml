@@ -10,19 +10,16 @@ import qs.Common
 PanelWindow {
     id: root
 
-
     property var menuHandler: null
     property int menuX: 0
     property int menuY: 0
 
     Component.onCompleted: {
         // Automatically animate IN when created
-       open()
+        open();
     }
 
-    function open()
-    {
-
+    function open() {
         menuContainer.opacity = 0;
         menuContainer.scale = 0.9;
         visible = true;
@@ -125,7 +122,7 @@ PanelWindow {
         color: Theme.surfaceContainer
         radius: 12
         border.width: 1
-        border.color: Theme.outline
+        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
         clip: true
 
         MouseArea {
@@ -197,7 +194,7 @@ PanelWindow {
                             implicitHeight: 1
                             Layout.fillWidth: true
                             Layout.margins: 4
-                            color: Theme.surfaceFg
+                            color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
                             opacity: 0.5
                         }
                     }

@@ -111,11 +111,6 @@ Rectangle {
                     width: parent.width - 8
                     height: parent.height - 8
                     source: modelData.icon
-                    layer.enabled: true
-                    layer.effect: MultiEffect {
-                        colorization: 1
-                        colorizationColor: backgroundAppsMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
-                    }
                 }
 
                 MouseArea {
