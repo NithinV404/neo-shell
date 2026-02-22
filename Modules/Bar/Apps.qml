@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.Components
+import qs.Widgets
 import qs.Services
 
 Rectangle {
@@ -9,11 +9,9 @@ Rectangle {
     property string screenName: ""
 
     implicitWidth: windowsRow.implicitWidth + 12
-    implicitHeight: parent.height * 0.75
-    color: Theme.surfaceContainer
+    implicitHeight: 12
+    color: "transparent"
     radius: 24
-    Layout.alignment: Qt.AlignVCenter
-
     visible: groupedApps.length > 0
 
     Behavior on implicitWidth {
@@ -108,10 +106,10 @@ Rectangle {
                 }
 
                 AppIcon {
-                    anchors.centerIn: parent
-                    size: 18
+                    id: icon
+                    anchors.verticalCenter: parent.verticalCenter
+                    size: 20
                     icon: appDelegate.appId
-                    // Always highlighted if any instance is focused
                     opacity: appDelegate.isAnyFocused ? 1.0 : 0.6
 
                     Behavior on opacity {
@@ -124,26 +122,26 @@ Rectangle {
 
                 // Indicator: dot for single, line for multiple
                 Rectangle {
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: -2
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    z: 1
+                    anchors.bottom: icon.bottom
+                    anchors.horizontalCenter: icon.horizontalCenter
+                    anchors.bottomMargin: -4
                     visible: appDelegate.isAnyFocused
-                    width: appDelegate.hasMultiple ? 12 : 5
-                    height: appDelegate.hasMultiple ? 3 : 5
+                    width: appDelegate.hasMultiple ? 12 : 4
+                    height: 4
                     radius: height / 2
-
-                    color: appDelegate.isAnyFocused ? Theme.primary : Theme.onSurfaceVariant
+                    color: appDelegate.isAnyFocused ? Theme.primary : Theme.surfaceVariant
 
                     Behavior on width {
                         NumberAnimation {
-                            duration: 150
+                            duration: 220
                             easing.type: Easing.OutCubic
                         }
                     }
 
                     Behavior on height {
                         NumberAnimation {
-                            duration: 150
+                            duration: 220
                             easing.type: Easing.OutCubic
                         }
                     }
