@@ -8,7 +8,7 @@ import qs.Modules.Bar.QuickControls
 import qs.Modules.Bar
 import qs.Services
 import Quickshell.Wayland
-import qs.Components
+import qs.Widgets
 
 PanelWindow {
     id: bar
@@ -33,23 +33,25 @@ PanelWindow {
     color: "transparent"
 
     implicitHeight: 40
-    WlrLayershell.namespace: "quickshell:quickmenu"
+    WlrLayershell.namespace: "neoshell:bar"
     WlrLayershell.layer: WlrLayer.Top
+    exclusionMode: ExclusionMode.Auto
 
     Rectangle {
         anchors.fill: parent
         anchors.centerIn: parent
         color: Theme.surface
         radius: 24
+        border.width: 1
+        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
 
-        Behavior on color {
-            ColorAnimation {
-                duration: 200
-                easing.type: Easing.OutCubic
-            }
+        // Clock absolutely centered, independent of layout
+        Clock {
+            id: clock
+            anchors.centerIn: parent
+            z: 1
         }
 
-        // Use a single RowLayout for everything
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 4
@@ -57,11 +59,24 @@ PanelWindow {
             spacing: 4
 
             Workspaces {
+                id: workspaces
                 Layout.alignment: Qt.AlignVCenter
                 screenName: bar.modelData?.name ?? ""
             }
 
+            Rectangle {
+                width: 1
+                radius: 12
+                height: 18
+                color: Theme.surfaceFg
+                opacity: 0.5
+                Layout.alignment: Qt.AlignVCenter
+                Layout.leftMargin: 3
+                Layout.rightMargin: 3
+            }
+
             Apps {
+                id: apps
                 Layout.alignment: Qt.AlignVCenter
                 screenName: bar.modelData?.name ?? ""
             }
@@ -70,19 +85,19 @@ PanelWindow {
                 Layout.fillWidth: true
             }
 
-            Clock {
-                anchors.centerIn: parent
-            }
+            // No clock here anymore
 
             Item {
                 Layout.fillWidth: true
             }
 
             BackgroundApps {
+                id: backgroundApps
                 Layout.alignment: Qt.AlignVCenter
             }
 
             QuickControls {
+                id: quickControls
                 Layout.alignment: Qt.AlignVCenter
             }
         }

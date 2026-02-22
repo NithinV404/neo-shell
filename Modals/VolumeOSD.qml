@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Pipewire
-import qs.Components
+import qs.Widgets
 import qs.Services
 import qs.Common
 import Quickshell.Wayland

@@ -2,7 +2,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Common
-import qs.Components
+import qs.Widgets
 import qs.Services
 import qs.Modules.Bar.Wallpaper
 import Quickshell
@@ -12,7 +12,7 @@ Rectangle {
     property var activePanel: null
     implicitWidth: timeRow.implicitWidth + 16
     implicitHeight: parent.height * 0.75
-    color: clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.secondaryContainer
+    color: clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
     radius: 24
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)

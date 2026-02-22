@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Services.Pipewire
 import qs.Services
 import qs.Common
-import qs.Components
+import qs.Widgets
 import qs.Modals
 
 PanelWindow {
@@ -56,7 +56,7 @@ PanelWindow {
     Item {
         id: panelContainer
         x: Utils.clampScreenX(root.menuX, width, 5)
-        y: Utils.clampScreenY(root.menuY, height, 20)
+        y: Utils.clampScreenY(root.menuY, height, 0)
         implicitWidth: 400
         implicitHeight: quickLayoutStack.height
         clip: true
@@ -132,7 +132,7 @@ PanelWindow {
                     implicitHeight: togglesGrid.implicitHeight + 20
                     implicitWidth: togglesGrid.implicitWidth + 20
                     color: Theme.surfaceContainer
-                    radius: 12
+                    radius: 24
 
                     GridLayout {
                         id: togglesGrid

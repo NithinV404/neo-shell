@@ -3,7 +3,7 @@ import Quickshell.Io
 import Quickshell
 import Qt5Compat.GraphicalEffects
 import qs.Services
-import qs.Components
+import qs.Widgets
 import qs.Common
 
 Item {

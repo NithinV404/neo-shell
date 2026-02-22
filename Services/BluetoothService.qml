@@ -52,7 +52,7 @@ Singleton {
             return;
         }
 
-        root.adapter.enabled = !root.adapter.enabled;
+        root.blue.defaultAdapter.enabled = !root.adapter.enabled;
     }
 
     function sortDevices(devices) {

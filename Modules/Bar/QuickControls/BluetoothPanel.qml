@@ -3,7 +3,7 @@ import Quickshell.Bluetooth
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import qs.Components
+import qs.Widgets
 import qs.Services
 import qs.Common
 

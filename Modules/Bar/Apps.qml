@@ -8,7 +8,7 @@ Rectangle {
 
     property string screenName: ""
 
-    implicitWidth: windowsRow.implicitWidth + 12
+    implicitWidth: windowsRow.implicitWidth
     implicitHeight: 12
     color: "transparent"
     radius: 24
@@ -108,7 +108,7 @@ Rectangle {
                 AppIcon {
                     id: icon
                     anchors.verticalCenter: parent.verticalCenter
-                    size: 20
+                    size: 18
                     icon: appDelegate.appId
                     opacity: appDelegate.isAnyFocused ? 1.0 : 0.6
 

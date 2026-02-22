@@ -13,7 +13,7 @@ Rectangle {
     // Track the currently active delegate item for the slider
     property Item activeItem: null
 
-    implicitWidth: workspaceRow.width + 10
+    implicitWidth: workspaceRow.width
     implicitHeight: 40
     color: "transparent"
     radius: 24

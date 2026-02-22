@@ -3,7 +3,7 @@ import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 import qs.Services
-import qs.Components
+import qs.Widgets
 import qs.Common
 
 PanelWindow {

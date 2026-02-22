@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import qs.Components
+import qs.Widgets
 import qs.Modals
 import qs.Services
 import qs.Common
@@ -18,9 +18,6 @@ Item {
 
     Component.onCompleted: {
         root.wifiService.addRef();
-        if (root.wifiService.wifiEnabled) {
-            root.wifiService.scanWifi();
-        }
     }
 
     Component.onDestruction: {
@@ -47,7 +44,7 @@ Item {
     }
 
     Connections {
-        target: NetworkService
+        target: root.wifiService
         function onPasswordDialogShouldReopenChanged() {
             wifiModalLoader.open("Invalid Password", wifiListContainer.lastAttemptSSID);
         }

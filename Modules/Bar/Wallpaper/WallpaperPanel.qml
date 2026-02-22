@@ -58,6 +58,13 @@ PanelWindow {
         state: root.visible ? "open" : "closed"
         transformOrigin: Item.Top
 
+        Behavior on height {
+            NumberAnimation {
+                duration: 220
+                easing.type: Easing.OutCubic
+            }
+        }
+
         states: [
             State {
                 name: "closed"
@@ -65,6 +72,7 @@ PanelWindow {
                     target: panelContainer
                     opacity: 0
                     scale: 0.9
+                    height: 0
                 }
             },
             State {
@@ -73,6 +81,7 @@ PanelWindow {
                     target: panelContainer
                     opacity: 1
                     scale: 1
+                    height: contentRect.height
                 }
             }
         ]
@@ -83,7 +92,7 @@ PanelWindow {
                 to: "open"
                 NumberAnimation {
                     target: panelContainer
-                    properties: "opacity,scale"
+                    properties: "opacity,scale,height"
                     duration: 220
                     easing.type: Easing.OutCubic
                 }
@@ -94,7 +103,7 @@ PanelWindow {
                 SequentialAnimation {
                     NumberAnimation {
                         target: panelContainer
-                        properties: "opacity,scale"
+                        properties: "opacity,scale,height"
                         duration: 220
                         easing.type: Easing.InCubic
                     }

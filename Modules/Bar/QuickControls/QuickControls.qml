@@ -1,7 +1,7 @@
 import QtQuick.Layouts
 import QtQuick
 import qs.Services
-import qs.Components
+import qs.Widgets
 
 Rectangle {
     id: root
@@ -11,7 +11,7 @@ Rectangle {
     implicitWidth: layout.implicitWidth + 18
     implicitHeight: parent.height * 0.75
     Layout.alignment: Qt.AlignRight
-    color: quickControlsPanel.containsMouse ? Theme.tertiaryContainer : Theme.secondaryContainer
+    color: quickControlsPanel.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
 

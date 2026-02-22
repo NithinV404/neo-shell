@@ -116,8 +116,7 @@ Singleton {
 
     function detectDefaultIconThemeGtk() {
         Proc.runCommand("detectDefaultIconThemeGtk", ["sh", "-c", "gsettings get org.gnome.desktop.interface icon-theme"], function (safeOutput) {
-            console.log(defaultIconTheme);
-            defaultIconTheme = safeOutput.strip();
+            defaultIconTheme = safeOutput.trim();
         }, 500, 3000);
     }
 
