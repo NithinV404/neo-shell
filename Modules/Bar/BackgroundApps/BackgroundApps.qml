@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 import qs.Services
-import QtQuick.Effects
+import qs.Widgets
 
 Rectangle {
     id: root
@@ -103,14 +103,17 @@ Rectangle {
             model: SystemTray.items
             delegate: Item {
                 id: trayItem
+                required property var modelData
                 implicitHeight: 24
                 implicitWidth: 24
 
-                IconImage {
+                AppIcon {
                     anchors.centerIn: parent
-                    width: parent.width - 8
-                    height: parent.height - 8
-                    source: modelData.icon
+                    size: 18
+                    icon: {
+                        console.log(trayItem.modelData.icon);
+                        return trayItem.modelData.icon;
+                    }
                 }
 
                 MouseArea {
