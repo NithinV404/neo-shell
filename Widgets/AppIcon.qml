@@ -123,7 +123,19 @@ Item {
     IconImage {
         id: iconImage
         visible: root.iconLoaded
-        source: root.hasIcon ? root.iconName.startsWith("/") ? "file://" + root.iconName : Quickshell.iconPath(root.iconName, true) : ""
+        source: {
+            if (root.hasIcon) {
+                if (root.iconName.startsWith("/")) {
+                    return "file://" + root.iconName;
+                } else if (root.iconName.startsWith("image:")) {
+                    return root.iconName;
+                } else {
+                    Quickshell.iconPath(root.iconName, true);
+                }
+            } else {
+                return "?";
+            }
+        }
         mipmap: true
         asynchronous: true
         implicitSize: root.size

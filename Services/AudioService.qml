@@ -407,7 +407,15 @@ Singleton {
             return root.setVolume(parseInt(percentage));
         }
 
-        function increment(step: string): string {
+        function increment(): string {
+            return _increment(Settings.audioVolumeStep);
+        }
+
+        function incrementBy(step: string): string {
+            return _increment(step);
+        }
+
+        function _increment(step: string): string {
             if (!root.sink?.audio) {
                 return "No audio sink available";
             }
@@ -425,7 +433,15 @@ Singleton {
             return `Volume increased to ${newVolume}%`;
         }
 
-        function decrement(step: string): string {
+        function decrement(): string {
+            return _decrement(Settings.audioVolumeStep);
+        }
+
+        function decrementBy(step: string): string {
+            return _decrement(step);
+        }
+
+        function _decrement(step: string): string {
             if (!root.sink?.audio) {
                 return "No audio sink available";
             }
