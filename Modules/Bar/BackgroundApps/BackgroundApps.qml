@@ -11,7 +11,7 @@ Rectangle {
     implicitHeight: parent.height * 0.75
     implicitWidth: layout.implicitWidth + 8
 
-    color: Theme.secondaryContainer
+    color: Theme.surfaceContainerHighest
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
 

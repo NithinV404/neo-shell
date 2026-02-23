@@ -1,0 +1,18 @@
+# Rust build artifacts
+target/
+
+# Cargo.lock is typically not ignored in libraries, but can be for applications
+# Uncomment if needed: Cargo.lock
+
+# Backup files
+**/*.rs.bk
+
+# IDE and editor files (optional, add as needed)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS-specific files
+.DS_Store
+Thumbs.db
