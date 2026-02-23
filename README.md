@@ -13,11 +13,11 @@
 
 See QuickShell in action:
 
-<p align="center">
-  <video src="Demo/video.mp4" width="100%" controls alt="QuickShell Demo Video">
-    Your browser does not support the video tag. You can view the demo video directly in the <code>/Demo</code> folder.
-  </video>
-</p>
+
+https://github.com/user-attachments/assets/c872957b-1f25-475d-b89f-d4eacecff476
+
+
+
 
 ---
 
