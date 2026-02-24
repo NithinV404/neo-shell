@@ -2,23 +2,22 @@ pragma Singleton
 import QtQuick
 import QtCore
 import Quickshell
+import qs.Modules.Bar
 
 QtObject {
-
-    property var currentScreen: Quickshell.screens[0]
 
     readonly property url config: `${StandardPaths.standardLocations(StandardPaths.GenericConfigLocation)[0]}`
     readonly property url cache: `${StandardPaths.standardLocations(StandardPaths.GenericCacheLocation)[0]}/neoshell`
     readonly property url imagecache: `${cache}/imagecache`
 
-    function clampScreenX(x, width, padding) {
-        var screenWidth = currentScreen.width;
+    function clampScreenX(x, width, padding, screen) {
+        var screenWidth = screen.width;
         var edge = x + width;
         return edge < screenWidth ? x : screenWidth - width - padding;
     }
 
-    function clampScreenY(y, height, padding) {
-        var screenHeight = currentScreen.height;
+    function clampScreenY(y, height, padding, screen) {
+        var screenHeight = screen.height;
         var edge = y + height;
         return edge > screenHeight ? y - height - padding : y;
     }
