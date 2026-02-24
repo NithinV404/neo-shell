@@ -58,7 +58,7 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
+        anchors.topMargin: 12
 
         // --- Header ---
         Rectangle {

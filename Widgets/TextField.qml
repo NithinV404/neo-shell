@@ -26,7 +26,7 @@ Rectangle {
 
     implicitWidth: 300
     implicitHeight: 56
-    radius: 12
+    radius: Settings.radius
     color: Theme.surfaceContainer
     border.color: inputField.activeFocus ? Theme.primary : Theme.outline
     border.width: inputField.activeFocus ? 2 : 1

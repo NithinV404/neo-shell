@@ -153,7 +153,7 @@ Scope {
                     implicitHeight: root.visible ? (root.items.length * 50) + 40 : 0
                     implicitWidth: 300
                     color: Theme.surface
-                    radius: 12
+                    radius: Settings.radius
                     clip: true
 
                     Behavior on implicitHeight {
@@ -185,7 +185,7 @@ Scope {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 42
                                 color: Theme.surfaceContainerHighest
-                                radius: 12
+                                radius: Settings.radius
 
                                 property real progress: 0.0
 
@@ -205,7 +205,7 @@ Scope {
                                         width: buttonDelegate.width
                                         color: Theme.primary
                                         opacity: 0.8
-                                        radius: 12
+                                        radius: Settings.radius
                                     }
                                 }
 

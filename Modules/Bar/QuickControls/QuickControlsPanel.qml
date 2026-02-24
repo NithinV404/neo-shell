@@ -56,7 +56,7 @@ PanelWindow {
 
     Item {
         id: panelContainer
-        x: Utils.clampScreenX(root.menuX, width, 0, root.screen)
+        x: Utils.clampScreenX(root.menuX, width, 5, root.screen)
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
         implicitWidth: 400
         implicitHeight: quickLayoutStack.height
@@ -110,12 +110,19 @@ PanelWindow {
             }
         ]
 
+        Rectangle {
+            anchors.fill: parent
+            radius: Settings.radius
+            color: Theme.surface
+        }
+
         StackLayout {
             id: quickLayoutStack
             currentIndex: 0
             clip: true
             implicitWidth: 800
             height: children[currentIndex].implicitHeight
+            anchors.centerIn: parent
 
             Behavior on height {
                 enabled: root.isVisible
@@ -130,8 +137,8 @@ PanelWindow {
                 asynchronous: false
                 sourceComponent: Rectangle {
                     id: togglePanel
-                    implicitHeight: togglesGrid.implicitHeight + 20
-                    implicitWidth: togglesGrid.implicitWidth + 20
+                    implicitHeight: togglesGrid.implicitHeight + 30
+                    implicitWidth: togglesGrid.implicitWidth + 5
                     color: Theme.surfaceContainer
                     radius: Settings.radius
 
@@ -143,7 +150,6 @@ PanelWindow {
                         columnSpacing: 8
                         rowSpacing: 8
                         anchors.centerIn: parent
-                        anchors.margins: 20
 
                         Rectangle {
                             Layout.columnSpan: 2
@@ -409,6 +415,7 @@ PanelWindow {
                 sourceComponent: NetworkListPanel {
                     wifi: NetworkService
                     onGoBack: quickLayoutStack.currentIndex = 0
+                    anchors.fill: parent
                 }
             }
 
@@ -419,6 +426,7 @@ PanelWindow {
                 sourceComponent: BluetoothPanel {
                     bluetooth: BluetoothService
                     onGoBack: quickLayoutStack.currentIndex = 0
+                    anchors.fill: parent
                 }
             }
         }

@@ -54,7 +54,7 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
+        anchors.topMargin: 12
         spacing: 12
 
         // --- Header (Fixed, doesn't scroll) ---
