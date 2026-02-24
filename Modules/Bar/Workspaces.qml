@@ -31,7 +31,7 @@ Rectangle {
         x: root.activeItem ? (workspaceRow.x + root.activeItem.x) : 0
         y: workspaceRow.y
 
-        width: root.activeItem ? root.activeItem.width : 0
+        width: 24
         height: 24
         radius: 24
         color: Theme.primary

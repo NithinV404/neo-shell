@@ -12,7 +12,7 @@ Rectangle {
     property var activePanel: null
     implicitWidth: timeRow.implicitWidth + 16
     implicitHeight: parent.height * 0.75
-    color: clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
+    color: "transparent" //clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
     radius: 24
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
@@ -61,14 +61,6 @@ Rectangle {
         anchors.centerIn: parent
         spacing: 8
 
-        // Clock icon
-        StyledText {
-            name: "schedule"
-            size: 16
-            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
-            Layout.alignment: Qt.AlignVCenter
-        }
-
         // Time
         Text {
             text: Qt.formatDateTime(clock.date, "hh:mm ap")
@@ -81,8 +73,9 @@ Rectangle {
 
         // Separator
         Rectangle {
-            width: 1
-            height: 14
+            implicitWidth: 4
+            implicitHeight: 4
+            radius: 24
             color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.outline
             opacity: 0.5
             Layout.alignment: Qt.AlignVCenter

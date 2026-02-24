@@ -64,7 +64,7 @@ Item {
         Rectangle {
             Layout.fillWidth: true
             implicitHeight: 42
-            radius: 28
+            radius: 24
             color: Theme.surfaceContainerHighest
 
             RowLayout {
@@ -75,7 +75,7 @@ Item {
                 Rectangle {
                     implicitWidth: 35
                     implicitHeight: 35
-                    radius: 20
+                    radius: 24
                     color: !backButtonHover.containsMouse ? Theme.primary : Qt.darker(Theme.primary)
                     Layout.topMargin: 3.5
                     Layout.leftMargin: 4
@@ -190,7 +190,7 @@ Item {
                 width: parent.width
                 height: wifiColumn.height
                 color: "transparent"
-                radius: 12
+                radius: 24
 
                 property string activeInputSSID: ""
                 property string lastAttemptSSID: ""
@@ -238,10 +238,10 @@ Item {
                                 height: contentCol.implicitHeight + 20
                                 color: Theme.surfaceContainerHighest
 
-                                topLeftRadius: delegateScope.isFirst ? 12 : 4
-                                topRightRadius: delegateScope.isFirst ? 12 : 4
-                                bottomLeftRadius: delegateScope.isLast ? 12 : 4
-                                bottomRightRadius: delegateScope.isLast ? 12 : 4
+                                topLeftRadius: delegateScope.isFirst ? 24 : 4
+                                topRightRadius: delegateScope.isFirst ? 24 : 4
+                                bottomLeftRadius: delegateScope.isLast ? 24 : 4
+                                bottomRightRadius: delegateScope.isLast ? 24 : 4
 
                                 Behavior on height {
                                     NumberAnimation {
@@ -271,7 +271,10 @@ Item {
 
                                         StyledText {
                                             name: delegateScope.signal >= 50 ? "wifi" : "wifi_1_bar"
-                                            color: Theme.surfaceFg
+                                            color: Theme.primaryFg
+                                            container: true
+                                            containerColor: Theme.primary
+                                            size: 20
                                         }
 
                                         ColumnLayout {

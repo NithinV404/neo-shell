@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Effects
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 import qs.Services
@@ -7,11 +8,10 @@ import qs.Widgets
 
 Rectangle {
     id: root
-    Layout.alignment: Qt.AlignRight
     implicitHeight: parent.height * 0.75
-    implicitWidth: layout.implicitWidth + 8
+    implicitWidth: layout.implicitWidth + 4
 
-    color: Theme.surfaceContainerHighest
+    color: "transparent" //  Theme.surfaceContainerHighest
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
 
@@ -109,10 +109,15 @@ Rectangle {
 
                 AppIcon {
                     anchors.centerIn: parent
-                    size: 18
+                    size: 20
                     icon: {
                         console.log(trayItem.modelData.icon);
                         return trayItem.modelData.icon;
+                    }
+                    layer.enabled: true
+                    layer.effect: MultiEffect {
+                        colorization: 1.0
+                        colorizationColor: Theme.tertiary
                     }
                 }
 

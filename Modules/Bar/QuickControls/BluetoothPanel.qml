@@ -223,10 +223,10 @@ Item {
                                 width: parent.width
                                 height: 48
 
-                                topLeftRadius: isStart ? 12 : 4
-                                topRightRadius: isStart ? 12 : 4
-                                bottomLeftRadius: isLast ? 12 : 4
-                                bottomRightRadius: isLast ? 12 : 4
+                                topLeftRadius: isStart ? 24 : 4
+                                topRightRadius: isStart ? 24 : 4
+                                bottomLeftRadius: isLast ? 24 : 4
+                                bottomRightRadius: isLast ? 24 : 4
 
                                 color: pairedDeviceHover.containsMouse ? Qt.lighter(Theme.surfaceContainerHighest, 1.1) : Theme.surfaceContainerHighest
 
@@ -238,13 +238,16 @@ Item {
 
                                 RowLayout {
                                     anchors.fill: parent
-                                    anchors.leftMargin: 12
+                                    anchors.leftMargin: 4
                                     anchors.rightMargin: 12
                                     spacing: 12
 
                                     StyledText {
                                         name: root.bs.getDeviceIcon(pairedDeviceDelegate.modelData)
-                                        color: Theme.surfaceFg
+                                        color: Theme.primaryFg
+                                        container: true
+                                        containerColor: Theme.primary
+                                        size: 20
                                     }
 
                                     ColumnLayout {
@@ -280,6 +283,30 @@ Item {
                                             color: text == "Connected" ? "green" : text.includes("failed") ? "red" : Qt.lighter(Theme.surfaceFg)
                                             font.pixelSize: 11
                                         }
+                                    }
+
+                                    StyledText {
+                                        Layout.alignment: Qt.AlignRight
+                                        name: {
+                                            var b = pairedDeviceDelegate.modelData.battery * 100;
+                                            if (b >= 95)
+                                                return "battery_android_full";
+                                            if (b >= 85)
+                                                return "battery_android_6";
+                                            if (b >= 70)
+                                                return "battery_android_5";
+                                            if (b >= 50)
+                                                return "battery_android_4";
+                                            if (b >= 35)
+                                                return "battery_android_3";
+                                            if (b >= 20)
+                                                return "battery_android_2";
+                                            if (b >= 10)
+                                                return "battery_android_1";
+                                            return "battery_android_0";
+                                        }
+                                        size: 24
+                                        color: Theme.primary
                                     }
 
                                     Rectangle {

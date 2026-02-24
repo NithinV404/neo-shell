@@ -251,7 +251,7 @@ Scope {
 
                                     StyledText {
                                         name: modelData.icon
-                                        font.pixelSize: 24
+                                        size: 24
                                         color: Theme.surfaceFg
                                         Layout.leftMargin: 12
                                     }

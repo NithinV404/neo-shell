@@ -8,8 +8,8 @@ Rectangle {
 
     property string screenName: ""
 
-    implicitWidth: windowsRow.implicitWidth
-    implicitHeight: 12
+    implicitWidth: windowsRow.implicitWidth + 12
+    implicitHeight: windowsRow.implicitHeight
     color: "transparent"
     radius: 24
     visible: groupedApps.length > 0

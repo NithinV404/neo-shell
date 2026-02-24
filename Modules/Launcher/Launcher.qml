@@ -191,7 +191,7 @@ Scope {
 
                             StyledText {
                                 name: "apps"
-                                font.pixelSize: 20
+                                size: 20
                                 color: Theme.primary
                             }
 

@@ -6,11 +6,11 @@ import qs.Widgets
 Rectangle {
     id: root
 
+    required property var screen
     property var activePanel: null
     readonly property int iconSize: 16
     implicitWidth: layout.implicitWidth + 18
     implicitHeight: parent.height * 0.75
-    Layout.alignment: Qt.AlignRight
     color: quickControlsPanel.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
@@ -121,6 +121,7 @@ Rectangle {
         id: panel
         active: false
         sourceComponent: QuickControlsPanel {
+            screen: root.screen
             onMenuClosed: {
                 panel.active = false;
                 root.activePanel = null;

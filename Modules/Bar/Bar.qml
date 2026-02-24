@@ -1,21 +1,17 @@
 // components/Bar.qml
-import Quickshell.Widgets
+
 import Quickshell
 import QtQuick
-import QtQuick.Layouts
 import qs.Modules.Bar.BackgroundApps
 import qs.Modules.Bar.QuickControls
 import qs.Modules.Bar
 import qs.Services
 import Quickshell.Wayland
-import qs.Widgets
 
 PanelWindow {
     id: bar
 
-    property var modelData
-    property var barPanelsManager: null
-
+    required property var modelData
     screen: modelData
     anchors {
         top: true
@@ -39,66 +35,52 @@ PanelWindow {
 
     Rectangle {
         anchors.fill: parent
-        anchors.centerIn: parent
         color: Theme.surface
         radius: 24
         border.width: 1
-        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
+        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.3)
 
-        // Clock absolutely centered, independent of layout
-        Clock {
-            id: clock
-            anchors.centerIn: parent
-            z: 1
+        Row {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: 8
+            spacing: 4
+
+            Apps {
+                id: apps
+                screenName: bar.modelData?.name ?? ""
+            }
         }
 
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 4
-            anchors.rightMargin: 4
+        Row {
+            anchors.centerIn: parent
             spacing: 4
 
             Workspaces {
                 id: workspaces
-                Layout.alignment: Qt.AlignVCenter
                 screenName: bar.modelData?.name ?? ""
             }
-
-            Rectangle {
-                width: 1
-                radius: 12
-                height: 18
-                color: Theme.surfaceFg
-                opacity: 0.5
-                Layout.alignment: Qt.AlignVCenter
-                Layout.leftMargin: 2
-                Layout.rightMargin: 2
+            Clock {
+                id: clock
+                anchors.verticalCenter: parent.verticalCenter
             }
+        }
 
-            Apps {
-                id: apps
-                Layout.alignment: Qt.AlignVCenter
-                screenName: bar.modelData?.name ?? ""
-            }
-
-            Item {
-                Layout.fillWidth: true
-            }
-
-            // No clock here anymore
-
-            Item {
-                Layout.fillWidth: true
-            }
+        Row {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.rightMargin: 4
+            spacing: 4
+            height: parent.height
 
             BackgroundApps {
                 id: backgroundApps
-                Layout.alignment: Qt.AlignVCenter
+                anchors.verticalCenter: parent.verticalCenter
             }
-
             QuickControls {
                 id: quickControls
-                Layout.alignment: Qt.AlignVCenter
+                screen: bar.modelData
+                anchors.verticalCenter: parent.verticalCenter
             }
         }
     }

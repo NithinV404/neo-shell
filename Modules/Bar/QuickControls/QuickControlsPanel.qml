@@ -11,6 +11,7 @@ PanelWindow {
     id: root
 
     // Use real for coords (they're numbers, not "var")
+    required property var screen
     property real menuX: 0
     property real menuY: 0
     property alias posX: root.menuX
@@ -21,7 +22,7 @@ PanelWindow {
     signal menuClosed
 
     function openAt(x, y) {
-        root.menuX = x - root.width / 2;
+        root.menuX = x;
         root.menuY = y;
         root.visible = true;
         root.isVisible = true;
@@ -55,8 +56,8 @@ PanelWindow {
 
     Item {
         id: panelContainer
-        x: Utils.clampScreenX(root.menuX, width, 5)
-        y: Utils.clampScreenY(root.menuY, height, 0)
+        x: Utils.clampScreenX(root.menuX, width, 0, root.screen)
+        y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
         implicitWidth: 400
         implicitHeight: quickLayoutStack.height
         clip: true
@@ -157,7 +158,7 @@ PanelWindow {
                             RowLayout {
                                 anchors.fill: parent
                                 Rectangle {
-                                    radius: 12
+                                    radius: 24
                                     Layout.rightMargin: 12
                                     Layout.alignment: Qt.AlignRight
                                     color: powerBtnMouse.containsMouse ? Theme.tertiaryContainer : Theme.surface
@@ -168,8 +169,8 @@ PanelWindow {
                                     StyledText {
                                         anchors.centerIn: parent
                                         name: "power_settings_new"
-                                        font.pixelSize: 15
-                                        color: Theme.primaryContainerFg
+                                        size: 15
+                                        color: powerBtnMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.primaryContainerFg
                                     }
                                     MouseArea {
                                         id: powerBtnMouse
@@ -178,6 +179,12 @@ PanelWindow {
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: {
                                             PowerMenuService.toggle();
+                                        }
+                                    }
+                                    Behavior on color {
+                                        ColorAnimation {
+                                            duration: 220
+                                            easing.type: Easing.OutCubic
                                         }
                                     }
                                 }
