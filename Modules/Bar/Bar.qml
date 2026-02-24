@@ -62,6 +62,7 @@ PanelWindow {
             }
             Clock {
                 id: clock
+                screen: bar.modelData
                 anchors.verticalCenter: parent.verticalCenter
             }
         }

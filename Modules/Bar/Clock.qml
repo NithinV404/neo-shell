@@ -9,6 +9,7 @@ import Quickshell
 
 Rectangle {
     id: root
+    required property var screen
     property var activePanel: null
     implicitWidth: timeRow.implicitWidth + 16
     implicitHeight: parent.height * 0.75
@@ -94,6 +95,7 @@ Rectangle {
         id: panel
         active: false
         WallpaperPanel {
+            screen: root.screen
             onMenuClosed: {
                 panel.active = false;
                 root.activePanel = null;

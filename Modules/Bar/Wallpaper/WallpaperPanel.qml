@@ -6,6 +6,7 @@ import qs.Services
 PanelWindow {
     id: root
 
+    required property var screen
     property real menuX: 0
     property real menuY: 0
     property alias posX: root.menuX
@@ -50,8 +51,8 @@ PanelWindow {
 
     Item {
         id: panelContainer
-        x: Utils.clampScreenX(root.menuX, width, 2)
-        y: Utils.clampScreenY(root.menuY, height, 20)
+        x: Utils.clampScreenX(root.menuX, width, 2, root.screen)
+        y: Utils.clampScreenY(root.menuY, height, 20, root.screen)
         height: contentRect.height
         width: contentRect.width
         clip: true
