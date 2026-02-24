@@ -133,7 +133,7 @@ PanelWindow {
                     implicitHeight: togglesGrid.implicitHeight + 20
                     implicitWidth: togglesGrid.implicitWidth + 20
                     color: Theme.surfaceContainer
-                    radius: 24
+                    radius: Settings.radius
 
                     GridLayout {
                         id: togglesGrid
@@ -150,7 +150,7 @@ PanelWindow {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 46
                             Layout.bottomMargin: 8
-                            radius: 24
+                            radius: Settings.radius
                             color: Theme.surfaceContainerHighest
                             border.width: 1
                             border.color: Qt.darker(Theme.outline)
@@ -158,7 +158,7 @@ PanelWindow {
                             RowLayout {
                                 anchors.fill: parent
                                 Rectangle {
-                                    radius: 24
+                                    radius: Settings.radius
                                     Layout.rightMargin: 12
                                     Layout.alignment: Qt.AlignRight
                                     color: powerBtnMouse.containsMouse ? Theme.tertiaryContainer : Theme.surface
@@ -289,7 +289,7 @@ PanelWindow {
                                     implicitHeight: 48
                                     implicitWidth: 48
                                     color: Theme.surfaceContainerHighest
-                                    radius: 24
+                                    radius: Settings.radius
                                     StyledText {
                                         anchors.centerIn: parent
                                         color: AudioService.muted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
@@ -360,7 +360,7 @@ PanelWindow {
                                             implicitHeight: 48
                                             implicitWidth: 48
                                             color: Theme.surfaceContainerHighest
-                                            radius: 24
+                                            radius: Settings.radius
 
                                             StyledText {
                                                 anchors.centerIn: parent

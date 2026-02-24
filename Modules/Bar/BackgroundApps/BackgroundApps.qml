@@ -5,6 +5,7 @@ import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 import qs.Services
 import qs.Widgets
+import qs.Common
 
 Rectangle {
     id: root
@@ -15,7 +16,7 @@ Rectangle {
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
 
-    radius: 24
+    radius: Settings.radius
 
     // 1. Keep visible until scale hits 0
     visible: scale > 0

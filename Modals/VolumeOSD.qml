@@ -77,7 +77,7 @@ Scope {
                 implicitHeight: volumeOSDLayout.height + 20
                 implicitWidth: volumeOSDLayout.width + 20
                 color: Theme.surface
-                radius: 24
+                radius: Settings.radius
                 layer.enabled: true
 
                 // Use panel's isOpen for state
@@ -139,7 +139,7 @@ Scope {
                         implicitHeight: 48
                         implicitWidth: 48
                         color: Theme.surfaceContainerHighest
-                        radius: 24
+                        radius: Settings.radius
 
                         StyledText {
                             anchors.centerIn: parent

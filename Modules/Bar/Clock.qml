@@ -2,7 +2,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Common
-import qs.Widgets
+
 import qs.Services
 import qs.Modules.Bar.Wallpaper
 import Quickshell
@@ -14,7 +14,7 @@ Rectangle {
     implicitWidth: timeRow.implicitWidth + 16
     implicitHeight: parent.height * 0.75
     color: "transparent" //clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
-    radius: 24
+    radius: Settings.radius
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
 
@@ -76,7 +76,7 @@ Rectangle {
         Rectangle {
             implicitWidth: 4
             implicitHeight: 4
-            radius: 24
+            radius: Settings.radius
             color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.outline
             opacity: 0.5
             Layout.alignment: Qt.AlignVCenter

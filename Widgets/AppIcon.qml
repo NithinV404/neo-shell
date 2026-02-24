@@ -105,7 +105,7 @@ Item {
     // Fallback
     Rectangle {
         anchors.fill: parent
-        radius: 24
+        radius: Settings.radius
         color: Theme.primaryContainer
         visible: !root.iconLoaded
 

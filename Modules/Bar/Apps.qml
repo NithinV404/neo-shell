@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Widgets
 import qs.Services
+import qs.Common
 
 Rectangle {
     id: root
@@ -11,7 +12,7 @@ Rectangle {
     implicitWidth: windowsRow.implicitWidth + 12
     implicitHeight: windowsRow.implicitHeight
     color: "transparent"
-    radius: 24
+    radius: Settings.radius
     visible: groupedApps.length > 0
 
     Behavior on implicitWidth {

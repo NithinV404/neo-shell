@@ -111,16 +111,16 @@ PanelWindow {
     // MENU BOX
     Rectangle {
         id: menuContainer
-        x: Utils.clampScreenX(root.menuX, width, 5)
+        x: Utils.clampScreenX(root.menuX, width, 5, root.screen)
         // 2. Vertical Clamp: Flip up if at bottom of screen
-        y: Utils.clampScreenY(root.menuY, height, 35)
+        y: Utils.clampScreenY(root.menuY, height, 35, root.screen)
 
         width: 200
         // Ensure height is never 0 to prevent drawing errors
-        height: Math.max(layout.implicitHeight + 10, 20)
+        height: Math.max(layout.implicitHeight + 24, 20)
 
         color: Theme.surfaceContainer
-        radius: 12
+        radius: Settings.radius
         border.width: 1
         border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
         clip: true
@@ -133,7 +133,7 @@ PanelWindow {
         ColumnLayout {
             id: layout
             anchors.fill: parent
-            anchors.margins: 5
+            anchors.margins: 8
             spacing: 2
 
             Repeater {
@@ -152,16 +152,9 @@ PanelWindow {
                         id: itemComp
                         Rectangle {
                             implicitHeight: 30
-                            Layout.fillWidth: true
+                            implicitWidth: parent.width + 10
                             color: optionsHover.containsMouse ? Theme.primary : Theme.surface
-                            radius: 6
-
-                            Behavior on color {
-                                ColorAnimation {
-                                    duration: 100
-                                    easing.type: Easing.OutCubic
-                                }
-                            }
+                            radius: Settings.radius
 
                             MouseArea {
                                 id: optionsHover
@@ -175,7 +168,8 @@ PanelWindow {
 
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.margins: 5
+                                anchors.leftMargin: 8
+                                anchors.rightMargin: 8
                                 Text {
                                     text: modelData.text
                                     font.family: Settings.fontFamily

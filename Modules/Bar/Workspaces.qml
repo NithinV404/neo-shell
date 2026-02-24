@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Services
+import qs.Common
 
 Rectangle {
     id: root
@@ -16,7 +17,7 @@ Rectangle {
     implicitWidth: workspaceRow.width
     implicitHeight: 40
     color: "transparent"
-    radius: 24
+    radius: Settings.radius
 
     Behavior on implicitWidth {
         NumberAnimation {
@@ -33,7 +34,7 @@ Rectangle {
 
         width: 24
         height: 24
-        radius: 24
+        radius: Settings.radius
         color: Theme.primary
 
         Rectangle {

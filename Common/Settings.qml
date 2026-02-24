@@ -21,6 +21,7 @@ Singleton {
     property int audioVolumeStep: 2
     property string wallpaperImage: ""
     property var wallpaperFolderImages: []
+    property int radius: 24
     readonly property string _homeUrl: StandardPaths.writableLocation(StandardPaths.HomeLocation)
     readonly property string _configUrl: StandardPaths.writableLocation(StandardPaths.ConfigLocation)
     readonly property string _configDir: Utils.strip(_configUrl)
@@ -60,7 +61,8 @@ Singleton {
             "audioVolumeStep": audioVolumeStep,
             "audioVolumeOverdrive": audioVolumeOverdrive,
             "wallpaperImage": wallpaperImage,
-            "defaultIconTheme": defaultIconTheme
+            "defaultIconTheme": defaultIconTheme,
+            "radius": radius
         }, null, 2));
     }
 
@@ -79,6 +81,7 @@ Singleton {
                 wallpaperFolderImages = settings.wallpaperFolderImages !== undefined ? settings.wallpaperFolderImages : [];
                 wallpaperImage = settings.wallpaperImage !== undefined ? settings.wallpaperImage : "";
                 defaultIconTheme = settings.defaultIconTheme !== undefined ? settings.defaultIconTheme : "";
+                radius = settings.radius !== undefined ? settings.radius : 24;
                 loadAvailableIcons();
                 detectDefault();
             }

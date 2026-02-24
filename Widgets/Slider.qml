@@ -28,7 +28,7 @@ Item {
     Rectangle {
         id: background
         anchors.fill: parent
-        radius: 24
+        radius: Settings.radius
         color: Theme.surfaceContainerHighest
 
         // Clipping container - this is the key!
@@ -82,7 +82,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: parent.width - 8
-                radius: 24
+                radius: Settings.radius
             }
         }
         RowLayout {

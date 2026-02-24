@@ -6,6 +6,7 @@ import qs.Modules.Bar.BackgroundApps
 import qs.Modules.Bar.QuickControls
 import qs.Modules.Bar
 import qs.Services
+import qs.Common
 import Quickshell.Wayland
 
 PanelWindow {
@@ -36,7 +37,7 @@ PanelWindow {
     Rectangle {
         anchors.fill: parent
         color: Theme.surface
-        radius: 24
+        radius: Settings.radius
         border.width: 1
         border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.3)
 

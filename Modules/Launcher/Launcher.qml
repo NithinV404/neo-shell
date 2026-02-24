@@ -145,7 +145,7 @@ Scope {
                 anchors.centerIn: parent
                 width: 450
                 height: root.showContainer ? 600 : 0
-                radius: 16
+                radius: Settings.radius
                 color: Theme.surface
                 clip: true
 

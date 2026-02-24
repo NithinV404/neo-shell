@@ -64,7 +64,7 @@ Item {
         Rectangle {
             Layout.fillWidth: true
             implicitHeight: 42
-            radius: 24
+            radius: Settings.radius
             color: Theme.surfaceContainerHighest
 
             RowLayout {
@@ -75,7 +75,7 @@ Item {
                 Rectangle {
                     implicitWidth: 35
                     implicitHeight: 35
-                    radius: 24
+                    radius: Settings.radius
                     color: !backButtonHover.containsMouse ? Theme.primary : Qt.darker(Theme.primary)
                     Layout.topMargin: 3.5
                     Layout.leftMargin: 4
@@ -190,7 +190,7 @@ Item {
                 width: parent.width
                 height: wifiColumn.height
                 color: "transparent"
-                radius: 24
+                radius: Settings.radius
 
                 property string activeInputSSID: ""
                 property string lastAttemptSSID: ""
