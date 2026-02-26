@@ -179,6 +179,8 @@ Item {
                 implicitHeight: 20
                 width: parent.width
 
+                property string activeInputSSID
+                property string lastAttemptSSID
                 property var availableNetworks: root.wifiNetworks.filter(a => !a.connected)
                 property var connectedNetworks: {
                     let connectedWifi = root.wifiNetworks.filter(a => a.connected);
@@ -478,10 +480,8 @@ Item {
 
                                             Loading {
                                                 visible: delegateScope.isConnecting
-                                                dotColor: Theme.secondaryFg
-                                                size: 18
-                                                running: root.wifiService.isConnecting
                                                 Layout.rightMargin: 8
+                                                implicitSize: 28
                                             }
 
                                             Rectangle {

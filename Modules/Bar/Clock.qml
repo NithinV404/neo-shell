@@ -66,7 +66,7 @@ Rectangle {
         Text {
             text: Qt.formatDateTime(clock.date, "hh:mm ap")
             color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
-            font.pixelSize: 14
+            font.pixelSize: 16
             font.family: Settings.fontFamily
             font.bold: true
             Layout.alignment: Qt.AlignVCenter
@@ -84,9 +84,9 @@ Rectangle {
 
         // Date
         Text {
-            text: Qt.formatDateTime(clock.date, "ddd, MMM d")
+            text: Qt.formatDateTime(clock.date, "ddd, MM/d")
             color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
-            font.pixelSize: 12
+            font.pixelSize: 14
             font.family: Settings.fontFamily
             Layout.alignment: Qt.AlignVCenter
         }

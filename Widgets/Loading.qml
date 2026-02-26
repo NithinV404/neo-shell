@@ -1,85 +1,97 @@
+pragma ComponentBehavior: Bound
 import QtQuick
+import qs.Widgets
+import qs.Services
 
-Item {
+Rectangle {
     id: root
 
-    // API
-    property int size: 24          // total height
-    property int dotSize: 6
-    property int gap: 5
-    property color dotColor: "#6750A4" // primary
-    property bool running: true
+    property bool loading: true
+    property double pullProgress: 0
 
-    // timing
-    property int period: 700       // ms for a full cycle
-    property int stagger: 120      // ms between dots
+    // Size, color
+    property double implicitSize: 48
+    implicitWidth: implicitSize
+    implicitHeight: implicitSize
+    radius: Math.min(width, height) / 2
+    color: Theme.primaryContainer
+    property double baseShapeSize: root.implicitSize * 0.7
+    property double leapZoomSize: root.baseShapeSize * 1.2
+    property double leapZoomProgress: 0
 
-    implicitHeight: size
-    implicitWidth: dotSize * 3 + gap * 2
+    // Shape
+    property list<var> shapes: [MaterialShape.Shape.SoftBurst, MaterialShape.Shape.Cookie9Sided, MaterialShape.Shape.Pentagon, MaterialShape.Shape.Pill, MaterialShape.Shape.Sunny, MaterialShape.Shape.Cookie4Sided, MaterialShape.Shape.Oval,]
+    property int shapeIndex: 0
+    property double pullRotation: root.loading ? 0 : -(root.pullProgress * 360)
+    property double continuousRotation: 0
+    property double leapRotation: 0
+    rotation: pullRotation + continuousRotation + leapRotation
 
-    Repeater {
-        model: 3
+    RotationAnimation on continuousRotation {
+        running: root.loading
+        duration: 12000
+        easing.type: Easing.Linear
+        loops: Animation.Infinite
+        from: 0
+        to: 360
+    }
+    Timer {
+        interval: 800
+        running: root.loading
+        repeat: true
+        onTriggered: leapAnimation.start()
+    }
+    ParallelAnimation {
+        id: leapAnimation
+        PropertyAction {
+            target: root
+            property: "shapeIndex"
+            value: (root.shapeIndex + 1) % root.shapes.length
+        }
+        RotationAnimation {
+            target: root
+            direction: RotationAnimation.Shortest
+            property: "leapRotation"
+            to: (root.leapRotation + 90) % 360
+            duration: 350
+            easing.type: Easing.InOutQuad
+        }
+        NumberAnimation {
+            target: root
+            property: "leapZoomProgress"
+            from: 0
+            to: 1
+            duration: 750
 
-        delegate: Rectangle {
-            width: root.dotSize
-            height: root.dotSize
-            radius: root.dotSize / 2
-            color: root.dotColor
+            // --- FIX 1: BEZIER CURVE ---
+            // Replaced Appearance.animationCurves.standard with standard Cubic Bezier points
+            // Format: [controlX1, controlY1, controlX2, controlY2]
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+        }
+    }
 
-            x: index * (root.dotSize + root.gap)
-            y: (root.size - root.dotSize) / 2
+    MaterialShape {
+        id: shape
+        anchors.centerIn: parent
+        shape: root.shapes[root.shapeIndex]
+        implicitSize: {
+            const leapZoomDiff = root.leapZoomSize - root.baseShapeSize;
+            const progressFirstHalf = Math.min(root.leapZoomProgress, 0.5) * 2;
+            const progressSecondHalf = Math.max(root.leapZoomProgress - 0.5, 0) * 2;
+            return root.baseShapeSize + leapZoomDiff * progressFirstHalf - leapZoomDiff * progressSecondHalf;
+        }
+        color: Theme.primaryContainerFg
 
-            // start "small and dim"
-            scale: 0.7
-            opacity: 0.55
+        // --- FIX 2: MATERIAL SHAPE ANIMATION ---
+        // Replaced the complex createObject call.
+        // Assuming MaterialShape expects an animation for shape transitions,
+        // we use a Behavior or assign a standard NumberAnimation property.
 
-            SequentialAnimation {
-                running: root.running && root.visible
-                loops: Animation.Infinite
-
-                // phase offset per dot
-                PauseAnimation {
-                    duration: index * root.stagger
-                }
-
-                ParallelAnimation {
-                    NumberAnimation {
-                        target: parent
-                        property: "scale"
-                        to: 1.15
-                        duration: root.period * 0.25
-                        easing.type: Easing.OutCubic
-                    }
-                    NumberAnimation {
-                        target: parent
-                        property: "opacity"
-                        to: 1.0
-                        duration: root.period * 0.25
-                        easing.type: Easing.OutCubic
-                    }
-                }
-
-                ParallelAnimation {
-                    NumberAnimation {
-                        target: parent
-                        property: "scale"
-                        to: 0.7
-                        duration: root.period * 0.35
-                        easing.type: Easing.InOutCubic
-                    }
-                    NumberAnimation {
-                        target: parent
-                        property: "opacity"
-                        to: 0.55
-                        duration: root.period * 0.35
-                        easing.type: Easing.InOutCubic
-                    }
-                }
-
-                // rest of the cycle (keeps period consistent)
-                PauseAnimation {
-                    duration: root.period * 0.40
-                }
+        Behavior on shape {
+            NumberAnimation {
+                duration: 250
+                easing.type: Easing.InOutQuad
             }
         }
     }

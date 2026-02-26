@@ -1,0 +1,3 @@
+[submodule "Widgets/MaterialShapes"]
+	path = Widgets/MaterialShapes
+	url = https://github.com/end-4/rounded-polygon-qmljs.git
