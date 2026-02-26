@@ -30,18 +30,6 @@ Singleton {
     property var wifiNetworks: []
     property var savedConnections: []
     property var ssidToConnectionName: ({})
-    property var wifiSignalIcon: {
-        if (!wifiConnected || networkStatus !== "wifi") {
-            return "wifi_off";
-        }
-        if (wifiSignalStrength >= 50) {
-            return "wifi";
-        }
-        if (wifiSignalStrength >= 25) {
-            return "wifi_2_bar";
-        }
-        return "wifi_1_bar";
-    }
 
     property string userPreference: "auto"
     property bool isConnecting: false
@@ -114,6 +102,19 @@ Singleton {
                 proc.running = false;
             }
         }
+    }
+
+    function getWifiSignalIcon(wifiSignalStrength) {
+        if (wifiSignalStrength == 0 || undefined) {
+            return "wifi_off";
+        }
+        if (wifiSignalStrength >= 50) {
+            return "wifi";
+        }
+        if (wifiSignalStrength >= 25) {
+            return "wifi_2_bar";
+        }
+        return "wifi_1_bar";
     }
 
     function addRef() {
@@ -1053,6 +1054,19 @@ Singleton {
     function connectToWifiAndSetPreference(ssid, password) {
         connectToWifi(ssid, password);
         setNetworkPreference("wifi");
+    }
+
+    function connectEthernet() {
+        ethernetConnector.running = true;
+    }
+
+    function disconnectEthernet() {
+        if (!root.ethernetInterface) {
+            return;
+        }
+
+        ethernetDisconnector.command = lowPriorityCmd.concat(["nmcli", "dev", "disconnect", root.ethernetInterface]);
+        ethernetDisconnector.running = true;
     }
 
     function toggleNetworkConnection(type) {

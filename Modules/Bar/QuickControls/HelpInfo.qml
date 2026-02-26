@@ -29,6 +29,7 @@ Rectangle {
             font.pixelSize: 20
             font.family: Settings.fontFamily
             color: Theme.surfaceFg
+            wrapMode: Text.WordWrap
         }
         Text {
             Layout.alignment: Qt.AlignCenter

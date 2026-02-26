@@ -72,6 +72,7 @@ PanelWindow {
                     target: panelContainer
                     opacity: 0
                     scale: 0.9
+                    height: 0
                 }
             },
             State {
@@ -80,6 +81,7 @@ PanelWindow {
                     target: panelContainer
                     opacity: 1
                     scale: 1
+                    height: quickLayoutStack.height
                 }
             }
         ]
@@ -101,7 +103,7 @@ PanelWindow {
                     }
                     ParallelAnimation {
                         NumberAnimation {
-                            properties: "opacity,scale"
+                            properties: "opacity,scale,height"
                             duration: 220
                             easing.type: Easing.OutCubic
                         }
@@ -128,7 +130,7 @@ PanelWindow {
                 enabled: root.isVisible
                 NumberAnimation {
                     duration: 220
-                    easing.type: Easing.OutCubic
+                    easing.type: Easing.OutBack
                 }
             }
 
@@ -138,7 +140,7 @@ PanelWindow {
                 sourceComponent: Rectangle {
                     id: togglePanel
                     implicitHeight: togglesGrid.implicitHeight + 30
-                    implicitWidth: togglesGrid.implicitWidth + 5
+                    implicitWidth: togglesGrid.implicitWidth
                     color: Theme.surfaceContainer
                     radius: Settings.radius
 
@@ -170,12 +172,12 @@ PanelWindow {
                                     color: powerBtnMouse.containsMouse ? Theme.tertiaryContainer : Theme.surface
                                     border.width: 1
                                     border.color: Qt.darker(Theme.outline)
-                                    implicitWidth: 30
-                                    implicitHeight: 30
+                                    implicitWidth: 32
+                                    implicitHeight: 32
                                     StyledText {
                                         anchors.centerIn: parent
                                         name: "power_settings_new"
-                                        size: 15
+                                        size: 16
                                         color: powerBtnMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.primaryContainerFg
                                     }
                                     MouseArea {

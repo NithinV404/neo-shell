@@ -159,23 +159,12 @@ Item {
             }
         }
 
-        // --- Empty State ---
-
-        HelpInfo {
-            visible: !root.wifiService.wifiEnabled
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignCenter
-            icon: "wifi_off"
-            title: "Turn on Wifi"
-        }
-
         // --- Scrollable Wifi List ---
         Flickable {
             id: wifiFlickable
             Layout.fillHeight: true
             Layout.fillWidth: true
-            Layout.topMargin: 4
+            Layout.topMargin: 2
             contentHeight: wifiListContainer.height
             clip: true
             boundsBehavior: Flickable.StopAtBounds
@@ -185,236 +174,416 @@ Item {
                 policy: ScrollBar.AsNeeded
             }
 
-            Rectangle {
+            ColumnLayout {
                 id: wifiListContainer
+                implicitHeight: 20
                 width: parent.width
-                height: wifiColumn.height
-                color: "transparent"
-                radius: Settings.radius
 
-                property string activeInputSSID: ""
-                property string lastAttemptSSID: ""
+                property var availableNetworks: root.wifiNetworks.filter(a => !a.connected)
+                property var connectedNetworks: {
+                    let connectedWifi = root.wifiNetworks.filter(a => a.connected);
+                    let networks = [];
+                    networks.push({
+                        "ssid": root.wifiService.ethernetInterface,
+                        "status": root.wifiService.ethernetConnected,
+                        "icon": root.wifiService.ethernetConnected ? "lan" : "signal_disconnected",
+                        "id": "lan"
+                    });
+                    if (root.wifiService.wifiConnected) {
+                        networks.push({
+                            "ssid": connectedWifi.ssid,
+                            "status": connectedWifi.connected,
+                            "icon": root.wifiService.getWifiSignalIcon(connectedWifi.signal),
+                            "id": "wifi"
+                        });
+                    }
+                    return networks;
+                }
 
-                Column {
-                    id: wifiColumn
-                    width: parent.width
-                    spacing: 2
+                Text {
+                    Layout.leftMargin: 8
 
-                    Repeater {
-                        id: wifiRepeater
-                        model: root.wifiNetworks
+                    color: Qt.darker(Theme.surfaceFg)
+                    font.family: Settings.fontFamily
+                    text: "Connected networks"
+                    font.pixelSize: 12
+                }
 
-                        delegate: FocusScope {
-                            id: delegateScope
-                            width: wifiColumn.width
-                            height: bgRect.height
+                Repeater {
+                    id: connectedRepeated
+                    model: wifiListContainer.connectedNetworks
 
-                            activeFocusOnTab: true
+                    delegate: Rectangle {
+                        id: connectedDelegateScope
+                        Layout.fillWidth: true
+                        implicitHeight: connectedContentCol.implicitHeight + 20
+                        color: Theme.surfaceContainerHighest
 
-                            required property int index
-                            required property var modelData
+                        required property var modelData
+                        required property int index
+                        readonly property bool isFirst: connectedDelegateScope.index === 0
+                        readonly property bool isLast: connectedDelegateScope.index === (connectedRepeated.count - 1)
 
-                            // Extract properties from modelData
-                            readonly property string ssid: modelData.ssid ?? ""
-                            readonly property int signal: modelData.signal ?? 0
-                            readonly property bool secured: modelData.secured ?? false
-                            readonly property string bssid: modelData.bssid ?? ""
-                            readonly property bool connected: modelData.connected ?? false
-                            readonly property bool saved: modelData.saved ?? false
+                        topLeftRadius: connectedDelegateScope.isFirst ? 24 : 4
+                        topRightRadius: connectedDelegateScope.isFirst ? 24 : 4
+                        bottomLeftRadius: connectedDelegateScope.isLast ? 24 : 4
+                        bottomRightRadius: connectedDelegateScope.isLast ? 24 : 4
 
-                            property bool isExpanded: wifiListContainer.activeInputSSID === delegateScope.ssid
-                            readonly property bool isCurrent: delegateScope.ssid === root.wifiService.currentWifiSSID
-                            readonly property bool isConnecting: root.wifiService.isConnecting && root.wifiService.connectingSSID === delegateScope.ssid
-                            readonly property bool isLastAttempt: wifiListContainer.lastAttemptSSID === delegateScope.ssid
-                            readonly property bool isErrorForThisRow: isLastAttempt && (root.wifiService.connectionStatus === "invalid_password" || root.wifiService.connectionStatus === "failed")
+                        Behavior on implicitHeight {
+                            NumberAnimation {
+                                duration: 250
+                                easing.type: Easing.OutQuad
+                            }
+                        }
 
-                            // Helper properties for rounded corners
-                            readonly property bool isFirst: delegateScope.index === 0
-                            readonly property bool isLast: delegateScope.index === (wifiRepeater.count - 1)
+                        MouseArea {
+                            id: connectedContextMenuHover
+                            anchors.fill: parent
+                            acceptedButtons: Qt.RightButton
+                            onClicked: mouse => {
+                                wifiItemMenu.popup();
+                            }
+                        }
 
-                            Rectangle {
-                                id: bgRect
-                                width: parent.width
-                                height: contentCol.implicitHeight + 20
-                                color: Theme.surfaceContainerHighest
+                        ColumnLayout {
+                            id: connectedContentCol
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.margins: 10
 
-                                topLeftRadius: delegateScope.isFirst ? 24 : 4
-                                topRightRadius: delegateScope.isFirst ? 24 : 4
-                                bottomLeftRadius: delegateScope.isLast ? 24 : 4
-                                bottomRightRadius: delegateScope.isLast ? 24 : 4
+                            RowLayout {
+                                Layout.fillWidth: true
 
-                                Behavior on height {
-                                    NumberAnimation {
-                                        duration: 250
-                                        easing.type: Easing.OutQuad
-                                    }
-                                }
-
-                                MouseArea {
-                                    id: contextMenuHover
-                                    anchors.fill: parent
-                                    acceptedButtons: Qt.RightButton
-                                    onClicked: mouse => {
-                                        wifiItemMenu.popup();
-                                    }
+                                StyledText {
+                                    name: connectedDelegateScope.modelData.icon
+                                    color: Theme.primaryFg
+                                    container: true
+                                    containerColor: Theme.primary
+                                    size: 20
                                 }
 
                                 ColumnLayout {
-                                    id: contentCol
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.top: parent.top
-                                    anchors.margins: 10
+                                    Layout.fillWidth: true
+                                    Layout.leftMargin: 8
+                                    spacing: 2
 
-                                    RowLayout {
-                                        Layout.fillWidth: true
-
-                                        StyledText {
-                                            name: delegateScope.signal >= 50 ? "wifi" : "wifi_1_bar"
-                                            color: Theme.primaryFg
-                                            container: true
-                                            containerColor: Theme.primary
-                                            size: 20
+                                    Text {
+                                        text: {
+                                            let name = connectedDelegateScope.modelData.id;
+                                            return name.charAt(0).toUpperCase() + name.slice(1);
                                         }
-
-                                        ColumnLayout {
-                                            Layout.fillWidth: true
-                                            Layout.leftMargin: 8
-                                            spacing: 2
-
-                                            Text {
-                                                text: {
-                                                    var ssid = delegateScope.ssid;
-                                                    if (ssid.length > 20)
-                                                        return ssid.slice(0, 18) + "...";
-                                                    else if (!ssid)
-                                                        return "Hidden";
-                                                    else
-                                                        return ssid;
-                                                }
-                                                elide: Text.ElideRight
-                                                color: Theme.surfaceFg
-                                                font.pixelSize: 14
-                                            }
-
-                                            Text {
-                                                text: {
-                                                    if (delegateScope.isConnecting) {
-                                                        return root.wifiService.connectionStatus;
-                                                    }
-                                                    if (delegateScope.connected) {
-                                                        return "Connected";
-                                                    } else {
-                                                        return delegateScope.saved ? "Saved" : delegateScope.secured ? "Secured" : "Open";
-                                                    }
-                                                }
-                                                font.pixelSize: 11
-                                                color: Qt.rgba(Theme.primaryContainerFg.r, Theme.primaryContainerFg.g, Theme.primaryContainerFg.b, 0.7)
-                                            }
-                                        }
-
-                                        Item {
-                                            Layout.fillWidth: true
-                                        }
-
-                                        Loading {
-                                            visible: delegateScope.isConnecting
-                                            dotColor: Theme.secondaryFg
-                                            size: 18
-                                            running: root.wifiService.isConnecting
-                                            Layout.rightMargin: 8
-                                        }
-
-                                        Rectangle {
-                                            color: connectBtnMouse.containsMouse ? Qt.darker(Theme.primary) : Theme.primary
-                                            radius: 15
-                                            implicitWidth: connectBtnText.text.length * 10
-                                            implicitHeight: 30
-
-                                            Behavior on color {
-                                                ColorAnimation {
-                                                    duration: 300
-                                                    easing.type: Easing.OutCubic
-                                                }
-                                            }
-
-                                            Text {
-                                                id: connectBtnText
-                                                anchors.centerIn: parent
-                                                text: delegateScope.isCurrent ? "Disconnect" : "Connect"
-                                                color: Theme.primaryFg
-                                                font.pixelSize: 12
-                                            }
-
-                                            MouseArea {
-                                                id: connectBtnMouse
-                                                anchors.fill: parent
-                                                cursorShape: Qt.PointingHandCursor
-                                                hoverEnabled: true
-                                                onClicked: {
-                                                    if (delegateScope.isCurrent) {
-                                                        wifiModalLoader.close();
-                                                        root.wifiService.disconnectWifi();
-                                                        wifiListContainer.activeInputSSID = "";
-                                                        wifiListContainer.lastAttemptSSID = "";
-                                                        return;
-                                                    }
-
-                                                    wifiListContainer.lastAttemptSSID = delegateScope.ssid;
-
-                                                    if (delegateScope.secured && !delegateScope.saved) {
-                                                        wifiModalLoader.open("Connect to Wifi", delegateScope.ssid);
-                                                    } else {
-                                                        root.wifiService.connectToWifi(delegateScope.ssid);
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        color: Theme.surfaceFg
+                                        font.pixelSize: 14
                                     }
-                                }
-                            }
-
-                            Menu {
-                                id: wifiItemMenu
-                                popupType: Popup.Window
-                                padding: 6
-                                background: Item {
-                                    implicitWidth: 180
-                                    implicitHeight: 44
-                                    Rectangle {
-                                        anchors.fill: parent
-                                        radius: 12
-                                        color: delegateScope.saved ? Theme.secondaryContainer : Qt.lighter(Theme.secondaryContainer)
-                                        border.width: 1
-                                        border.color: Qt.rgba(1, 1, 1, 0.08)
-                                    }
-                                }
-
-                                MenuItem {
-                                    id: forgetItem
-                                    text: "Forget network"
-                                    enabled: delegateScope.saved
-                                    implicitHeight: 34
-                                    leftPadding: 8
-                                    rightPadding: 8
-                                    background: Rectangle {
-                                        radius: 10
-                                        color: forgetItem.highlighted ? Qt.rgba(Theme.tertiary.r, Theme.tertiary.g, Theme.tertiary.b, 0.5) : "transparent"
-                                    }
-                                    contentItem: Text {
-                                        text: forgetItem.text
-                                        color: parent.enabled ? Theme.tertiaryFg : Qt.rgba(Theme.secondaryFg.r, Theme.secondaryFg.g, Theme.secondaryFg.b, 0.5)
-                                        font.pixelSize: 13
-                                        verticalAlignment: Text.AlignVCenter
+                                    Text {
+                                        text: {
+                                            var ssid = connectedDelegateScope.modelData.ssid;
+                                            if (ssid.length > 20)
+                                                return ssid.slice(0, 18) + "...";
+                                            else if (!ssid)
+                                                return "Hidden";
+                                            else
+                                                return ssid;
+                                        }
+                                        color: Qt.rgba(Theme.primaryContainerFg.r, Theme.primaryContainerFg.g, Theme.primaryContainerFg.b, 0.7)
                                         elide: Text.ElideRight
+                                        font.pixelSize: 14
                                     }
-                                    onTriggered: {
-                                        root.wifiService.forgetWifiNetwork(delegateScope.ssid);
+                                }
+
+                                Item {
+                                    Layout.fillWidth: true
+                                }
+
+                                Rectangle {
+                                    color: connectedConnectBtnMouse.containsMouse ? Qt.darker(Theme.primary) : Theme.primary
+                                    radius: 15
+                                    implicitWidth: connectedConnectBtnText.text.length * 10
+                                    implicitHeight: 30
+
+                                    Behavior on color {
+                                        ColorAnimation {
+                                            duration: 300
+                                            easing.type: Easing.OutCubic
+                                        }
+                                    }
+
+                                    Text {
+                                        id: connectedConnectBtnText
+                                        anchors.centerIn: parent
+                                        text: connectedDelegateScope.modelData.status ? "Disconnect" : "Connect"
+                                        color: Theme.primaryFg
+                                        font.pixelSize: 12
+                                    }
+                                    MouseArea {
+                                        id: connectedConnectBtnMouse
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        hoverEnabled: true
+                                        onClicked: {
+                                            if (connectedDelegateScope.modelData.id == "wifi") {
+                                                root.wifiService.disconnectWifi();
+                                            } else {
+                                                if (root.wifiService.ethernetConnected) {
+                                                    root.wifiService.disconnectEthernet();
+                                                } else {
+                                                    root.wifiService.connectEthernet();
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                }
+
+                ColumnLayout {
+                    implicitHeight: wifiColumn.height
+                    Layout.fillWidth: true
+                    property string activeInputSSID: ""
+                    property string lastAttemptSSID: ""
+
+                    Text {
+                        Layout.leftMargin: 8
+                        color: Qt.darker(Theme.surfaceFg)
+                        font.family: Settings.fontFamily
+                        text: "Available networks"
+                        font.pixelSize: 12
+                    }
+
+                    Column {
+                        id: wifiColumn
+                        Layout.fillWidth: true
+                        spacing: 2
+                        visible: root.wifiService.wifiEnabled
+
+                        Repeater {
+                            id: wifiRepeater
+                            model: wifiListContainer.availableNetworks
+
+                            delegate: FocusScope {
+                                id: delegateScope
+                                width: wifiColumn.width
+                                height: bgRect.height
+
+                                activeFocusOnTab: true
+
+                                required property int index
+                                required property var modelData
+
+                                // Extract properties from modelData
+                                readonly property string ssid: modelData.ssid ?? ""
+                                readonly property int signal: modelData.signal ?? 0
+                                readonly property bool secured: modelData.secured ?? false
+                                readonly property string bssid: modelData.bssid ?? ""
+                                readonly property bool connected: modelData.connected ?? false
+                                readonly property bool saved: modelData.saved ?? false
+
+                                property bool isExpanded: wifiListContainer.activeInputSSID === delegateScope.ssid
+                                readonly property bool isCurrent: delegateScope.ssid === root.wifiService.currentWifiSSID
+                                readonly property bool isConnecting: root.wifiService.isConnecting && root.wifiService.connectingSSID === delegateScope.ssid
+                                readonly property bool isLastAttempt: wifiListContainer.lastAttemptSSID === delegateScope.ssid
+                                readonly property bool isErrorForThisRow: isLastAttempt && (root.wifiService.connectionStatus === "invalid_password" || root.wifiService.connectionStatus === "failed")
+
+                                // Helper properties for rounded corners
+                                readonly property bool isFirst: delegateScope.index === 0
+                                readonly property bool isLast: delegateScope.index === (wifiRepeater.count - 1)
+
+                                Rectangle {
+                                    id: bgRect
+                                    width: parent.width
+                                    height: contentCol.implicitHeight + 20
+                                    color: Theme.surfaceContainerHighest
+
+                                    topLeftRadius: delegateScope.isFirst ? 24 : 4
+                                    topRightRadius: delegateScope.isFirst ? 24 : 4
+                                    bottomLeftRadius: delegateScope.isLast ? 24 : 4
+                                    bottomRightRadius: delegateScope.isLast ? 24 : 4
+
+                                    Behavior on height {
+                                        NumberAnimation {
+                                            duration: 250
+                                            easing.type: Easing.OutQuad
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        id: contextMenuHover
+                                        anchors.fill: parent
+                                        acceptedButtons: Qt.RightButton
+                                        onClicked: mouse => {
+                                            wifiItemMenu.popup();
+                                        }
+                                    }
+
+                                    ColumnLayout {
+                                        id: contentCol
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.top: parent.top
+                                        anchors.margins: 10
+
+                                        RowLayout {
+                                            Layout.fillWidth: true
+
+                                            StyledText {
+                                                name: root.wifiService.getWifiSignalIcon(delegateScope.signal)
+                                                color: Theme.primaryFg
+                                                container: true
+                                                containerColor: Theme.primary
+                                                size: 20
+                                            }
+
+                                            ColumnLayout {
+                                                Layout.fillWidth: true
+                                                Layout.leftMargin: 8
+                                                spacing: 2
+
+                                                Text {
+                                                    text: {
+                                                        var ssid = delegateScope.ssid;
+                                                        if (ssid.length > 20)
+                                                            return ssid.slice(0, 18) + "...";
+                                                        else if (!ssid)
+                                                            return "Hidden";
+                                                        else
+                                                            return ssid;
+                                                    }
+                                                    elide: Text.ElideRight
+                                                    color: Theme.surfaceFg
+                                                    font.pixelSize: 14
+                                                }
+
+                                                Text {
+                                                    text: {
+                                                        if (delegateScope.isConnecting) {
+                                                            return root.wifiService.connectionStatus;
+                                                        }
+                                                        if (delegateScope.connected) {
+                                                            return "Connected";
+                                                        } else {
+                                                            return delegateScope.saved ? "Saved" : delegateScope.secured ? "Secured" : "Open";
+                                                        }
+                                                    }
+                                                    font.pixelSize: 11
+                                                    color: Qt.rgba(Theme.primaryContainerFg.r, Theme.primaryContainerFg.g, Theme.primaryContainerFg.b, 0.7)
+                                                }
+                                            }
+
+                                            Item {
+                                                Layout.fillWidth: true
+                                            }
+
+                                            Loading {
+                                                visible: delegateScope.isConnecting
+                                                dotColor: Theme.secondaryFg
+                                                size: 18
+                                                running: root.wifiService.isConnecting
+                                                Layout.rightMargin: 8
+                                            }
+
+                                            Rectangle {
+                                                color: connectBtnMouse.containsMouse ? Qt.darker(Theme.primary) : Theme.primary
+                                                radius: 15
+                                                implicitWidth: connectBtnText.text.length * 10
+                                                implicitHeight: 30
+
+                                                Behavior on color {
+                                                    ColorAnimation {
+                                                        duration: 300
+                                                        easing.type: Easing.OutCubic
+                                                    }
+                                                }
+
+                                                Text {
+                                                    id: connectBtnText
+                                                    anchors.centerIn: parent
+                                                    text: delegateScope.isCurrent ? "Disconnect" : "Connect"
+                                                    color: Theme.primaryFg
+                                                    font.pixelSize: 12
+                                                }
+
+                                                MouseArea {
+                                                    id: connectBtnMouse
+                                                    anchors.fill: parent
+                                                    cursorShape: Qt.PointingHandCursor
+                                                    hoverEnabled: true
+                                                    onClicked: {
+                                                        if (delegateScope.isCurrent) {
+                                                            wifiModalLoader.close();
+                                                            root.wifiService.disconnectWifi();
+                                                            wifiListContainer.activeInputSSID = "";
+                                                            wifiListContainer.lastAttemptSSID = "";
+                                                            return;
+                                                        }
+
+                                                        wifiListContainer.lastAttemptSSID = delegateScope.ssid;
+
+                                                        if (delegateScope.secured && !delegateScope.saved) {
+                                                            wifiModalLoader.open("Connect to Wifi", delegateScope.ssid);
+                                                        } else {
+                                                            root.wifiService.connectToWifi(delegateScope.ssid);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Menu {
+                                    id: wifiItemMenu
+                                    popupType: Popup.Window
+                                    padding: 6
+                                    background: Item {
+                                        implicitWidth: 180
+                                        implicitHeight: 44
+                                        Rectangle {
+                                            anchors.fill: parent
+                                            radius: 12
+                                            color: delegateScope.saved ? Theme.secondaryContainer : Qt.lighter(Theme.secondaryContainer)
+                                            border.width: 1
+                                            border.color: Qt.rgba(1, 1, 1, 0.08)
+                                        }
+                                    }
+
+                                    MenuItem {
+                                        id: forgetItem
+                                        text: "Forget network"
+                                        enabled: delegateScope.saved
+                                        implicitHeight: 34
+                                        leftPadding: 8
+                                        rightPadding: 8
+                                        background: Rectangle {
+                                            radius: 10
+                                            color: forgetItem.highlighted ? Qt.rgba(Theme.tertiary.r, Theme.tertiary.g, Theme.tertiary.b, 0.5) : "transparent"
+                                        }
+                                        contentItem: Text {
+                                            text: forgetItem.text
+                                            color: parent.enabled ? Theme.tertiaryFg : Qt.rgba(Theme.secondaryFg.r, Theme.secondaryFg.g, Theme.secondaryFg.b, 0.5)
+                                            font.pixelSize: 13
+                                            verticalAlignment: Text.AlignVCenter
+                                            elide: Text.ElideRight
+                                        }
+                                        onTriggered: {
+                                            root.wifiService.forgetWifiNetwork(delegateScope.ssid);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                // --- Empty State ---
+                HelpInfo {
+                    visible: !root.wifiService.wifiEnabled
+                    implicitHeight: 200
+                    Layout.alignment: Qt.AlignCenter
+                    Layout.fillWidth: true
+                    icon: "wifi_off"
+                    title: "Turn on wifi"
                 }
             }
         }
