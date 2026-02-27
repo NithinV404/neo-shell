@@ -65,7 +65,7 @@ Scope {
             anchors.right: true
             exclusiveZone: 0
             implicitWidth: 260
-            implicitHeight: 90
+            implicitHeight: 60
             color: "transparent"
             mask: Region {}
 
@@ -88,16 +88,14 @@ Scope {
                         name: "closed"
                         PropertyChanges {
                             target: osdContent
-                            y: 0
                             opacity: 0
-                            scale: 0.9
+                            scale: 0.8
                         }
                     },
                     State {
                         name: "opened"
                         PropertyChanges {
                             target: osdContent
-                            y: 10
                             opacity: 1
                             scale: 1
                         }
