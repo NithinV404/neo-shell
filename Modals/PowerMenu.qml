@@ -251,9 +251,10 @@ Scope {
 
                                     StyledText {
                                         name: modelData.icon
-                                        size: 24
+                                        size: 20
                                         color: Theme.surfaceFg
                                         Layout.leftMargin: 12
+                                        Layout.alignment: Qt.AlignCenter
                                     }
 
                                     Text {

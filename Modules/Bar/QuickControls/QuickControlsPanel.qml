@@ -156,12 +156,12 @@ PanelWindow {
                         Rectangle {
                             Layout.columnSpan: 2
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 46
+                            Layout.preferredHeight: 26
                             Layout.bottomMargin: 8
                             radius: Settings.radius
-                            color: Theme.surfaceContainerHighest
-                            border.width: 1
-                            border.color: Qt.darker(Theme.outline)
+                            color: "transparent" //Theme.surfaceContainerHighest
+                            // border.width: 1
+                            // border.color: Qt.darker(Theme.outline)
 
                             RowLayout {
                                 anchors.fill: parent
@@ -169,15 +169,15 @@ PanelWindow {
                                     radius: Settings.radius
                                     Layout.rightMargin: 12
                                     Layout.alignment: Qt.AlignRight
-                                    color: powerBtnMouse.containsMouse ? Theme.tertiaryContainer : Theme.surface
-                                    border.width: 1
-                                    border.color: Qt.darker(Theme.outline)
+                                    color: powerBtnMouse.containsMouse ? Theme.surfaceContainerLow : Theme.surface //powerBtnMouse.containsMouse ? Theme.tertiaryContainer : Theme.surface
+                                    //border.width: 1
+                                    //border.color: Qt.darker(Theme.outline)
                                     implicitWidth: 32
                                     implicitHeight: 32
                                     StyledText {
                                         anchors.centerIn: parent
                                         name: "power_settings_new"
-                                        size: 16
+                                        size: 18
                                         color: powerBtnMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.primaryContainerFg
                                     }
                                     MouseArea {

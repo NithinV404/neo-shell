@@ -132,21 +132,14 @@ Scope {
                 RowLayout {
                     id: volumeOSDLayout
                     anchors.centerIn: parent
-                    spacing: 12
+                    spacing: 4
+                    property real volume: (Pipewire.defaultAudioSink?.audio.volume ?? 0)
 
-                    Rectangle {
+                    StyledText {
                         Layout.alignment: Qt.AlignVCenter
-                        implicitHeight: 48
-                        implicitWidth: 48
-                        color: Theme.surfaceContainerHighest
-                        radius: Settings.radius
-
-                        StyledText {
-                            anchors.centerIn: parent
-                            color: AudioService.muted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
-                            name: AudioService.getOutputIcon()
-                        }
-
+                        color: AudioService.muted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
+                        name: AudioService.getOutputIcon()
+                        size: 28
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
@@ -154,14 +147,41 @@ Scope {
                         }
                     }
 
-                    Slider {
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        Layout.preferredWidth: 160
-                        Layout.alignment: Qt.AlignVCenter
-                        value: (Pipewire.defaultAudioSink?.audio.volume ?? 0) * 100
-                        minValue: 0
-                        maxValue: Settings.audioVolumeOverdrive ? 150 : 100
-                        showValue: true
+                        Layout.fillHeight: true
+                        Layout.leftMargin: 8
+                        Layout.rightMargin: 8
+                        spacing: 4
+                        RowLayout {
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignCenter
+
+                            Text {
+                                text: "Volume"
+                                font.family: Settings.fontFamily
+                                font.pixelSize: 16
+                                color: Theme.surfaceFg
+                            }
+
+                            Item {
+                                Layout.fillWidth: true
+                            }
+
+                            Text {
+                                text: Math.floor(volumeOSDLayout.volume * 100)
+                                font.family: Settings.fontFamily
+                                font.pixelSize: 16
+                                color: Theme.surfaceFg
+                            }
+                        }
+
+                        LineProgress {
+                            Layout.fillWidth: true
+                            implicitWidth: 120
+                            progress: volumeOSDLayout.volume
+                        }
                     }
                 }
             }
