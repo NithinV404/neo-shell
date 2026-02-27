@@ -181,6 +181,7 @@ Scope {
                             Layout.fillWidth: true
                             implicitWidth: 120
                             progress: volumeOSDLayout.volume
+                            maxProgress: Settings.audioVolumeStep ? 1.5 : 1.0
                         }
                     }
                 }
