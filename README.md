@@ -14,12 +14,14 @@
 See QuickShell in action:
 
 
-https://github.com/user-attachments/assets/c872957b-1f25-475d-b89f-d4eacecff476
-
 
 
 
 ---
+
+https://github.com/user-attachments/assets/b7b18515-9e1b-4930-ac45-c2d513d2462b
+
+
 
 
 ---
