@@ -50,11 +50,17 @@ Item {
         }
     }
 
+    FontLoader
+    {
+        id: symbolicFont
+        source: Qt.resolvedUrl("../Fonts/material-symbols-rounded-latin-400-normal.ttf")
+    }
+
     Text {
         id: icon
         anchors.centerIn: parent
 
-        font.family: "Material Symbols Rounded"
+        font.family: symbolicFont.name
         font.pixelSize: 24
         font.weight: 100
 

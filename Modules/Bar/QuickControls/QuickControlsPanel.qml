@@ -141,7 +141,7 @@ PanelWindow {
                     id: togglePanel
                     implicitHeight: togglesGrid.implicitHeight + 30
                     implicitWidth: togglesGrid.implicitWidth
-                    color: Theme.surfaceContainer
+                    color:"transparent"
                     radius: Settings.radius
 
                     GridLayout {

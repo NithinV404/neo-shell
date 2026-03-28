@@ -26,7 +26,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.surfaceContainer
+        color: "transparent"
         radius: 12
     }
 
