@@ -112,7 +112,7 @@ Item {
                     id: syncIcon
                     Layout.margins: 4
                     name: "sync"
-                    color: Theme.surfaceContainerHighest
+                    color: Theme.surfaceFg
                     rotation: 0
 
                     RotationAnimation on rotation {
@@ -190,7 +190,7 @@ Item {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 8
-                    visible: root.bs.enabled
+                    visible: root.bs.enabled && root.bs?.pairedDevices.length > 0
 
                     Text {
                         visible: root.bs.enabled
