@@ -183,22 +183,27 @@ Item {
                 property string lastAttemptSSID
                 property var availableNetworks: root.wifiNetworks.filter(a => !a.connected)
                 property var connectedNetworks: {
-                    let connectedWifi = root.wifiNetworks.filter(a => a.connected);
-                    let networks = [];
+                    let networks = [] ;
+                    if(root.wifiService.ethernetConnected)
+                    {
+
                     networks.push({
                         "ssid": root.wifiService.ethernetInterface,
                         "status": root.wifiService.ethernetConnected,
                         "icon": root.wifiService.ethernetConnected ? "lan" : "signal_disconnected",
                         "id": "lan"
                     });
+                    }
+
                     if (root.wifiService.wifiConnected) {
                         networks.push({
-                            "ssid": connectedWifi.ssid,
-                            "status": connectedWifi.connected,
-                            "icon": root.wifiService.getWifiSignalIcon(connectedWifi.signal),
+                            "ssid": root.wifiService.currentWifiSSID,
+                            "status": root.wifiService.wifiConnected,
+                            "icon": root.wifiService.getWifiSignalIcon(root.wifiService.wifiSignalStrength),
                             "id": "wifi"
                         });
                     }
+
                     return networks;
                 }
 
@@ -353,6 +358,11 @@ Item {
                         font.family: Settings.fontFamily
                         text: "Available networks"
                         font.pixelSize: 12
+                    }
+
+                    Loading {
+                        visible: root.wifiService.isScanning
+                        implicitSize: 48
                     }
 
                     Column {
@@ -527,6 +537,7 @@ Item {
                                                             root.wifiService.connectToWifi(delegateScope.ssid);
                                                         }
                                                     }
+
                                                 }
                                             }
                                         }
@@ -548,6 +559,7 @@ Item {
                                             border.color: Qt.rgba(1, 1, 1, 0.08)
                                         }
                                     }
+
 
                                     MenuItem {
                                         id: forgetItem
@@ -576,6 +588,7 @@ Item {
                         }
                     }
                 }
+
                 // --- Empty State ---
                 HelpInfo {
                     visible: !root.wifiService.wifiEnabled
