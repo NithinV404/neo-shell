@@ -203,15 +203,18 @@ PanelWindow {
                             icon: {
                                 name: {
                                     var ns = NetworkService;
-                                    if (ns.ethernetConnected)
+                                    if (ns.ethernetConnected) {
                                         return "lan";
-                                    if (ns.wifiEnabled && !ns.wifiConnected)
+                                    }
+                                    if (ns.wifiEnabled && !ns.wifiConnected) {
                                         return "signal_wifi_bad";
-                                    if (ns.wifiEnabled && ns.wifiConnected)
-                                        return ns.wifiSingalIcon;
+                                    }
+                                    if (ns.wifiEnabled && ns.wifiConnected) {
+                                        return ns.getWifiSignalIcon(ns.wifiSignalStrength);
+                                    }
+
                                     return "signal_disconnected";
-                                }
-                            }
+                                }}
                             title: {
                                 var name = NetworkService.networkStatus;
                                 return name.charAt(0).toUpperCase() + name.slice(1);
