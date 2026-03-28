@@ -166,12 +166,12 @@ Singleton {
     }
 
     function updateMatugenColors() {
-        if (_loading || !wallpaperImage)
-            return;
+        if (_loading || !wallpaperImage) return;
 
         const imagePath = Utils.strip(wallpaperImage);
-        Quickshell.execDetached(["matugen", "image", "-c", Utils.strip(Utils.config) + "/quickshell/matugen/config/neoshell.toml"  // Your config path
-            , imagePath]);
+        const configPath = Utils.strip(Utils.config) + "/quickshell/matugen/config/neoshell.toml";
+        const command = `matugen image "${imagePath}" -c "${configPath}" --source-color-index 1 `;
+        Quickshell.execDetached(["sh", "-c", command]);
     }
 
     // FileView for Storing and parsing the settings File
