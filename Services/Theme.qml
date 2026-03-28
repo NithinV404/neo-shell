@@ -11,60 +11,62 @@ Singleton {
     property var colors: ({})
     property bool darkMode: Settings.darkMode
 
-    // Primary
-    property color primary: "#6750A4"
+    // --- Hardcoded Simple Palette (Defaults) ---
+    // Blue for Active/Primary
+    property color primary: "#007BFF"
     property color primaryFg: "#FFFFFF"
-    property color primaryContainer: "#EADDFF"
-    property color primaryContainerFg: "#21005D"
+    property color primaryContainer: darkMode ? "#004085" : "#CCE5FF"
+    property color primaryContainerFg: darkMode ? "#FFFFFF" : "#004085"
 
-    // Secondary
-    property color secondary: "#625B71"
+    // Secondary & Tertiary (Mapped to Blue/Gray for simplicity)
+    property color secondary: "#6C757D"
     property color secondaryFg: "#FFFFFF"
-    property color secondaryContainer: "#E8DEF8"
-    property color secondaryContainerFg: "#1D192B"
+    property color secondaryContainer: darkMode ? "#495057" : "#E9ECEF"
+    property color secondaryContainerFg: darkMode ? "#FFFFFF" : "#212529"
 
-    // Tertiary
-    property color tertiary: "#7D5260"
+    property color tertiary: "#007BFF"
     property color tertiaryFg: "#FFFFFF"
-    property color tertiaryContainer: "#FFD8E4"
-    property color tertiaryContainerFg: "#31111D"
+    property color tertiaryContainer: darkMode ? "#004085" : "#CCE5FF"
+    property color tertiaryContainerFg: darkMode ? "#FFFFFF" : "#004085"
 
-    // Error
-    property color error: "#B3261E"
+    // Error (Standard Red)
+    property color error: "#DC3545"
     property color errorFg: "#FFFFFF"
-    property color errorContainer: "#F9DEDC"
-    property color errorContainerFg: "#410E0B"
+    property color errorContainer: darkMode ? "#921B27" : "#F8D7DA"
+    property color errorContainerFg: darkMode ? "#FFFFFF" : "#842029"
 
-    // Background
-    property color background: "#1C1B1F"
-    property color backgroundFg: "#E6E1E5"
+    // Background (Black/White)
+    property color background: darkMode ? "#000000" : "#FFFFFF"
+    property color backgroundFg: darkMode ? "#FFFFFF" : "#000000"
 
     // Surface
-    property color surface: "#1C1B1F"
-    property color surfaceFg: "#E6E1E5"
-    property color surfaceVariant: "#49454F"
-    property color surfaceVariantFg: "#CAC4D0"
-    property color surfaceDim: "#141218"
-    property color surfaceBright: "#3B383E"
-    property color surfaceContainerLowest: "#0F0D13"
-    property color surfaceContainerLow: "#1D1B20"
-    property color surfaceContainer: "#211F26"
-    property color surfaceContainerHigh: "#2B2930"
-    property color surfaceContainerHighest: "#36343B"
-    property color surfaceTint: "#96ccf8"
+    property color surface: darkMode ? "#000000" : "#FFFFFF"
+    property color surfaceFg: darkMode ? "#FFFFFF" : "#000000"
+    property color surfaceVariant: darkMode ? "#1A1A1A" : "#F8F9FA"
+    property color surfaceVariantFg: darkMode ? "#E0E0E0" : "#212529"
+    property color surfaceDim: darkMode ? "#000000" : "#DEE2E6"
+    property color surfaceBright: darkMode ? "#1A1A1A" : "#FFFFFF"
+
+    // Detailed Surface Containers
+    property color surfaceContainerLowest: darkMode ? "#000000" : "#FFFFFF"
+    property color surfaceContainerLow: darkMode ? "#0A0A0A" : "#F8F9FA"
+    property color surfaceContainer: darkMode ? "#121212" : "#F1F3F5"
+    property color surfaceContainerHigh: darkMode ? "#1A1A1A" : "#E9ECEF"
+    property color surfaceContainerHighest: darkMode ? "#222222" : "#DEE2E6"
+    property color surfaceTint: "#007BFF"
 
     // Outline
-    property color outline: "#938F99"
-    property color outlineVariant: "#49454F"
+    property color outline: darkMode ? "#333333" : "#DEE2E6"
+    property color outlineVariant: darkMode ? "#444444" : "#CED4DA"
 
     // Other
     property color shadow: "#000000"
     property color scrim: "#000000"
 
     // Inverse
-    property color inverseSurface: "#E6E1E5"
-    property color inverseSurfaceFg: "#313033"
-    property color inversePrimary: "#6750A4"
+    property color inverseSurface: darkMode ? "#FFFFFF" : "#000000"
+    property color inverseSurfaceFg: darkMode ? "#000000" : "#FFFFFF"
+    property color inversePrimary: "#007BFF"
 
     onDarkModeChanged: updateColorProperties()
 
@@ -72,101 +74,56 @@ Singleton {
         var mode = darkMode ? "dark" : "light";
         var c = colors[mode] || {};
 
-        primary = Qt.color(c["primary"] || "#6750A4");
-        primaryFg = Qt.color(c["on_primary"] || "#FFFFFF");
-        primaryContainer = Qt.color(c["primary_container"] || "#EADDFF");
-        primaryContainerFg = Qt.color(c["on_primary_container"] || "#21005D");
+        // Helper to grab JSON color OR use our new hardcoded simple fallback
+        function getC(key, fallback) {
+            return c[key] ? Qt.color(c[key]) : Qt.color(fallback);
+        }
 
-        secondary = Qt.color(c["secondary"] || "#625B71");
-        secondaryFg = Qt.color(c["on_secondary"] || "#FFFFFF");
-        secondaryContainer = Qt.color(c["secondary_container"] || "#E8DEF8");
-        secondaryContainerFg = Qt.color(c["on_secondary_container"] || "#1D192B");
+        primary = getC("primary", "#007BFF");
+        primaryFg = getC("on_primary", "#FFFFFF");
+        primaryContainer = getC("primary_container", darkMode ? "#004085" : "#CCE5FF");
+        primaryContainerFg = getC("on_primary_container", darkMode ? "#FFFFFF" : "#004085");
 
-        tertiary = Qt.color(c["tertiary"] || "#7D5260");
-        tertiaryFg = Qt.color(c["on_tertiary"] || "#FFFFFF");
-        tertiaryContainer = Qt.color(c["tertiary_container"] || "#FFD8E4");
-        tertiaryContainerFg = Qt.color(c["on_tertiary_container"] || "#31111D");
+        secondary = getC("secondary", "#6C757D");
+        secondaryFg = getC("on_secondary", "#FFFFFF");
 
-        error = Qt.color(c["error"] || "#B3261E");
-        errorFg = Qt.color(c["on_error"] || "#FFFFFF");
-        errorContainer = Qt.color(c["error_container"] || "#F9DEDC");
-        errorContainerFg = Qt.color(c["on_error_container"] || "#410E0B");
+        background = getC("background", darkMode ? "#000000" : "#FFFFFF");
+        backgroundFg = getC("on_background", darkMode ? "#FFFFFF" : "#000000");
 
-        background = Qt.color(c["background"] || "#1C1B1F");
-        backgroundFg = Qt.color(c["on_background"] || "#E6E1E5");
+        surface = getC("surface", darkMode ? "#000000" : "#FFFFFF");
+        surfaceFg = getC("on_surface", darkMode ? "#FFFFFF" : "#000000");
+        surfaceVariant = getC("surface_variant", darkMode ? "#1A1A1A" : "#F8F9FA");
+        surfaceVariantFg = getC("on_surface_variant", darkMode ? "#E0E0E0" : "#212529");
 
-        surface = Qt.color(c["surface"] || "#1C1B1F");
-        surfaceFg = Qt.color(c["on_surface"] || "#E6E1E5");
-        surfaceVariant = Qt.color(c["surface_variant"] || "#49454F");
-        surfaceVariantFg = Qt.color(c["on_surface_variant"] || "#CAC4D0");
-        surfaceDim = Qt.color(c["surface_dim"] || "#141218");
-        surfaceBright = Qt.color(c["surface_bright"] || "#3B383E");
-        surfaceContainerLowest = Qt.color(c["surface_container_lowest"] || "#0F0D13");
-        surfaceContainerLow = Qt.color(c["surface_container_low"] || "#1D1B20");
-        surfaceContainer = Qt.color(c["surface_container"] || "#211F26");
-        surfaceContainerHigh = Qt.color(c["surface_container_high"] || "#2B2930");
-        surfaceContainerHighest = Qt.color(c["surface_container_highest"] || "#36343B");
-        surfaceTint = Qt.color(c["surface_tint"] || "#96ccf8");
+        outline = getC("outline", darkMode ? "#333333" : "#DEE2E6");
+        error = getC("error", "#DC3545");
 
-        outline = Qt.color(c["outline"] || "#938F99");
-        outlineVariant = Qt.color(c["outline_variant"] || "#49454F");
-
-        shadow = Qt.color(c["shadow"] || "#000000");
-        scrim = Qt.color(c["scrim"] || "#000000");
-
-        inverseSurface = Qt.color(c["inverse_surface"] || "#E6E1E5");
-        inverseSurfaceFg = Qt.color(c["inverse_on_surface"] || "#313033");
-        inversePrimary = Qt.color(c["inverse_primary"] || "#6750A4");
+        // Sync inverse colors
+        inverseSurface = getC("inverse_surface", darkMode ? "#FFFFFF" : "#000000");
+        inverseSurfaceFg = getC("inverse_on_surface", darkMode ? "#000000" : "#FFFFFF");
     }
 
-    function getColor(key, fallback) {
-        var safeFallback = fallback || "#00000000";
-        var mode = darkMode ? "dark" : "light";
-        var modeData = colors[mode];
-
-        if (!modeData)
-            return Qt.color(safeFallback);
-
-        var val = modeData[key];
-        return val ? Qt.color(val) : Qt.color(safeFallback);
+    // --- File Handling remains the same ---
+    function parseTheme(content) {
+        if (!content) return;
+        try {
+            var json = JSON.parse(content.trim());
+            root.colors = json.colors || {};
+            root.updateColorProperties();
+        } catch (e) {
+            console.warn("[Theme] JSON error, keeping simple Black/White/Blue.");
+            root.colors = {};
+            root.updateColorProperties();
+        }
     }
 
     FileView {
         id: themeFile
         watchChanges: true
         path: Paths.home + "/.config/quickshell/quickshell.json"
-
-        onFileChanged: {
-            reloadTimer.restart();
-        }
-
-        onTextChanged: {
-            var content = text();
-            if (!content)
-                return;
-
-            try {
-                var json = JSON.parse(content.trim());
-                root.colors = json.colors || {};
-                root.updateColorProperties();
-            } catch (e) {
-                console.warn("[Theme] Parse error:", e);
-            }
-        }
-
-        onLoaded: {
-            var content = text();
-            if (!content)
-                return;
-
-            try {
-                var json = JSON.parse(content.trim());
-                root.colors = json.colors || {};
-                root.updateColorProperties();
-            } catch (e) {
-                console.warn("[Theme] Parse error:", e);
-            }
-        }
+        onFileChanged: reloadTimer.restart()
+        onTextChanged: parseTheme(text())
+        onLoaded: parseTheme(text())
     }
 
     Timer {
