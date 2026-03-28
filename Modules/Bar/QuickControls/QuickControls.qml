@@ -81,7 +81,7 @@ Rectangle {
                     return "signal_wifi_bad";
                 }
                 if (ns.wifiEnabled && ns.wifiConnected) {
-                    return ns.wifiSingalIcon;
+                    return ns.getWifiSignalIcon(ns.wifiSignalStrength);
                 }
 
                 return "signal_disconnected";
