@@ -44,4 +44,27 @@ QtObject {
     function mkdir(path: url): void {
         Quickshell.execDetached(["mkdir", "-p", strip(path)]);
     }
+
+    function resolvePath(path) {
+        if (!path)
+            return "";
+
+        let resolved = path;
+
+        // 1. Handle Tilde (~)
+        if (resolved.startsWith("~")) {
+            const home = Quickshell.env("HOME") || "/home/" + Quickshell.env("USER");
+            resolved = resolved.replace("~", home);
+        }
+
+        // 2. Handle Environment Variables (e.g., $HOME/Wallpapers or ${HOME}/Wallpapers)
+        resolved = resolved.replace(/\$(\w+)/g, (_, key) => Quickshell.env(key) || "");
+        resolved = resolved.replace(/\${(\w+)}/g, (_, key) => Quickshell.env(key) || "");
+
+        // 3. Clean up double slashes (except the protocol file://)
+        // This turns "home/user//Pictures" into "home/user/Pictures"
+        resolved = resolved.replace(/([^:])\/\//g, "$1/");
+
+        return resolved;
+    }
 }
