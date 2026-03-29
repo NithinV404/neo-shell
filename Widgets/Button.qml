@@ -10,21 +10,31 @@ Rectangle {
     property string icon: ""
     property bool primary: false
     property bool enabled: true
+    property color bgColor: Theme.primary
+    property color textColor: Theme.primaryFg
+
+    property color normalColor: bgColor
+    property color hoverColor: Qt.lighter(bgColor, 1.1)
+    property color pressedColor: Qt.darker(bgColor, 1.1)
+    property color disabledColor: Qt.darker(bgColor, 1.3)
 
     signal clicked
 
     implicitWidth: buttonContent.implicitWidth + 30
     implicitHeight: 34
     radius: 22
+
     color: {
         if (!root.enabled)
-            return Theme.surfaceContainer;
-        if (root.primary) {
-            return buttonMouse.containsPress ? Theme.primaryContainer : buttonMouse.containsMouse ? Qt.lighter(Theme.primary, 1.1) : Theme.primary;
-        }
-        return buttonMouse.containsPress ? Theme.surfaceContainerHigh : buttonMouse.containsMouse ? Theme.surfaceContainerHighest : Theme.surface;
+            return root.disabledColor;
+        if (buttonMouse.containsPress)
+            return root.pressedColor;
+        if (buttonMouse.containsMouse)
+            return root.hoverColor;
+        return root.normalColor;
     }
-    border.color: root.primary ? "transparent" : Theme.outline
+
+    border.color: root.primary ? "transparent" : Qt.darker(root.bgColor, 1.4)
     border.width: root.primary ? 0 : 1
 
     Behavior on color {
@@ -39,10 +49,10 @@ Rectangle {
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton
         cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+
         onClicked: {
-            if (root.enabled) {
+            if (root.enabled)
                 root.clicked();
-            }
         }
     }
 
@@ -51,16 +61,11 @@ Rectangle {
         anchors.centerIn: parent
         spacing: 8
 
-        Text {
+        StyledText {
             visible: root.icon !== ""
             text: root.icon
-            font.family: Settings.fontFamily
-            font.pixelSize: 18
-            color: {
-                if (!root.enabled)
-                    return Theme.surfaceVariantFg;
-                return root.primary ? Theme.primaryFg : Theme.primary;
-            }
+            size: 20
+            color: !root.enabled ? Qt.darker(root.textColor, 1.4) : root.textColor
         }
 
         Text {
@@ -68,12 +73,7 @@ Rectangle {
             font.pixelSize: 14
             font.family: Settings.fontFamily
             font.weight: Font.Medium
-
-            color: {
-                if (!root.enabled)
-                    return Theme.surfaceVariantFg;
-                return root.primary ? Theme.primaryFg : Theme.primary;
-            }
+            color: !root.enabled ? Qt.darker(root.textColor, 1.4) : root.textColor
         }
     }
 }
