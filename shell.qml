@@ -45,7 +45,7 @@ ShellRoot {
     //     }
     // }
     Wallpaper {
-        source: Settings.wallpaperImage != "" ? Settings.wallpaperImage : "file:///home/nithin/Pictures/Wallpapers/wallhaven-8gg3lo_3840x2160.png"
+        source: Settings.wallpaperImage
         // color: "#1a1a2e"  // fallback color
     }
 

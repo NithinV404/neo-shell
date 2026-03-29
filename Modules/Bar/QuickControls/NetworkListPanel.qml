@@ -183,16 +183,14 @@ Item {
                 property string lastAttemptSSID
                 property var availableNetworks: root.wifiNetworks.filter(a => !a.connected)
                 property var connectedNetworks: {
-                    let networks = [] ;
-                    if(root.wifiService.ethernetConnected)
-                    {
-
-                    networks.push({
-                        "ssid": root.wifiService.ethernetInterface,
-                        "status": root.wifiService.ethernetConnected,
-                        "icon": root.wifiService.ethernetConnected ? "lan" : "signal_disconnected",
-                        "id": "lan"
-                    });
+                    let networks = [];
+                    if (root.wifiService.ethernetConnected) {
+                        networks.push({
+                            "ssid": root.wifiService.ethernetInterface,
+                            "status": root.wifiService.ethernetConnected,
+                            "icon": root.wifiService.ethernetConnected ? "lan" : "signal_disconnected",
+                            "id": "lan"
+                        });
                     }
 
                     if (root.wifiService.wifiConnected) {
@@ -210,7 +208,7 @@ Item {
                 Text {
                     Layout.leftMargin: 8
 
-                    color: Qt.darker(Theme.surfaceFg)
+                    color: Qt.darker(Theme.primary)
                     font.family: Settings.fontFamily
                     text: "Connected networks"
                     font.pixelSize: 12
@@ -352,17 +350,19 @@ Item {
                     property string activeInputSSID: ""
                     property string lastAttemptSSID: ""
 
-                    Text {
-                        Layout.leftMargin: 8
-                        color: Qt.darker(Theme.surfaceFg)
-                        font.family: Settings.fontFamily
-                        text: "Available networks"
-                        font.pixelSize: 12
-                    }
-
                     Loading {
                         visible: root.wifiService.isScanning
                         implicitSize: 48
+                        Layout.topMargin: 12
+                        Layout.alignment: Qt.AlignCenter
+                    }
+
+                    Text {
+                        Layout.leftMargin: 8
+                        color: Qt.darker(Theme.primary)
+                        font.family: Settings.fontFamily
+                        text: "Available networks"
+                        font.pixelSize: 12
                     }
 
                     Column {
@@ -488,12 +488,6 @@ Item {
                                                 Layout.fillWidth: true
                                             }
 
-                                            Loading {
-                                                visible: delegateScope.isConnecting
-                                                Layout.rightMargin: 8
-                                                implicitSize: 28
-                                            }
-
                                             Rectangle {
                                                 color: connectBtnMouse.containsMouse ? Qt.darker(Theme.primary) : Theme.primary
                                                 radius: 15
@@ -537,7 +531,6 @@ Item {
                                                             root.wifiService.connectToWifi(delegateScope.ssid);
                                                         }
                                                     }
-
                                                 }
                                             }
                                         }
@@ -559,7 +552,6 @@ Item {
                                             border.color: Qt.rgba(1, 1, 1, 0.08)
                                         }
                                     }
-
 
                                     MenuItem {
                                         id: forgetItem

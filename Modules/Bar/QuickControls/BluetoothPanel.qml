@@ -42,6 +42,10 @@ Item {
         }
     }
 
+    Component.onCompleted: {
+        root.startDiscovering();
+    }
+
     Component.onDestruction: {
         root.stopDiscovering();
     }
@@ -195,7 +199,7 @@ Item {
                     Text {
                         visible: root.bs.enabled
                         Layout.leftMargin: 8
-                        color: Qt.darker(Theme.surfaceFg)
+                        color: Qt.darker(Theme.primary)
                         font.family: Settings.fontFamily
                         text: "Paired Devices"
                         font.pixelSize: 12
@@ -339,7 +343,13 @@ Item {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 8
-                    visible: availableDevicesRepeater.count > 0
+
+                    Loading {
+                        visible: root.bs.discovering
+                        implicitSize: 48
+                        Layout.topMargin: 12
+                        Layout.alignment: Qt.AlignCenter
+                    }
 
                     Text {
                         Layout.leftMargin: 8
@@ -347,6 +357,7 @@ Item {
                         font.family: Settings.fontFamily
                         text: "Available Devices"
                         font.pixelSize: 12
+                        visible: availableDevicesRepeater.count > 0
                     }
 
                     Column {

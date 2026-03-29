@@ -66,8 +66,7 @@ Rectangle {
             // --- FIX 1: BEZIER CURVE ---
             // Replaced Appearance.animationCurves.standard with standard Cubic Bezier points
             // Format: [controlX1, controlY1, controlX2, controlY2]
-            easing.type: Easing.BezierSpline
-                easing.bezierCurve: [0.2, 0.0, 0.0, 1.0]
+            easing.type: Easing.OutCubic
         }
     }
 
