@@ -71,7 +71,7 @@ Rectangle {
     RowLayout {
         id: windowsRow
         anchors.centerIn: parent
-
+        spacing: 6
         Repeater {
             model: root.groupedApps
 
@@ -94,7 +94,7 @@ Rectangle {
                 // Hover highlight
                 Rectangle {
                     anchors.fill: parent
-                    radius: 14
+                    radius: Settings.radius
                     color: Theme.surfaceContainerHighest
                     opacity: iconMouse.containsMouse ? 0.8 : 0.0
 
@@ -109,7 +109,7 @@ Rectangle {
                 AppIcon {
                     id: icon
                     anchors.verticalCenter: parent.verticalCenter
-                    size: 18
+                    size: 20
                     icon: appDelegate.appId
                     opacity: appDelegate.isAnyFocused ? 1.0 : 0.6
 
