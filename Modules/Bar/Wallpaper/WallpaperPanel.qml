@@ -1,7 +1,10 @@
 import Quickshell
 import QtQuick
+import QtQuick.Layouts
 import qs.Common
 import qs.Services
+import qs.Widgets
+import Quickshell.Wayland
 
 PanelWindow {
     id: root
@@ -13,6 +16,9 @@ PanelWindow {
     property alias posY: root.menuY
     property bool visible: false
     property bool isVisible: false
+
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+    focusable: true
 
     signal menuClosed
 
@@ -40,11 +46,18 @@ PanelWindow {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton
+        propagateComposedEvents: true
         onClicked: mouse => {
-            const p = mapToItem(panelContainer, mouse.x, mouse.y);
-            const inside = (p.x >= 0 && p.x <= panelContainer.width && p.y >= 0 && p.y <= panelContainer.height);
-            if (!inside) {
+            const panelContainerArea = mapToItem(panelContainer, mouse.x, mouse.y);
+            const insidePanelContainerArea = (panelContainerArea.x >= 0 && panelContainerArea.x <= panelContainer.width && panelContainerArea.y >= 0 && panelContainerArea.y <= panelContainer.height);
+            if (!insidePanelContainerArea) {
                 root.close();
+            }
+
+            const inputFieldArea = mapToItem(textField, mouse.x, mouse.y);
+            const insideInputFieldArea = (inputFieldArea.x >= 0 && inputFieldArea.x <= textField.width && inputFieldArea.y >= 0 && inputFieldArea.y <= textField.height);
+            if (!insideInputFieldArea) {
+                textField.clearFocus();
             }
         }
     }
@@ -117,15 +130,53 @@ PanelWindow {
                 }
             }
         ]
+
         Rectangle {
             id: contentRect
             color: Theme.surface
             radius: 26
-            implicitWidth: wallpaperGrid.implicitWidth + 20
-            implicitHeight: wallpaperGrid.implicitHeight + 20
-            WallpaperGrid {
-                id: wallpaperGrid
+            implicitWidth: Math.max(wallpaperGrid.implicitWidth, wallpaperbuttons.implicitWidth) + 20
+            implicitHeight: wallpaperGrid.implicitHeight + wallpaperbuttons.height + 20
+
+            ColumnLayout {
                 anchors.centerIn: parent
+                WallpaperGrid {
+                    id: wallpaperGrid
+                    Layout.alignment: Qt.AlignCenter
+                }
+                RowLayout {
+                    id: wallpaperbuttons
+                    implicitHeight: 32
+                    TextField {
+                        id: textField
+                        Layout.fillWidth: true
+                        placeholder: Settings.wallpapersFolder
+                        edit: true
+                    }
+                    Button {
+                        icon: "save"
+                        text: "Save"
+                        implicitHeight: parent.height
+                        radius: Settings.radius
+                        bgColor: Theme.primary
+                        textColor: Theme.primaryFg
+                        onClicked: {
+                            Settings.saveWallpapersFolderPath(textField.text);
+                            textField.clearFocus();
+                        }
+                    }
+                    Button {
+                        icon: "colorize"
+                        text: "Regenerate Colors"
+                        implicitHeight: parent.height
+                        radius: Settings.radius
+                        bgColor: Theme.primary
+                        textColor: Theme.primaryFg
+                        onClicked: {
+                            Settings.updateMatugenColors();
+                        }
+                    }
+                }
             }
         }
     }

@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell.Io
-import Quickshell
+
 import Qt5Compat.GraphicalEffects
 import qs.Services
 import qs.Widgets
@@ -21,7 +21,7 @@ Item {
     // Match exactly what GridView needs
     implicitWidth: (gridCellWidth * noOfCols) + (padding * 2)
     implicitHeight: Math.min(300, (gridCellHeight * 3) + (padding * 2))
-    property string folderPath: Quickshell.env("HOME") + "/Pictures/Wallpapers"
+    property string folderPath: Utils.resolvePath(Settings.wallpapersFolder)
     property var imageFiles: []
 
     Component.onCompleted: {
@@ -112,7 +112,8 @@ Item {
                 imagePath: imageCell.modelData
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
-                visible: false
+                opacity: 0
+                visible: true
             }
 
             Rectangle {

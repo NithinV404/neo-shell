@@ -20,6 +20,7 @@ Singleton {
     property bool audioVolumeOverdrive: true
     property int audioVolumeStep: 2
     property string wallpaperImage: ""
+    property string wallpapersFolder: "~/Pictures/Wallpapers"
     property var wallpaperFolderImages: []
     property int radius: 24
     readonly property string _homeUrl: StandardPaths.writableLocation(StandardPaths.HomeLocation)
@@ -60,6 +61,7 @@ Singleton {
             "wallpaperFolderImages": wallpaperFolderImages,
             "audioVolumeStep": audioVolumeStep,
             "audioVolumeOverdrive": audioVolumeOverdrive,
+            "wallpapersFolder": wallpapersFolder,
             "wallpaperImage": wallpaperImage,
             "defaultIconTheme": defaultIconTheme,
             "radius": radius
@@ -79,6 +81,7 @@ Singleton {
                 audioVolumeOverdrive = settings.audioVolumeOverdrive !== undefined ? settings.audioVolumeOverdrive : false;
                 audioVolumeStep = settings.audioVolumeStep !== undefined ? settings.audioVolumeStep : 1;
                 wallpaperFolderImages = settings.wallpaperFolderImages !== undefined ? settings.wallpaperFolderImages : [];
+                wallpapersFolder = settings.wallpapersFolder !== undefined ? settings.wallpapersFolder : "~/Pictures/Wallpapers";
                 wallpaperImage = settings.wallpaperImage !== undefined ? settings.wallpaperImage : "";
                 defaultIconTheme = settings.defaultIconTheme !== undefined ? settings.defaultIconTheme : "";
                 radius = settings.radius !== undefined ? settings.radius : 24;
@@ -90,6 +93,11 @@ Singleton {
         } finally {
             _loading = false;
         }
+    }
+
+    function saveWallpapersFolderPath(path) {
+        wallpapersFolder = path;
+        saveSettings();
     }
 
     function loadSettings() {
@@ -178,7 +186,7 @@ Singleton {
             return;
 
         const imagePath = Utils.strip(wallpaperImage);
-        const configPath = Utils.strip(Utils.config) + "/quickshell/matugen/config/neoshell.toml";
+        const configPath = Utils.strip(Utils.config) + "/quickshell/Matugen/config/neoshell.toml";
         const command = `matugen image "${imagePath}" -c "${configPath}" --source-color-index 1 `;
         Quickshell.execDetached(["sh", "-c", command]);
     }
