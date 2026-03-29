@@ -10,6 +10,7 @@ Rectangle {
     property string text: inputField.text
     property bool password: false
     property bool showPassword: false
+    property bool edit: false
 
     signal accepted
 
@@ -17,9 +18,10 @@ Rectangle {
         inputField.text = "";
     }
 
-    function setFocus() {
-        inputField.forceActiveFocus();
+    function clearFocus() {
+        inputField.focus = false;
     }
+
     Component.onDestruction: {
         inputField.focus = false;
     }
@@ -40,8 +42,10 @@ Rectangle {
         TextInput {
             id: inputField
             Layout.fillWidth: true
+            Layout.fillHeight: true
             Layout.alignment: Qt.AlignVCenter
-            color: Theme.surfaceFg
+            verticalAlignment: TextInput.AlignVCenter
+            color: Theme.surfaceVariantFg
             font.pixelSize: 16
             font.family: Settings.fontFamily
             clip: true
@@ -51,6 +55,7 @@ Rectangle {
             selectedTextColor: Theme.primaryFg
             onTextChanged: root.textChanged
             onAccepted: root.accepted()
+            text: root.edit ? root.placeholder : ""
 
             Text {
                 anchors.fill: parent
