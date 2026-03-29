@@ -11,7 +11,7 @@ Item {
     property var wifiService
     property var wifiModalInstace: null
     property alias wifi: root.wifiService
-    property var wifiNetworks: root.getSortedNetworks()
+    property var wifiNetworks: []
     implicitHeight: 400
 
     signal goBack
@@ -30,17 +30,19 @@ Item {
         radius: 12
     }
 
+    function updateSortedNetworks() {
+        root.wifiNetworks = getSortedNetworks();
+    }
+
     // Sorted network list
     function getSortedNetworks() {
-        let networks = [...root.wifiService.wifiNetworks];
-        networks.sort((a, b) => {
+        return root.wifiService.wifiNetworks.filter(w => w.connected === false).sort((a, b) => {
             if (a.ssid === root.wifiService.currentWifiSSID)
                 return -1;
             if (b.ssid === root.wifiService.currentWifiSSID)
                 return 1;
             return b.signal - a.signal;
         });
-        return networks;
     }
 
     Connections {
@@ -49,7 +51,7 @@ Item {
             wifiModalLoader.open("Invalid Password", wifiListContainer.lastAttemptSSID);
         }
         function onNetworksUpdated() {
-            root.wifiNetworks = root.getSortedNetworks();
+            root.updateSortedNetworks();
         }
         function onWifiInterfaceChanged() {
             console.log(root.wifiService.wifiInterface);
@@ -122,7 +124,7 @@ Item {
                     color: Theme.surfaceFg
                     rotation: 0
 
-                    RotationAnimation on rotation {
+                    NumberAnimation on rotation {
                         id: rotationAnim
                         running: root.wifiService.isScanning
                         from: 0
@@ -182,8 +184,16 @@ Item {
                 property string activeInputSSID
                 property string lastAttemptSSID
                 property var availableNetworks: root.wifiNetworks.filter(a => !a.connected)
-                property var connectedNetworks: {
-                    let networks = [];
+                property var connectedNetworks: []
+
+                Component.onCompleted: updateConnectedNetworks()
+
+                function updateConnectedNetworks() {
+                    wifiListContainer.connectedNetworks = getConnectedNetworks();
+                }
+
+                function getConnectedNetworks() {
+                    var networks = [];
                     if (root.wifiService.ethernetConnected) {
                         networks.push({
                             "ssid": root.wifiService.ethernetInterface,
@@ -201,13 +211,11 @@ Item {
                             "id": "wifi"
                         });
                     }
-
                     return networks;
                 }
 
                 Text {
                     Layout.leftMargin: 8
-
                     color: Qt.darker(Theme.primary)
                     font.family: Settings.fontFamily
                     text: "Connected networks"
@@ -375,6 +383,8 @@ Item {
                             id: wifiRepeater
                             model: wifiListContainer.availableNetworks
 
+
+
                             delegate: FocusScope {
                                 id: delegateScope
                                 width: wifiColumn.width
@@ -402,6 +412,8 @@ Item {
                                 // Helper properties for rounded corners
                                 readonly property bool isFirst: delegateScope.index === 0
                                 readonly property bool isLast: delegateScope.index === (wifiRepeater.count - 1)
+
+
 
                                 Rectangle {
                                     id: bgRect
@@ -598,6 +610,7 @@ Item {
     Loader {
         id: wifiModalLoader
         active: false
+        asynchronous: true
 
         function open(title, ssid) {
             active = true;
