@@ -68,7 +68,7 @@ Rectangle {
             // ON  = Dark Text on Bright Background -> Icon Box becomes transparent or slightly darkened
             // OFF = Grey Background -> Icon Box becomes the "Primary" accent
             color: root.active ? Qt.darker(Theme.primary, 1.2) // Subtle highlight on active
-            : toggleButton.containsMouse ? Theme.tertiary : Theme.surfaceDim
+            : toggleButton.containsMouse ? Theme.tertiary : Theme.surfaceContainerLow
 
             radius: root.radius - root.setPadding
 
