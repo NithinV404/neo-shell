@@ -90,7 +90,7 @@ PanelWindow {
         implicitHeight: contentColumn.implicitHeight + 48
         color: Theme.surface
         anchors.centerIn: parent
-        radius: 12
+        radius: 24
         state: root.opened ? "open" : "closed"
 
         states: [
