@@ -110,7 +110,12 @@ Singleton {
     }
 
     function setGtkIconTheme() {
-        Proc.runCommand("gtkIconTheme", ["gsettings", "set", "org.gnome.desktop.interface", "icon-theme", iconTheme == "System Default" ? defaultIconTheme : iconTheme], null, 500, 3000);
+        let themeToSet = (iconTheme === "System Default") ? defaultIconTheme : iconTheme;
+        if (themeToSet && themeToSet.trim() !== "") {
+            Proc.runCommand("gtkIconTheme", ["gsettings", "set", "org.gnome.desktop.interface", "icon-theme", themeToSet], null, 500, 3000);
+        } else {
+            console.warn("Attempted to set icon theme to an empty string; ignoring.");
+        }
     }
 
     function detectDefault() {
@@ -119,7 +124,10 @@ Singleton {
 
     function detectDefaultIconThemeGtk() {
         Proc.runCommand("detectDefaultIconThemeGtk", ["sh", "-c", "gsettings get org.gnome.desktop.interface icon-theme"], function (safeOutput) {
-            defaultIconTheme = safeOutput.trim();
+            var detected = safeOutput.trim().replace(/'/g, "");
+            if (detected && detected !== "") {
+                defaultIconTheme = detected;
+            }
         }, 500, 3000);
     }
 
@@ -166,7 +174,8 @@ Singleton {
     }
 
     function updateMatugenColors() {
-        if (_loading || !wallpaperImage) return;
+        if (_loading || !wallpaperImage)
+            return;
 
         const imagePath = Utils.strip(wallpaperImage);
         const configPath = Utils.strip(Utils.config) + "/quickshell/matugen/config/neoshell.toml";
