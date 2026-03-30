@@ -344,13 +344,6 @@ Item {
                     Layout.fillWidth: true
                     spacing: 8
 
-                    Loading {
-                        visible: root.bs.discovering
-                        implicitSize: 48
-                        Layout.topMargin: 12
-                        Layout.alignment: Qt.AlignCenter
-                    }
-
                     Text {
                         Layout.leftMargin: 8
                         color: Qt.darker(Theme.primary)
@@ -358,6 +351,13 @@ Item {
                         text: "Available Devices"
                         font.pixelSize: 12
                         visible: availableDevicesRepeater.count > 0
+                    }
+                    Loading {
+                        visible: root.bs.discovering
+                        implicitSize: 40
+                        Layout.topMargin: 12
+                        Layout.bottomMargin: 12
+                        Layout.alignment: Qt.AlignCenter
                     }
 
                     Column {

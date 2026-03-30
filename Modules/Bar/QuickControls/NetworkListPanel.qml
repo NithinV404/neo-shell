@@ -358,13 +358,6 @@ Item {
                     property string activeInputSSID: ""
                     property string lastAttemptSSID: ""
 
-                    Loading {
-                        visible: root.wifiService.isScanning
-                        implicitSize: 48
-                        Layout.topMargin: 12
-                        Layout.alignment: Qt.AlignCenter
-                    }
-
                     Text {
                         Layout.leftMargin: 8
                         color: Qt.darker(Theme.primary)
@@ -373,6 +366,13 @@ Item {
                         font.pixelSize: 12
                     }
 
+                    Loading {
+                        visible: root.wifiService.isScanning
+                        implicitSize: 40
+                        Layout.topMargin: 12
+                        Layout.bottomMargin: 12
+                        Layout.alignment: Qt.AlignCenter
+                    }
                     Column {
                         id: wifiColumn
                         Layout.fillWidth: true
@@ -382,8 +382,6 @@ Item {
                         Repeater {
                             id: wifiRepeater
                             model: wifiListContainer.availableNetworks
-
-
 
                             delegate: FocusScope {
                                 id: delegateScope
@@ -412,8 +410,6 @@ Item {
                                 // Helper properties for rounded corners
                                 readonly property bool isFirst: delegateScope.index === 0
                                 readonly property bool isLast: delegateScope.index === (wifiRepeater.count - 1)
-
-
 
                                 Rectangle {
                                     id: bgRect
