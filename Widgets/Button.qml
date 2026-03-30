@@ -14,15 +14,15 @@ Rectangle {
     property color textColor: Theme.primaryFg
 
     property color normalColor: bgColor
-    property color hoverColor: Qt.lighter(bgColor, 1.1)
-    property color pressedColor: Qt.darker(bgColor, 1.1)
-    property color disabledColor: Qt.darker(bgColor, 1.3)
+    property color hoverColor: Qt.lighter(bgColor)
+    property color pressedColor: Qt.darker(bgColor, 1.0)
+    property color disabledColor: Qt.darker(bgColor, 1.8)
 
     signal clicked
 
     implicitWidth: buttonContent.implicitWidth + 30
     implicitHeight: 34
-    radius: 22
+    radius: Settings.radius
 
     color: {
         if (!root.enabled)
@@ -65,12 +65,12 @@ Rectangle {
             visible: root.icon !== ""
             text: root.icon
             size: 20
-            color: !root.enabled ? Qt.darker(root.textColor, 1.4) : root.textColor
+            color: !root.enabled ? Qt.darker(root.textColor) : root.textColor
         }
 
         Text {
             text: root.text
-            font.pixelSize: 14
+            font.pixelSize: root.height * 0.25
             font.family: Settings.fontFamily
             font.weight: Font.Medium
             color: !root.enabled ? Qt.darker(root.textColor, 1.4) : root.textColor
