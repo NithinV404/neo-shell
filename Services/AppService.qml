@@ -12,7 +12,7 @@ Singleton {
 
     // Get icon path for an app
     function getIconPath(app) {
-        if (!app?.icon)
+        if (!app.icon)
             return "";
         return Quickshell.iconPath(app.icon, true);
     }
