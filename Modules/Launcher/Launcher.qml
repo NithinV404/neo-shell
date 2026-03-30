@@ -298,6 +298,7 @@ Scope {
 
                                 AppIcon {
                                     icon: appDelegate.modelData.icon
+                                    name: appDelegate.modelData.name
                                     size: 40
                                     Layout.preferredWidth: 40
                                     Layout.preferredHeight: 40
