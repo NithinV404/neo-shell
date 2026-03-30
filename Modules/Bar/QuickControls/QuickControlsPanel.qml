@@ -141,7 +141,7 @@ PanelWindow {
                     id: togglePanel
                     implicitHeight: togglesGrid.implicitHeight + 30
                     implicitWidth: togglesGrid.implicitWidth
-                    color:"transparent"
+                    color: "transparent"
                     radius: Settings.radius
 
                     GridLayout {
@@ -214,7 +214,8 @@ PanelWindow {
                                     }
 
                                     return "signal_disconnected";
-                                }}
+                                }
+                            }
                             title: {
                                 var name = NetworkService.networkStatus;
                                 return name.charAt(0).toUpperCase() + name.slice(1);
@@ -333,32 +334,33 @@ PanelWindow {
                                 width: parent.width
 
                                 Repeater {
-                                    model: AppAudioService.applicationStreams
+                                    model: AppAudioService?.applicationStreams
                                     delegate: RowLayout {
                                         id: streamDelegate
                                         required property var modelData
-                                        readonly property PwNode node: modelData && modelData.ready ? modelData : null
-                                        readonly property real appVolume: node?.audio.volume ?? 0
-                                        readonly property bool appMuted: node?.audio.muted ?? true
+                                        readonly property PwNode node: AppAudioService.isValidNode(modelData) && modelData
+                                        readonly property real appVolume: node.audio.volume ?? 0
+                                        readonly property bool appMuted: node.audio.muted ?? true
 
                                         property string resolvedIcon: ""
 
                                         Component.onCompleted: resolveIcon()
-
                                         onNodeChanged: resolveIcon()
 
-                                        function resolveIcon() {
-                                            let appName = AppAudioService.getApplicationName(node).toLowerCase();
 
-                                            if (appName.includes("electron") || appName.includes("chromium")) {
-                                                // Async resolve
+                                        function resolveIcon() {
+                                            let appName = ""
+                                            AppAudioService.getApplicationName(node, function(name){
+                                                appName = name
+                                            })
+
+                                            if (appName.includes("electron") || appName.includes("Chromium")) {
+                                                // Set a generic fallback icon immediately while we wait for resolution
+                                                resolvedIcon = "chromium";
+
                                                 AppAudioService.resolveAppName(node, function (name) {
                                                     streamDelegate.resolvedIcon = name;
                                                 });
-                                                if (!appName.includes("electron") || !appName.includes("chromium")) {
-                                                    return;
-                                                }
-                                                resolvedIcon = appName;
                                             } else {
                                                 resolvedIcon = appName;
                                             }
@@ -376,13 +378,13 @@ PanelWindow {
                                             StyledText {
                                                 anchors.centerIn: parent
                                                 color: streamDelegate.appMuted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
-                                                name: streamDelegate.node && AppAudioService.getApplicationVolumeIcon(streamDelegate.node)
+                                                name:  AppAudioService.getApplicationVolumeIcon(streamDelegate.node)
                                             }
 
                                             MouseArea {
                                                 anchors.fill: parent
                                                 cursorShape: Qt.PointingHandCursor
-                                                onClicked: streamDelegate.node && AppAudioService.toggleApplicationMute(streamDelegate.node)
+                                                onClicked: AppAudioService.toggleApplicationMute(streamDelegate.node)
                                             }
                                         }
 
@@ -397,7 +399,7 @@ PanelWindow {
                                             showValue: true
 
                                             onMoved: newValue => {
-                                                streamDelegate.node ? AppAudioService.setApplicationVolume(streamDelegate.node, newValue) : "";
+                                                 AppAudioService.setApplicationVolume(streamDelegate.node, newValue)
                                             }
                                         }
 
