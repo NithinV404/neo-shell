@@ -18,6 +18,11 @@ Rectangle {
         inputField.text = "";
     }
 
+    function setFocus()
+    {
+        inputField.focus = true
+    }
+
     function clearFocus() {
         inputField.focus = false;
     }
@@ -30,7 +35,7 @@ Rectangle {
     implicitHeight: 56
     radius: Settings.radius
     color: Theme.surfaceContainer
-    border.color: inputField.activeFocus ? Theme.primary : Theme.outline
+    border.color: inputField.activeFocus ? Theme.tertiary : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
     border.width: inputField.activeFocus ? 2 : 1
 
     RowLayout {
@@ -51,8 +56,8 @@ Rectangle {
             clip: true
             echoMode: root.password && !root.showPassword ? TextInput.Password : TextInput.Normal
             selectByMouse: true
-            selectionColor: Theme.primary
-            selectedTextColor: Theme.primaryFg
+            selectionColor: Theme.tertiary
+            selectedTextColor: Theme.tertiaryFg
             onTextChanged: root.textChanged
             onAccepted: root.accepted()
             text: root.edit ? root.placeholder : ""
