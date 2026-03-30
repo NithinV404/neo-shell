@@ -80,7 +80,7 @@ Item {
         color: Theme.surfaceContainerHighest
         radius: Settings.radius
         border.width: 1
-        border.color: Qt.darker(Theme.outline)
+        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
     }
 
     GridView {
@@ -137,7 +137,7 @@ Item {
                 radius: Settings.radius
                 color: "transparent"
                 border.width: imageCell.isSelected ? 2 : 0
-                border.color: Theme.primary
+                border.color: Theme.tertiary
             }
 
             MouseArea {

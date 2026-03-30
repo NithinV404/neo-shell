@@ -18,7 +18,7 @@ PanelWindow {
     property bool isVisible: false
 
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-    focusable: true
+    focusable: false
 
     signal menuClosed
 
