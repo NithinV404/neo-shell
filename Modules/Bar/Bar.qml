@@ -39,7 +39,7 @@ PanelWindow {
         color: Theme.surface
         radius: Settings.radius
         border.width: 1
-        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.3)
+        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
 
         Row {
             anchors.left: parent.left
