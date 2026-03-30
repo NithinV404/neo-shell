@@ -7,7 +7,8 @@ import Quickshell.Widgets
 Item {
     id: root
 
-    property var icon
+    property string icon
+    property string name: ""
     property int size: 56
 
     implicitWidth: size
@@ -94,6 +95,7 @@ Item {
             return bestMatch;
         }
 
+
         return null;
     }
 
@@ -111,7 +113,7 @@ Item {
 
         Text {
             anchors.centerIn: parent
-            text: root.iconName.charAt(0)?.toUpperCase() ?? "?"
+            text: root.name ? root.name.charAt(0).toUpperCase() != "": root.iconName.charAt(0).toUpperCase() ?? "?"
             font.pixelSize: root.size * 0.45
             font.family: Settings.fontFamily
             font.weight: Font.Medium
@@ -123,6 +125,7 @@ Item {
     IconImage {
         id: iconImage
         visible: root.iconLoaded
+
         source: {
             if (root.hasIcon) {
                 if (root.iconName.startsWith("/")) {
@@ -130,6 +133,7 @@ Item {
                 } else if (root.iconName.startsWith("image:")) {
                     return root.iconName;
                 } else {
+
                     Quickshell.iconPath(root.iconName, true);
                 }
             } else {
@@ -141,6 +145,7 @@ Item {
         implicitSize: root.size
 
         onStatusChanged: {
+
             if (status === Image.Error) {
                 console.log("Failed to load icon:", root.iconName, "for app:", root.icon);
             }
