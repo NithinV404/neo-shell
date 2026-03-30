@@ -24,190 +24,95 @@ Singleton {
     }
 
     function isValidNode(node) {
-        if (!node)
-            return false;
-        if (!node.audio)
-            return false;
+        return node && node.ready;
+    }
 
-        try {
-            if (node.isStream) {
-                return true;
-            }
-
-            if (!node.ready)
-                return false;
-            return true;
-        } catch (e) {
-            return false;
-        }
+    function isValidAudioNode(node) {
+        return isValidNode(node) && node.audio;
     }
 
     function isValidStreamNode(node) {
-        if (!node)
-            return false;
-        if (!node.audio)
-            return false;
-
-        try {
-            return node.isStream !== undefined;
-        } catch (e) {
-            return false;
-        }
-    }
-
-    function isNodeReadyForVolumeControl(node) {
-        if (!node || !node.audio)
-            return false;
-
-        if (node.ready === false) {
-            return false;
-        }
-
-        return true;
+        return isValidAudioNode(node) && node.isStream !== undefined;
     }
 
     readonly property var applicationStreams: (Pipewire.nodes?.values || []).filter(node => {
         if (!isValidStreamNode(node))
             return false;
-        try {
-            return node.isStream && node.isSink;
-        } catch (e) {
-            return false;
-        }
+        return node.isStream && node.isSink;
     })
 
     readonly property var applicationInputStreams: (Pipewire.nodes?.values || []).filter(node => {
         if (!isValidStreamNode(node))
             return false;
-        try {
-            return node.isStream && !node.isSink;
-        } catch (e) {
-            return false;
-        }
+
+        return node.isStream && !node.isSink;
     })
 
     readonly property var outputDevices: (Pipewire.nodes?.values || []).filter(node => {
         if (!isValidNode(node))
             return false;
-        try {
-            return !node.isStream && node.isSink;
-        } catch (e) {
-            return false;
-        }
+
+        return !node.isStream && node.isSink;
     })
 
     readonly property var inputDevices: (Pipewire.nodes?.values || []).filter(node => {
         if (!isValidNode(node))
             return false;
-        try {
-            return !node.isStream && !node.isSink;
-        } catch (e) {
-            return false;
-        }
+
+        return !node.isStream && !node.isSink;
     })
 
-    function getApplicationName(node, debug = false) {
-        if (!node) {
+    function getApplicationName(node, cb) {
+        if (!isValidNode(node)) {
             return "Unknown Application";
         }
 
         const props = node.properties || {};
-        const desc = node.description || "";
-        const name = node.name || "";
+        const desc = node.description || {};
 
-        // Debug logging for Electron apps
-        const appName = props["application.name"] || "";
-        const binaryName = props["application.process.binary"] || "";
+        if (props["pipewire.access.portal.app_id"]) {
+              let appId = props["pipewire.access.portal.app_id"];
+              cb(appId);
+              return;
+          }
 
-        if (debug && (binaryName.includes("chromium") || binaryName.includes("electron") || appName.toLowerCase().includes("cider"))) {
-            console.log("AudioService Debug - Node:", name, "App:", appName, "Binary:", binaryName, "Props:", JSON.stringify(props));
+
+        let name = props["application.name"]  || props["media.title"]  || props["media.name"];
+
+        if (!name && props["application.id"]) {
+            let id = props["application.id"].split('.').pop();
+            name = id.charAt(0).toUpperCase() + id.slice(1);
         }
 
-        // If properties aren't available yet, try description or name
-        if (!props) {
-            if (desc) {
-                return desc;
-            }
-            if (name) {
-                // Try to extract meaningful name from node name
-                const nameParts = name.split(/[-_]/);
-                if (nameParts.length > 0) {
-                    const extracted = nameParts[0];
-                    if (extracted) {
-                        return extracted.charAt(0).toUpperCase() + extracted.slice(1);
-                    }
-                }
-                return name;
-            }
-            return "Unknown Application";
+        if (!name && props["application.process.binary"]) {
+            name = props["application.process.binary"].split('/').pop();
         }
 
-        // Try to get application name from various properties
-        let computedAppName = props["application.name"] || "";
-        const mediaName = props["media.name"] || "";
-        const mediaTitle = props["media.title"] || "";
-        const appId = props["application.id"] || "";
-        // binaryName already declared above for debug logging
-
-        // Special handling for Electron apps like Cider
-        if (binaryName && binaryName.toLowerCase().includes("cider")) {
-            console.log("AudioService Debug - Detected Cider from binary:", binaryName, "-> Setting name to 'Cider'");
-            computedAppName = "Cider";
+        if (name.includes("electron") || name.includes("chromium")) {
+            name = "chromium";
+            resolveAppName(node, function (name) {
+                name = name;
+            });
         }
 
-        // If we have application.id, try to extract app name from it (e.g., "firefox.desktop" -> "firefox")
-        if (!computedAppName && appId) {
-            const parts = appId.split(".");
-            if (parts.length > 0) {
-                computedAppName = parts[0];
-                // Capitalize first letter and format nicely
-                if (computedAppName) {
-                    computedAppName = computedAppName.charAt(0).toUpperCase() + computedAppName.slice(1);
-                }
-            }
+        if (!name && desc) {
+            name = desc;
         }
 
-        // Try binary name as fallback (but avoid generic Electron names)
-        if (!computedAppName && binaryName) {
-            const binParts = binaryName.split("/");
-            if (binParts.length > 0) {
-                const binBaseName = binParts[binParts.length - 1];
-                // Skip generic Electron/Chromium binaries if we have application.name
-                if (binBaseName !== "chromium" && binBaseName !== "electron" && binBaseName !== "chrome") {
-                    computedAppName = binBaseName.charAt(0).toUpperCase() + binBaseName.slice(1);
-                }
-            }
-        }
-
-        // Priority: application.name > media.title > media.name > binary > description > name
-        let result = computedAppName || mediaTitle || mediaName || binaryName || desc || name;
-
-        // If we still don't have a good name, try to extract from node name
-        if (!result || result === "" || result === "Unknown Application") {
-            if (name) {
-                // Try to extract meaningful name from node name (e.g., "firefox-1234" -> "firefox")
-                const nameParts = name.split(/[-_]/);
-                if (nameParts.length > 0) {
-                    result = nameParts[0];
-                    // Capitalize first letter
-                    if (result) {
-                        result = result.charAt(0).toUpperCase() + result.slice(1);
-                    }
-                }
-            }
-        }
-
-        return result || "Unknown Application";
+        cb(name);
     }
 
     function resolveAppName(node, callback) {
         let props = node.properties;
-        let procId = props["application.process.id"].toString();
+        // --- Native apps: /proc works fine ---
+        let procId = props["application.process.id"]?.toString();
+        if (!procId) {
+            if (callback) callback("unknown");
+            return;
+        }
 
-        // If resolvedIcons already contains cache of the icon name return it
         if (root.resolvedIcons[procId]) {
-            if (callback)
-                callback(root.resolvedIcons[procId]);
+            if (callback) callback(root.resolvedIcons[procId]);
             return;
         }
 
@@ -253,6 +158,8 @@ Singleton {
                     newCache[procResolver.pid] = appName;
                     root.resolvedIcons = newCache;
 
+
+
                     if (procResolver.callback && typeof procResolver.callback === "function") {
                         procResolver.callback(appName);
                     }
@@ -289,83 +196,44 @@ Singleton {
         }
     }
 
-    function isNodeBound(node) {
-        return isNodeReadyForVolumeControl(node);
-    }
-
     function setApplicationVolume(node, percentage) {
-        if (!node || !node.audio) {
-            return "No audio stream available";
+        if (!isValidNode(node)) {
+            return "Not a Valid node";
         }
 
-        if (node.ready === false) {
-            return "Node not ready";
-        }
-
-        try {
-            const clampedVolume = Math.max(0, Math.min(100, percentage));
-            const volumeValue = clampedVolume / 100;
-            node.audio.volume = volumeValue;
-            root.applicationVolumeChanged();
-            return `Volume set to ${clampedVolume}%`;
-        } catch (e) {
-            return "Failed to set volume";
-        }
+        const clampedVolume = Math.max(0, Math.min(100, percentage));
+        const volumeValue = clampedVolume / 100;
+        node.audio.volume = volumeValue;
+        root.applicationVolumeChanged();
+        return `Volume set to ${clampedVolume}%`;
     }
 
     function toggleApplicationMute(node) {
-        if (!node || !node.audio) {
-            return "No audio stream available";
+        if (!isValidNode(node)) {
+            return "Not a valid audio node";
         }
-
-        if (!isNodeBound(node)) {
-            return "Node not ready";
-        }
-
-        try {
-            node.audio.muted = !node.audio.muted;
-            root.applicationMuteChanged();
-            return node.audio.muted ? "Application muted" : "Application unmuted";
-        } catch (e) {
-            return "Failed to toggle mute";
-        }
+        node.audio.muted = !node.audio.muted;
+        root.applicationMuteChanged();
+        return node.audio.muted ? "Application muted" : "Application unmuted";
     }
 
     function setApplicationInputVolume(node, percentage) {
-        if (!node || !node.audio) {
-            return "No audio input stream available";
+        if (!isValidAudioNode(node)) {
+            return "Not a valid audio node";
         }
-
-        if (!isNodeBound(node)) {
-            return "Node not ready";
-        }
-
-        try {
-            const clampedVolume = Math.max(0, Math.min(100, percentage));
-            node.audio.volume = clampedVolume / 100;
-            root.applicationVolumeChanged();
-            return `Input volume set to ${clampedVolume}%`;
-        } catch (e) {
-            return "Failed to set input volume";
-        }
+        const clampedVolume = Math.max(0, Math.min(100, percentage));
+        node.audio.volume = clampedVolume / 100;
+        root.applicationVolumeChanged();
+        return `Input volume set to ${clampedVolume}%`;
     }
 
     function toggleApplicationInputMute(node) {
-        if (!node || !node.audio) {
-            return "No audio input stream available";
+        if (!isValidAudioNode(node)) {
+            return "Not a valid audio node";
         }
-
-        if (!isNodeBound(node)) {
-            return "Node not ready";
-        }
-
-        try {
-            node.audio.muted = !node.audio.muted;
-            root.applicationMuteChanged();
-            return node.audio.muted ? "Application input muted" : "Application input unmuted";
-        } catch (e) {
-            return "Failed to toggle input mute";
-        }
+        node.audio.muted = !node.audio.muted;
+        root.applicationMuteChanged();
+        return node.audio.muted ? "Application input muted" : "Application input unmuted";
     }
 
     function routeStreamToOutput(streamNode, targetSinkNode) {
