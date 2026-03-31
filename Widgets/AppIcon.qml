@@ -95,29 +95,32 @@ Item {
             return bestMatch;
         }
 
-
         return null;
     }
 
     // Use icon from desktop entry, otherwise try app_id directly
     property string iconName: desktopEntry?.icon ?? root.icon ?? ""
-    property bool hasIcon: iconName !== "" && iconName !== null
+    property bool hasIcon: iconName && iconName !== null
     property bool iconLoaded: hasIcon && iconImage.status === Image.Ready
 
     // Fallback
     Rectangle {
         anchors.fill: parent
         radius: Settings.radius
-        color: Theme.primaryContainer
+        color: Theme.primary
         visible: !root.iconLoaded
 
         Text {
             anchors.centerIn: parent
-            text: root.name ? root.name.charAt(0).toUpperCase() != "": root.iconName.charAt(0).toUpperCase() ?? "?"
+            text: root.name ? root.name.charAt(0).toUpperCase() : root.iconName ? root.iconName.charAt(0).toUpperCase() : "?"
             font.pixelSize: root.size * 0.45
             font.family: Settings.fontFamily
             font.weight: Font.Medium
-            color: Theme.primaryContainerFg
+            color: Theme.primaryFg
+
+            Component.onCompleted: {
+                console.info(root.name);
+            }
         }
     }
 
@@ -133,7 +136,6 @@ Item {
                 } else if (root.iconName.startsWith("image:")) {
                     return root.iconName;
                 } else {
-
                     Quickshell.iconPath(root.iconName, true);
                 }
             } else {
@@ -145,7 +147,6 @@ Item {
         implicitSize: root.size
 
         onStatusChanged: {
-
             if (status === Image.Error) {
                 console.log("Failed to load icon:", root.iconName, "for app:", root.icon);
             }
