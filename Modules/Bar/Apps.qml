@@ -88,7 +88,7 @@ Rectangle {
                 readonly property bool isAnyFocused: modelData.hasAnyFocused
 
                 implicitWidth: 20
-                implicitHeight: 20
+                implicitHeight: 30
                 Layout.alignment: Qt.AlignVCenter
 
                 // Hover highlight
