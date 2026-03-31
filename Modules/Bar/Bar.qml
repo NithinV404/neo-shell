@@ -31,7 +31,6 @@ PanelWindow {
 
     implicitHeight: 40
     WlrLayershell.namespace: "neoshell:bar"
-    WlrLayershell.layer: WlrLayer.Top
     exclusionMode: ExclusionMode.Auto
 
     Rectangle {
@@ -44,7 +43,7 @@ PanelWindow {
         Row {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: 8
+            anchors.leftMargin: 4
             spacing: 4
 
             Apps {
