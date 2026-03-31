@@ -17,8 +17,8 @@ PanelWindow {
     property bool visible: false
     property bool isVisible: false
 
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-    focusable: false
+    focusable: mouseArea.containsMouse || textField.focused
+    WlrLayershell.layer: WlrLayer.Overlay
 
     signal menuClosed
 
@@ -53,12 +53,6 @@ PanelWindow {
             if (!insidePanelContainerArea) {
                 root.close();
             }
-
-            const inputFieldArea = mapToItem(textField, mouse.x, mouse.y);
-            const insideInputFieldArea = (inputFieldArea.x >= 0 && inputFieldArea.x <= textField.width && inputFieldArea.y >= 0 && inputFieldArea.y <= textField.height);
-            if (!insideInputFieldArea) {
-                textField.clearFocus();
-            }
         }
     }
 
@@ -71,6 +65,19 @@ PanelWindow {
         clip: true
         state: root.visible ? "open" : "closed"
         transformOrigin: Item.Top
+
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: mouse => {
+                const inputFieldArea = mapToItem(textField, mouse.x, mouse.y);
+                const insideInputFieldArea = (inputFieldArea.x >= 0 && inputFieldArea.x <= textField.width && inputFieldArea.y >= 0 && inputFieldArea.y <= textField.height);
+                if (!insideInputFieldArea) {
+                    textField.clearFocus();
+                }
+            }
+        }
 
         Behavior on height {
             NumberAnimation {
@@ -146,12 +153,22 @@ PanelWindow {
                 }
                 RowLayout {
                     id: wallpaperbuttons
-                    implicitHeight: 32
                     TextField {
                         id: textField
                         Layout.fillWidth: true
                         placeholder: Settings.wallpapersFolder
                         edit: true
+                        implicitHeight: 48
+
+                        Keys.onPressed: event => {
+                            if (event.key === Qt.Key_Escape) {
+                                textField.clearFocus();  // Triggers editingFinished automatically
+                                event.accepted = true;
+                            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                                Settings.saveWallpapersFolderPath(textField.text);
+                                textField.clearFocus();
+                            }
+                        }
                     }
                     Button {
                         icon: "save"
@@ -166,7 +183,7 @@ PanelWindow {
                         }
                     }
                     Button {
-                        icon: "colorize"
+                        icon: "refresh"
                         text: "Regenerate Colors"
                         implicitHeight: parent.height
                         radius: Settings.radius

@@ -144,9 +144,11 @@ Item {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onClicked: {
+                propagateComposedEvents: true
+                onClicked: mouse => {
                     console.log("Selected:", imageCell.modelData);
                     Settings.updateWallpaperImage("file://" + imageCell.modelData);
+                    mouse.accepted = false;
                 }
             }
         }
