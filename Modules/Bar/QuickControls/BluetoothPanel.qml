@@ -113,9 +113,9 @@ Item {
                 }
 
                 StyledText {
-                    id: syncIcon
+                    id: refresh
                     Layout.margins: 4
-                    name: "sync"
+                    name: "refresh"
                     color: Theme.surfaceFg
                     rotation: 0
 
@@ -130,7 +130,7 @@ Item {
                         // Reset rotation when animation stops
                         onRunningChanged: {
                             if (!running) {
-                                syncIcon.rotation = 0;
+                                refresh.rotation = 0;
                             }
                         }
                     }
