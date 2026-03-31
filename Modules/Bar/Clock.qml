@@ -12,8 +12,8 @@ Rectangle {
     required property var screen
     property var activePanel: null
     implicitWidth: timeRow.implicitWidth + 16
-    implicitHeight: parent.height * 0.75
-    color: "transparent" //clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
+    implicitHeight: 30
+    color: clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer
     radius: Settings.radius
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
