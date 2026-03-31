@@ -118,9 +118,9 @@ Item {
                 }
 
                 StyledText {
-                    id: syncIcon
+                    id: refreshIcon
                     Layout.margins: 4
-                    name: "sync"
+                    name: "refresh"
                     color: Theme.surfaceFg
                     rotation: 0
 
