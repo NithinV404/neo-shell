@@ -11,16 +11,17 @@ Rectangle {
     property bool password: false
     property bool showPassword: false
     property bool edit: false
+    readonly property bool focused: inputField.activeFocus
 
+    signal editingFinished
     signal accepted
 
     function clear() {
         inputField.text = "";
     }
 
-    function setFocus()
-    {
-        inputField.focus = true
+    function setFocus() {
+        inputField.focus = true;
     }
 
     function clearFocus() {
@@ -28,7 +29,7 @@ Rectangle {
     }
 
     Component.onDestruction: {
-        inputField.focus = false;
+        clearFocus();
     }
 
     implicitWidth: 300
@@ -61,6 +62,8 @@ Rectangle {
             onTextChanged: root.textChanged
             onAccepted: root.accepted()
             text: root.edit ? root.placeholder : ""
+            activeFocusOnPress: true
+            onEditingFinished: root.editingFinished
 
             Text {
                 anchors.fill: parent
