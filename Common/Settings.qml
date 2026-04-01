@@ -107,7 +107,9 @@ Singleton {
     }
 
     function loadAvailableIcons() {
-        iconThemeDetectionProcess.running = true;
+        if (availableIconThemes.length === 0) {
+            iconThemeDetectionProcess.running = true;
+        }
     }
 
     function setFont() {
@@ -226,7 +228,6 @@ Singleton {
                     }
                 }
                 root.availableIconThemes = detectedThemes;
-                root.saveSettings();
             }
         }
     }
