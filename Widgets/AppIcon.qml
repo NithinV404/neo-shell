@@ -37,62 +37,9 @@ Item {
                 return entry;
         }
 
-        // Fuzzy search through all available desktop entries
-        const searchTerm = lastPart.toLowerCase();
-        let bestMatch = null;
-        let bestScore = 0;
-
-        for (const entry of DesktopEntries.applications.values) {
-            const entryId = (entry.id ?? "").toLowerCase();
-            const entryName = (entry.name ?? "").toLowerCase();
-            const entryExec = (entry.exec ?? "").toLowerCase();
-
-            let score = 0;
-
-            // Exact ID match (shouldn't happen, but just in case)
-            if (entryId === searchTerm) {
-                return entry;
-            }
-
-            // ID starts with search term (e.g., "helium" matches "helium-browser")
-            if (entryId.startsWith(searchTerm + "-") || entryId.startsWith(searchTerm + "_") || entryId.startsWith(searchTerm + ".")) {
-                score = 100;
-            } else
-            // ID contains search term
-            if (entryId.includes(searchTerm)) {
-                score = 75;
-            } else
-            // Name exactly matches
-            if (entryName === searchTerm) {
-                score = 90;
-            } else
-            // Name starts with search term
-            if (entryName.startsWith(searchTerm)) {
-                score = 70;
-            } else
-            // Name contains search term
-            if (entryName.includes(searchTerm)) {
-                score = 50;
-            } else
-            // Exec command contains search term
-            if (entryExec.includes(searchTerm)) {
-                score = 40;
-            }
-
-            // Prefer shorter IDs (more specific matches)
-            if (score > 0) {
-                score -= entryId.length * 0.1;
-            }
-
-            if (score > bestScore) {
-                bestScore = score;
-                bestMatch = entry;
-            }
-        }
-
-        if (bestMatch) {
-            console.log(`Fuzzy matched "${appId}" → "${bestMatch.id}" (score: ${bestScore.toFixed(1)})`);
-            return bestMatch;
+        const searchResult = Utils.heuristicSearch(DesktopEntries.applications.values, lastPart);
+        if (searchResult.length > 0) {
+            return searchResult[0];
         }
 
         return null;
@@ -117,10 +64,6 @@ Item {
             font.family: Settings.fontFamily
             font.weight: Font.Medium
             color: Theme.primaryFg
-
-            Component.onCompleted: {
-                console.info(root.name);
-            }
         }
     }
 
@@ -147,8 +90,8 @@ Item {
         implicitSize: root.size
 
         onStatusChanged: {
-            if (status === Image.Error) {
-                console.log("Failed to load icon:", root.iconName, "for app:", root.icon);
+            if (status === Image.Error || status === Image.Null) {
+                console.info(`Failed to Load icon for ${root.iconName}`);
             }
         }
     }
