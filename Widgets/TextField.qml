@@ -7,7 +7,7 @@ Rectangle {
     id: root
 
     property string placeholder: ""
-    property string text: inputField.text
+    property alias text: inputField.text
     property bool password: false
     property bool showPassword: false
     property bool edit: false
