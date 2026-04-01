@@ -77,7 +77,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.surfaceContainerHighest
+        color: Theme.secondaryContainer
         radius: Settings.radius
         border.width: 1
         border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
