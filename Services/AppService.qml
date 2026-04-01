@@ -3,12 +3,13 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
+import qs.Common
 import "../Common/fzf.js" as Fzf
 
 Singleton {
     id: root
 
-    property var applications: DesktopEntries.applications.values.filter(app => !app.noDisplay && !app.runInTerminal)
+    property var applications: DesktopEntries.applications.values.filter(app => !app.noDisplay && !app.runInTerminal).sort((a, b) => a.name.localeCompare(b.name))
 
     // Get icon path for an app
     function getIconPath(app) {
@@ -17,91 +18,37 @@ Singleton {
         return Quickshell.iconPath(app.icon, true);
     }
 
+    property var _fzfFinder: null
+    onApplicationsChanged: {
+        _fzfFinder = new Fzf.Finder(applications, {
+            // You can join multiple fields so Fzf searches name, comment AND keywords simultaneously!
+            selector: a => `${a.name || ""} ${a.genericName || ""} ${a.comment || ""} ${(a.keywords || []).join(" ")}`,
+            casing: "case-insensitive",
+            fuzzy: "v1"
+        });
+    }
+
     function searchApplications(query) {
-        if (!query || query.length === 0)
+        if (!query || query.trim() === "")
             return applications;
-        if (applications.length === 0)
-            return [];
+        var result = Utils.heuristicSearch(applications, query);
+        if (result.length === 0) {
+            try {
+                if (_fzfFinder) {
+                    const fuzzyResults = _fzfFinder.find(query);
 
-        const queryLower = query.toLowerCase().trim();
-        const scoredApps = [];
-
-        for (const app of applications) {
-            const name = (app.name || "").toLowerCase();
-            const genericName = (app.genericName || "").toLowerCase();
-            const comment = (app.comment || "").toLowerCase();
-            const keywords = app.keywords ? app.keywords.map(k => k.toLowerCase()) : [];
-
-            let score = 0;
-            let matched = false;
-
-            const nameWords = name.trim().split(/\s+/).filter(w => w.length > 0);
-            const containsAsWord = nameWords.includes(queryLower);
-            const startsWithAsWord = nameWords.some(word => word.startsWith(queryLower));
-
-            if (name === queryLower) {
-                score = 10000;
-                matched = true;
-            } else if (containsAsWord) {
-                score = 9500 + (100 - Math.min(name.length, 100));
-                matched = true;
-            } else if (name.startsWith(queryLower)) {
-                score = 9000 + (100 - Math.min(name.length, 100));
-                matched = true;
-            } else if (startsWithAsWord) {
-                score = 8500 + (100 - Math.min(name.length, 100));
-                matched = true;
-            } else if (name.includes(queryLower)) {
-                score = 8000 + (100 - Math.min(name.length, 100));
-                matched = true;
-            } else if (keywords.length > 0) {
-                for (const keyword of keywords) {
-                    if (keyword === queryLower) {
-                        score = 6000;
-                        matched = true;
-                        break;
-                    } else if (keyword.startsWith(queryLower)) {
-                        score = 5500;
-                        matched = true;
-                        break;
-                    } else if (keyword.includes(queryLower)) {
-                        score = 5000;
-                        matched = true;
-                        break;
+                    if (fuzzyResults.length > 0) {
+                        return fuzzyResults.map(r => r.item);
                     }
                 }
+            } catch (e) {
+                console.error("FZF Search Error: ", e);
             }
-            if (!matched && genericName.includes(queryLower)) {
-                score = 4000;
-                matched = true;
-            } else if (!matched && comment.includes(queryLower)) {
-                score = 3000;
-                matched = true;
-            } else if (!matched) {
-                try {
-                    const nameFinder = Fzf.Finder([app], {
-                        "selector": a => a.name || "",
-                        "casing": "case-insensitive",
-                        "fuzzy": "v2"
-                    });
-                    const fuzzyResults = nameFinder.find(query);
-                    if (fuzzyResults.length > 0 && fuzzyResults[0].score > 0) {
-                        score = Math.min(fuzzyResults[0].score, 2000);
-                        matched = true;
-                    }
-                } catch (e) {}
-            }
-
-            if (matched) {
-                scoredApps.push({
-                    "app": app,
-                    "score": score
-                });
-            }
+        } else {
+            return result;
         }
 
-        scoredApps.sort((a, b) => b.score - a.score);
-        return scoredApps.slice(0, 50).map(item => item.app);
+        return [];
     }
 
     function getCategoriesForApp(app) {
