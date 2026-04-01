@@ -31,7 +31,7 @@ Scope {
     property int selectedIndex: 0  // Track selected item
 
     // All apps from service
-    readonly property var allApps: AppService.applications.slice().sort((a, b) => a.name.localeCompare(b.name))
+    readonly property var allApps: AppService.applications
 
     // Search query
     property string searchQuery: ""
