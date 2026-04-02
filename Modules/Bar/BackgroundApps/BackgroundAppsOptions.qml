@@ -1,23 +1,22 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Quickshell.Services.SystemTray
-import Quickshell.Wayland // Required for WlrLayershell
+import Quickshell.Wayland
 import Quickshell
 import qs.Services
 import qs.Common
+import qs.Widgets
 
 PanelWindow {
     id: root
 
+    property alias title: title.text
+    property alias titleIcon: title_icon.icon
     property var menuHandler: null
     property int menuX: 0
     property int menuY: 0
 
-    Component.onCompleted: {
-        // Automatically animate IN when created
-        open();
-    }
+    Component.onCompleted: open()
 
     function open() {
         menuContainer.opacity = 0;
@@ -27,14 +26,13 @@ PanelWindow {
     }
 
     function close() {
-        if (exitAnim.running) {
+        if (exitAnim.running)
             return;
-        }
-        // Start exit animation
         exitAnim.start();
     }
 
-    // --- ANIMATIONS ---
+    // --- Animations ---
+
     ParallelAnimation {
         id: enterAnim
         NumberAnimation {
@@ -51,14 +49,12 @@ PanelWindow {
             from: 0.9
             to: 1
             duration: 200
-            easing.type: Easing.OutBack // Gives it a nice "pop" effect
-
+            easing.type: Easing.OutBack
         }
     }
 
     ParallelAnimation {
         id: exitAnim
-        // Run these animations...
         NumberAnimation {
             target: menuContainer
             property: "opacity"
@@ -74,15 +70,14 @@ PanelWindow {
             to: 0.95
             duration: 150
         }
-
-        // ...and when done, actually hide the window
         onFinished: {
             root.menuHandler = null;
             root.destroy();
         }
     }
 
-    // LAYER SETTINGS
+    // --- Window setup ---
+
     WlrLayershell.layer: WlrLayer.Overlay
 
     QsMenuOpener {
@@ -90,7 +85,6 @@ PanelWindow {
         menu: root.menuHandler
     }
 
-    // Use specific anchors instead of fill: true (safer)
     anchors {
         top: true
         bottom: true
@@ -101,23 +95,22 @@ PanelWindow {
     color: "transparent"
     visible: false
 
-    // SHIELD (Click outside to close)
+    // Dismiss on outside click
     MouseArea {
         anchors.fill: parent
-        hoverEnabled: true
         onClicked: root.close()
     }
 
-    // MENU BOX
+    // --- Menu popup ---
+
     Rectangle {
         id: menuContainer
+
         x: Utils.clampScreenX(root.menuX, width, 5, root.screen)
-        // 2. Vertical Clamp: Flip up if at bottom of screen
         y: Utils.clampScreenY(root.menuY, height, 35, root.screen)
 
         width: 200
-        // Ensure height is never 0 to prevent drawing errors
-        height: Math.max(layout.implicitHeight + 24, 20)
+        height: outerColumn.implicitHeight  // driven entirely by content
 
         color: Theme.surfaceContainer
         radius: Settings.radius
@@ -125,72 +118,116 @@ PanelWindow {
         border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
         clip: true
 
+        // Block click-through
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
         }
 
         ColumnLayout {
-            id: layout
-            anchors.fill: parent
-            anchors.margins: 8
-            spacing: 2
+            id: outerColumn
+            anchors.left: parent.left
+            anchors.right: parent.right
+            spacing: 0
 
-            Repeater {
-                id: menuRepeater
-                model: menuOpener.children
+            // --- Menu items (padded) ---
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.margins: 8
+                spacing: 2
 
-                // Model is set via alias
-                //
+                Repeater {
+                    model: menuOpener.children
 
-                delegate: Loader {
-                    id: loader
-                    Layout.fillWidth: true
-                    sourceComponent: modelData.isSeparator ? separatorComp : itemComp
+                    delegate: Loader {
+                        id: delegateLoader
+                        required property var modelData
+                        Layout.fillWidth: true
+                        sourceComponent: modelData.isSeparator ? separatorComp : menuItemComp
 
-                    Component {
-                        id: itemComp
-                        Rectangle {
-                            implicitHeight: 30
-                            implicitWidth: parent.width + 10
-                            color: optionsHover.containsMouse ? Theme.primary : Theme.surface
-                            radius: Settings.radius
+                        Component {
+                            id: menuItemComp
+                            Rectangle {
+                                implicitHeight: 30
+                                color: itemHover.containsMouse ? Theme.primary : Theme.surfaceContainer
+                                radius: Settings.radius
 
-                            MouseArea {
-                                id: optionsHover
-                                anchors.fill: parent
-                                onClicked: {
-                                    modelData.triggered();
-                                    root.close();
+                                MouseArea {
+                                    id: itemHover
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    onClicked: {
+                                        delegateLoader.modelData.triggered();
+                                        root.close();
+                                    }
                                 }
-                                hoverEnabled: true
-                            }
 
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.leftMargin: 8
-                                anchors.rightMargin: 8
-                                Text {
-                                    text: modelData.text
-                                    font.family: Settings.fontFamily
-                                    color: !optionsHover.containsMouse ? Theme.surfaceFg : Theme.primaryFg
-                                    Layout.fillWidth: true
-                                    elide: Text.ElideRight
-                                    antialiasing: true
+                                RowLayout {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 8
+                                    anchors.rightMargin: 8
+
+                                    Text {
+                                        text: delegateLoader.modelData.text
+                                        font.family: Settings.fontFamily
+                                        color: itemHover.containsMouse ? Theme.primaryFg : Theme.surfaceFg
+                                        Layout.fillWidth: true
+                                        elide: Text.ElideRight
+                                        antialiasing: true
+                                    }
+                                }
+                            }
+                        }
+
+                        Component {
+                            id: separatorComp
+                            Item {
+                                implicitHeight: 9
+                                Rectangle {
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.leftMargin: 4
+                                    anchors.rightMargin: 4
+                                    height: 1
+                                    color: Theme.surfaceFg
+                                    opacity: 0.5
                                 }
                             }
                         }
                     }
+                }
+            }
 
-                    Component {
-                        id: separatorComp
-                        Rectangle {
-                            implicitHeight: 1
-                            Layout.fillWidth: true
-                            Layout.margins: 4
-                            color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
-                            opacity: 0.5
-                        }
+            // --- Title bar (edge-to-edge, no negative margins needed) ---
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: 38
+                color: Theme.secondaryContainer
+                radius: Settings.radius
+                border.width: 1
+                border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 8
+                    anchors.rightMargin: 8
+
+                    AppIcon {
+                        id: title_icon
+                        icon: root.title
+                        size: 20
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+
+                    Text {
+                        id: title
+                        font.family: Settings.fontFamily
+                        color: Theme.surfaceFg
+                        antialiasing: true
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
+                        elide: Text.ElideRight
                     }
                 }
             }
