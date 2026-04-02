@@ -153,7 +153,7 @@ PanelWindow {
                 }
                 RowLayout {
                     id: wallpaperbuttons
-                    TextField {
+                    InputField {
                         id: textField
                         Layout.fillWidth: true
                         placeholder: Settings.wallpapersFolder
