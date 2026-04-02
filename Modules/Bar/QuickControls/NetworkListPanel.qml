@@ -135,7 +135,7 @@ Item {
                         // Reset rotation when animation stops
                         onRunningChanged: {
                             if (!running) {
-                                syncIcon.rotation = 0;
+                                refreshIcon.rotation = 0;
                             }
                         }
                     }
@@ -216,6 +216,7 @@ Item {
 
                 Text {
                     Layout.leftMargin: 8
+                    visible: wifiListContainer.connectedNetworks.length > 0
                     color: Qt.darker(Theme.primary)
                     font.family: Settings.fontFamily
                     text: "Connected networks"
