@@ -11,11 +11,21 @@ Canvas {
     property real degree: 360
     property real speed: 1
     property bool animate: true
+    property real animationInterval: 16
     property color color: "#000"
 
     // ensure pixel density
     renderStrategy: Canvas.Cooperative
     antialiasing: true
+
+    Timer {
+            interval: root.animationInterval
+            running: root.animate && root.visible
+            repeat: true
+            onTriggered: root.requestPaint()
+        }
+
+    onDegreeChanged: requestPaint()
 
     onPaint: {
         let ctx = getContext("2d");
