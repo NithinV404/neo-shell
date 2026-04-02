@@ -182,7 +182,7 @@ PanelWindow {
                     color: Theme.surfaceVariantFg
                 }
 
-                TextField {
+                InputField {
                     id: passwordInput
                     Layout.fillWidth: true
                     placeholder: "Enter network password"
