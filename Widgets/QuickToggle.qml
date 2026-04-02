@@ -10,12 +10,12 @@ Rectangle {
     property string icon: "help"
     property alias title: subText.text
     property alias status: subTextInfo.text
-
+    property bool hasSubMenu: true
     // The most important part of a toggle: Is it ON or OFF?
     property bool active: false
 
     property int setPadding: 4
-    property int setRadius: 28 //
+    property int setRadius: Settings.radius //
 
     signal clicked
     signal menuClicked
@@ -27,7 +27,7 @@ Rectangle {
     // Color Logic:
     // ON  = Primary Color (Colorful)
     // OFF = Surface Container Highest (Dark Grey/Neutral)
-    color: Theme.surfaceContainerHighest
+    color: (!root.hasSubMenu && root.active) ? Theme.primary : Theme.surfaceContainerHighest
 
     // Smooth color transition
     Behavior on color {
@@ -55,7 +55,7 @@ Rectangle {
     RowLayout {
         anchors.fill: parent
         anchors.margins: root.setPadding
-        spacing: 12 // A bit more breathing room between icon and text
+        spacing: 8 // A bit more breathing room between icon and text
 
         // --- 4. ICON CONTAINER ---
         Rectangle {
@@ -67,8 +67,15 @@ Rectangle {
             // Color Logic:
             // ON  = Dark Text on Bright Background -> Icon Box becomes transparent or slightly darkened
             // OFF = Grey Background -> Icon Box becomes the "Primary" accent
-            color: root.active ? Qt.darker(Theme.primary, 1.2) // Subtle highlight on active
-            : toggleButton.containsMouse ? Theme.tertiary : Theme.surfaceContainerLow
+            color: {
+                if (!root.hasSubMenu && root.active)
+                    return "transparent";
+                if (root.active)
+                    return !root.hasSubMenu ? Theme.primary : Qt.darker(Theme.primary, 1.2);
+                if (toggleButton.containsMouse)
+                    return Theme.tertiary;
+                return root.hasSubMenu ? Theme.surfaceContainerLow : "transparent";
+            }
 
             radius: root.radius - root.setPadding
 
@@ -84,7 +91,7 @@ Rectangle {
                 size: 20 // Slightly larger icon
 
                 // Icon Color: Contrast against the box
-                color: root.active ? Theme.primaryFg : toggleButton.containsMouse ? Theme.tertiaryFg : Theme.secondaryContainerFg
+                color: root.active ? Theme.primaryFg : (toggleButton.containsMouse ? Theme.tertiaryFg : Theme.secondaryContainerFg)
             }
 
             MouseArea {
@@ -112,7 +119,7 @@ Rectangle {
                     text: "Title"
                     font.weight: 600
                     font.pixelSize: 14
-                    color: Theme.surfaceFg
+                    color: (root.active && !root.hasSubMenu) ? Theme.primaryFg : Theme.surfaceFg
                     font.family: Settings.fontFamily
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignLeft
@@ -126,7 +133,7 @@ Rectangle {
                     font.weight: 400
                     font.pixelSize: 12
                     opacity: 0.8
-                    color: Theme.surfaceFg
+                    color: (root.active && !root.hasSubMenu) ? Theme.primaryFg : Theme.surfaceFg
                     font.family: Settings.fontFamily
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignLeft
@@ -140,7 +147,7 @@ Rectangle {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 hoverEnabled: true
-                onClicked: root.menuClicked()
+                onClicked: root.hasSubMenu ? root.menuClicked() : root.clicked()
             }
         }
     }
