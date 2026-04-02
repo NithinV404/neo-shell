@@ -83,6 +83,12 @@ PanelWindow {
                 screen: bar.modelData
                 anchors.verticalCenter: parent.verticalCenter
             }
+            Battery
+            {
+                id: battery
+                screen: bar.modelData
+                anchors.verticalCenter: parent.verticalCenter
+            }
         }
     }
 }
