@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
-import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 import qs.Services
 import qs.Widgets
@@ -146,7 +145,9 @@ Rectangle {
                                 var newmenu = customMenu.createObject(null, {
                                     menuHandler: modelData.menu,
                                     menuX: localPos.x,
-                                    menuY: localPos.y
+                                    menuY: localPos.y,
+                                    title: modelData.title,
+                                    icon: modelData.icon
                                 });
                                 root.activeMenuInstance = newmenu;
                             }
