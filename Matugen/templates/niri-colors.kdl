@@ -1,5 +1,6 @@
 layout {
     border {
+        width 1.5
         active-color   "{{colors.primary.default.hex}}"
         inactive-color "{{colors.outline.default.hex}}"
         urgent-color   "{{colors.error.default.hex}}"
@@ -20,6 +21,7 @@ layout {
     }
 
     focus-ring {
+        width 1.5
         active-color "{{colors.primary.default.hex}}"
         inactive-color "{{colors.surface.default.hex}}"
     }
