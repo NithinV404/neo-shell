@@ -224,7 +224,7 @@ Scope {
                         Layout.leftMargin: 8
                         Layout.rightMargin: 8
 
-                        TextField {
+                        InputField {
                             id: searchField
                             anchors.left: parent.left
                             anchors.right: parent.right
