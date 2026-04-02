@@ -1,11 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Services.Pipewire
 import qs.Services
 import qs.Common
 import qs.Widgets
-import qs.Modals
 
 PanelWindow {
     id: root
@@ -146,7 +144,7 @@ PanelWindow {
 
                     GridLayout {
                         id: togglesGrid
-                        readonly property int quickToogleHeight: 50
+                        readonly property int quickToogleHeight: 60
                         readonly property int quickToogleWidth: 180
                         columns: 2
                         columnSpacing: 8
@@ -167,7 +165,6 @@ PanelWindow {
                                 anchors.fill: parent
                                 Rectangle {
                                     radius: Settings.radius
-                                    Layout.rightMargin: 12
                                     Layout.alignment: Qt.AlignRight
                                     color: powerBtnMouse.containsMouse ? Theme.surfaceContainerLow : Theme.surface //powerBtnMouse.containsMouse ? Theme.tertiaryContainer : Theme.surface
                                     //border.width: 1
@@ -280,6 +277,7 @@ PanelWindow {
                             icon: "dark_mode"
                             title: "Dark mode"
                             active: Settings.darkMode
+                            hasSubMenu: false
                             onClicked: Settings.setDarkMode(!Settings.darkMode)
                             implicitWidth: togglesGrid.quickToogleWidth
                             implicitHeight: togglesGrid.quickToogleHeight
@@ -334,11 +332,11 @@ PanelWindow {
                                 width: parent.width
 
                                 Repeater {
-                                    model: AppAudioService?.applicationStreams
+                                    model: AppAudioService.applicationStreams
                                     delegate: RowLayout {
                                         id: streamDelegate
                                         required property var modelData
-                                        readonly property PwNode node: AppAudioService.isValidNode(modelData) && modelData
+                                        readonly property var node: AppAudioService.isValidNode(modelData) && modelData
                                         readonly property real appVolume: node.audio.volume ?? 0
                                         readonly property bool appMuted: node.audio.muted ?? true
 
@@ -347,12 +345,11 @@ PanelWindow {
                                         Component.onCompleted: resolveIcon()
                                         onNodeChanged: resolveIcon()
 
-
                                         function resolveIcon() {
-                                            let appName = ""
-                                            AppAudioService.getApplicationName(node, function(name){
-                                                appName = name
-                                            })
+                                            let appName = "";
+                                            AppAudioService.getApplicationName(node, function (name) {
+                                                appName = name;
+                                            });
 
                                             if (appName.includes("electron") || appName.includes("Chromium")) {
                                                 // Set a generic fallback icon immediately while we wait for resolution
@@ -378,7 +375,7 @@ PanelWindow {
                                             StyledText {
                                                 anchors.centerIn: parent
                                                 color: streamDelegate.appMuted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
-                                                name:  AppAudioService.getApplicationVolumeIcon(streamDelegate.node)
+                                                name: AppAudioService.getApplicationVolumeIcon(streamDelegate.node)
                                             }
 
                                             MouseArea {
@@ -399,7 +396,7 @@ PanelWindow {
                                             showValue: true
 
                                             onMoved: newValue => {
-                                                 AppAudioService.setApplicationVolume(streamDelegate.node, newValue)
+                                                AppAudioService.setApplicationVolume(streamDelegate.node, newValue);
                                             }
                                         }
 
