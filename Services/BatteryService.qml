@@ -5,7 +5,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.UPower
 
-
 Singleton {
     id: root
 
@@ -186,16 +185,16 @@ Singleton {
             // Logger.e("BatteryDebug", "Available Battery count: " + laptopBatteries.length); // can be useful for debugging
             if (laptopBatteries.length > 1 && device.nativePath) {
                 if (device.nativePath === "DisplayDevice") {
-                    return I18n.tr("battery.all-batteries");
+                    return "battery.all-batteries";
                 }
                 var match = device.nativePath.match(/(\d+)$/);
                 if (match) {
                     // In case of 2 batteries: bat0 => bat1  bat1 => bat2
-                    return I18n.tr("common.battery") + " " + (parseInt(match[1]) + 1);  // Append numbers
+                    return "common.battery" + " " + (parseInt(match[1]) + 1);  // Append numbers
                 }
             }
             // Return Battery if there is only one
-            return I18n.tr("common.battery");
+            return "common.battery";
         }
 
         if (isBluetoothDevice(device) && device.name) {
@@ -226,12 +225,12 @@ Singleton {
                 icon: "battery_android_full"
             },
             {
-                threshold: 76,
+                threshold: 72,
                 icon: "battery_android_6"
             },
             {
-                threshold: 56,
-                icon: "battery_android_3"
+                threshold: 48,
+                icon: "battery_android_4"
             },
             {
                 threshold: 31,
@@ -239,7 +238,7 @@ Singleton {
             },
             {
                 threshold: 11,
-                icon: "battery-1"
+                icon: "battery_android_1"
             },
             {
                 threshold: 0,

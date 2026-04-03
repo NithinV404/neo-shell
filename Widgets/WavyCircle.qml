@@ -19,13 +19,14 @@ Canvas {
     antialiasing: true
 
     Timer {
-            interval: root.animationInterval
-            running: root.animate && root.visible
-            repeat: true
-            onTriggered: root.requestPaint()
-        }
+        interval: root.animationInterval
+        running: root.animate && root.visible
+        repeat: true
+        onTriggered: root.requestPaint()
+    }
 
     onDegreeChanged: requestPaint()
+    onColorChanged: requestPaint()
 
     onPaint: {
         let ctx = getContext("2d");

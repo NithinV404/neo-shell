@@ -78,6 +78,7 @@ PanelWindow {
 
     // --- Window setup ---
 
+    exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
 
     QsMenuOpener {
@@ -112,7 +113,7 @@ PanelWindow {
         width: 200
         height: outerColumn.implicitHeight  // driven entirely by content
 
-        color: Theme.surfaceContainer
+        color: Theme.surface
         radius: Settings.radius
         border.width: 1
         border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
@@ -149,7 +150,7 @@ PanelWindow {
                             id: menuItemComp
                             Rectangle {
                                 implicitHeight: 30
-                                color: itemHover.containsMouse ? Theme.primary : Theme.surfaceContainer
+                                color: itemHover.containsMouse ? Theme.surfaceFg : Theme.surface
                                 radius: Settings.radius
 
                                 MouseArea {

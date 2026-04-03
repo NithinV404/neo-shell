@@ -8,6 +8,7 @@ import qs.Common
 
 Rectangle {
     id: root
+
     implicitHeight: parent.height * 0.75
     implicitWidth: layout.implicitWidth + 4
 
@@ -145,7 +146,7 @@ Rectangle {
                                 var newmenu = customMenu.createObject(null, {
                                     menuHandler: modelData.menu,
                                     menuX: localPos.x,
-                                    menuY: localPos.y,
+                                    menuY: localPos.y + root.height + 4,
                                     title: modelData.title,
                                     icon: modelData.icon
                                 });

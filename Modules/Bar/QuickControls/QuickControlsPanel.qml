@@ -4,6 +4,7 @@ import Quickshell
 import qs.Services
 import qs.Common
 import qs.Widgets
+import Quickshell.Wayland
 
 PanelWindow {
     id: root
@@ -32,6 +33,9 @@ PanelWindow {
 
     color: "transparent"
 
+    exclusionMode: ExclusionMode.Ignore
+    WlrLayershell.layer: WlrLayer.Overlay
+
     anchors {
         left: true
         right: true
@@ -56,7 +60,7 @@ PanelWindow {
         id: panelContainer
         x: Utils.clampScreenX(root.menuX, width, 5, root.screen)
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
-        implicitWidth: 400
+        implicitWidth: quickLayoutStack.width + 30
         implicitHeight: quickLayoutStack.height
         clip: true
 
@@ -120,7 +124,7 @@ PanelWindow {
             id: quickLayoutStack
             currentIndex: 0
             clip: true
-            implicitWidth: 800
+            implicitWidth: children[currentIndex].implicitWidth
             height: children[currentIndex].implicitHeight
             anchors.centerIn: parent
 
@@ -144,8 +148,8 @@ PanelWindow {
 
                     GridLayout {
                         id: togglesGrid
-                        readonly property int quickToogleHeight: 60
-                        readonly property int quickToogleWidth: 180
+                        readonly property int quickToogleHeight: 50
+                        readonly property int quickToogleWidth: 170
                         columns: 2
                         columnSpacing: 8
                         rowSpacing: 8
