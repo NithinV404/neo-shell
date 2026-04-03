@@ -108,7 +108,7 @@ PanelWindow {
         id: menuContainer
 
         x: Utils.clampScreenX(root.menuX, width, 5, root.screen)
-        y: Utils.clampScreenY(root.menuY, height, 35, root.screen)
+        y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
 
         width: 200
         height: outerColumn.implicitHeight  // driven entirely by content

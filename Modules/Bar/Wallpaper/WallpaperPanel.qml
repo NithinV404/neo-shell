@@ -59,7 +59,7 @@ PanelWindow {
     Item {
         id: panelContainer
         x: Utils.clampScreenX(root.menuX, width, 2, root.screen)
-        y: Utils.clampScreenY(root.menuY, height, 20, root.screen)
+        y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
         height: contentRect.height
         width: contentRect.width
         clip: true

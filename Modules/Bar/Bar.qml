@@ -31,7 +31,8 @@ PanelWindow {
 
     implicitHeight: 40
     WlrLayershell.namespace: "neoshell:bar"
-    exclusionMode: ExclusionMode.Auto
+    WlrLayershell.layer: WlrLayer.Top
+    WlrLayershell.exclusionMode: ExclusionMode.Ignore
 
     Rectangle {
         anchors.fill: parent
@@ -83,8 +84,7 @@ PanelWindow {
                 screen: bar.modelData
                 anchors.verticalCenter: parent.verticalCenter
             }
-            Battery
-            {
+            Battery {
                 id: battery
                 screen: bar.modelData
                 anchors.verticalCenter: parent.verticalCenter

@@ -105,7 +105,7 @@ Rectangle {
             if (active && panel.item) {
                 var pos = root.mapToItem(null, 0, 0);
                 root.activePanel = panel.item;
-                panel.item.openAt(pos.x + (root.width / 2), pos.y);
+                panel.item.openAt(pos.x + (root.width / 2), pos.y + root.height + 8);
             }
         }
     }
