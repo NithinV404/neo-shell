@@ -12,19 +12,17 @@ Rectangle {
     implicitWidth: 30
     implicitHeight: 30
     color: Theme.surfaceContainerHighest
-    radius: Settings.radius
-
+    radius: 100
 
     WavyCircle {
         id: batteryWave
         anchors.fill: parent
-        lineWidth : 1.5
+        lineWidth: 1.5
         waveHeight: 1
-        frequency: 12
+        frequency: 10
         animate: BatteryService.batteryPluggedIn || BatteryService.batteryCharging
         degree: BatteryService.batteryPercentage * 3.6
-        color: BatteryService.batteryCharging ? Theme.primary :
-               (BatteryService.batteryPercentage < 20 ? Theme.error : Theme.primary)
+        color: BatteryService.batteryPercentage < 30 ? Theme.error : Theme.primary
 
         // The Icon inside the WavyCircle
         StyledText {
