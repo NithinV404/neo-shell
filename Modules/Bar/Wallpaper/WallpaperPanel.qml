@@ -184,6 +184,7 @@ PanelWindow {
                             }
                         }
                     }
+
                     Button {
                         icon: "save"
                         text: "Save"

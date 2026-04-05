@@ -1,7 +1,6 @@
 import QtQuick
 import qs.Widgets
 import qs.Services
-import qs.Common
 
 Rectangle {
     id: root
@@ -20,9 +19,31 @@ Rectangle {
         lineWidth: 1.5
         waveHeight: 1
         frequency: 10
-        animate: BatteryService.batteryPluggedIn || BatteryService.batteryCharging
+        animate: false
         degree: BatteryService.batteryPercentage * 3.6
         color: BatteryService.batteryPercentage < 30 ? Theme.error : Theme.primary
+
+        Connections {
+            target: BatteryService
+            function onBatteryPluggedInChanged() {
+                batteryWave.animate = true;
+                waveAnimateTimer.restart();  // Use start() instead of restart()
+            }
+
+            function onBatteryChargingChanged() {
+                batteryWave.animate = true;
+                waveAnimateTimer.restart();
+            }
+        }
+
+        Timer {
+            id: waveAnimateTimer
+            interval: 5000
+            running: false
+            onTriggered: {
+                batteryWave.animate = false;
+            }
+        }
 
         // The Icon inside the WavyCircle
         StyledText {
