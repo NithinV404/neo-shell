@@ -1,3 +1,5 @@
+Here is the updated README with a dedicated **Acknowledgements** section added to give proper credit to Noctalia. I placed it right before the License section, which is the standard place for open-source credits.
+
 ***
 
 # QuickShell ⚡
@@ -13,16 +15,7 @@
 
 See QuickShell in action:
 
-
-
-
-
----
-
 https://github.com/user-attachments/assets/b7b18515-9e1b-4930-ac45-c2d513d2462b
-
-
-
 
 ---
 
@@ -35,6 +28,12 @@ Contributions are what make the open-source community such an amazing place to l
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+---
+
+## 🙏 Acknowledgements
+
+* **[Noctalia](https://github.com/Noctalia/noctalia)** - A special thanks to the Noctalia project. QuickShell's system services backend (including the brightness, audio, and hardware control integrations) is adapted from their excellent open-source codebase. 
 
 ---
 
