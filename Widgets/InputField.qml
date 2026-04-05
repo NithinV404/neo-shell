@@ -1,9 +1,10 @@
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import qs.Services
 import qs.Common
 
-Rectangle {
+Item {
     id: root
 
     property string placeholder: ""
@@ -28,78 +29,90 @@ Rectangle {
         inputField.focus = false;
     }
 
-    Component.onDestruction: {
-        clearFocus();
-    }
+    Component.onDestruction: clearFocus()
 
     implicitWidth: 300
-    implicitHeight: 56
-    radius: Settings.radius
-    color: Theme.surfaceContainer
-    border.color: inputField.activeFocus ? Theme.tertiary : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
-    border.width: inputField.activeFocus ? 2 : 1
+    implicitHeight: 60
 
-    RowLayout {
+    DropShadow {
+        anchors.fill: backgroundRect
+        source: backgroundRect
+        horizontalOffset: 0
+        verticalOffset: 6
+        radius: 16
+        samples: 41
+        color: Qt.rgba(0, 0, 0, 0.25)
+        transparentBorder: true
+    }
+
+    Rectangle {
+        id: backgroundRect
         anchors.fill: parent
-        anchors.leftMargin: 16
-        anchors.rightMargin: 12
-        spacing: 8
+        height: 80
 
-        TextInput {
-            id: inputField
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.alignment: Qt.AlignVCenter
-            verticalAlignment: TextInput.AlignVCenter
-            color: Theme.surfaceVariantFg
-            font.pixelSize: 16
-            font.family: Settings.fontFamily
-            clip: true
-            echoMode: root.password && !root.showPassword ? TextInput.Password : TextInput.Normal
-            selectByMouse: true
-            selectionColor: Theme.tertiary
-            selectedTextColor: Theme.tertiaryFg
-            onTextChanged: root.textChanged
-            onAccepted: root.accepted()
-            text: root.edit ? root.placeholder : ""
-            activeFocusOnPress: true
-            onEditingFinished: root.editingFinished
+        radius: Settings.radius
+        color: Theme.surfaceContainer
+        border.color: inputField.activeFocus ? Theme.tertiary : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
+        border.width: inputField.activeFocus ? 1.5 : 1
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 16
+            anchors.rightMargin: 12
+            spacing: 8
 
-            Text {
-                anchors.fill: parent
-                anchors.verticalCenter: parent.verticalCenter
-                font.family: Settings.fontFamily
-                text: root.placeholder
+            TextInput {
+                id: inputField
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.alignment: Qt.AlignVCenter
+                verticalAlignment: TextInput.AlignVCenter
                 color: Theme.surfaceVariantFg
                 font.pixelSize: 16
-                visible: !inputField.text && !inputField.activeFocus
-                verticalAlignment: Text.AlignVCenter
+                font.family: Settings.fontFamily
+                clip: true
+                echoMode: root.password && !root.showPassword ? TextInput.Password : TextInput.Normal
+                selectByMouse: true
+                selectionColor: Theme.tertiary
+                selectedTextColor: Theme.tertiaryFg
+                onAccepted: root.accepted()
+                text: root.edit ? root.placeholder : ""
+                activeFocusOnPress: true
+                onEditingFinished: root.editingFinished
+
+                Text {
+                    anchors.fill: parent
+                    font.family: Settings.fontFamily
+                    text: root.placeholder
+                    color: Theme.surfaceVariantFg
+                    font.pixelSize: 16
+                    visible: !inputField.text && !inputField.activeFocus
+                    verticalAlignment: Text.AlignVCenter
+                }
             }
-        }
 
-        // Toggle password visibility button
-        Rectangle {
-            visible: root.password
-            Layout.preferredWidth: 32
-            Layout.preferredHeight: 32
-            Layout.alignment: Qt.AlignVCenter
-            radius: 16
-            color: toggleMouse.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+            Rectangle {
+                visible: root.password
+                Layout.preferredWidth: 32
+                Layout.preferredHeight: 32
+                Layout.alignment: Qt.AlignVCenter
+                radius: 16
+                color: toggleMouse.containsMouse ? Theme.surfaceContainerHigh : "transparent"
 
-            StyledText {
-                anchors.centerIn: parent
-                text: root.showPassword ? "visibility_off" : "visibility"  // Nerd font icons (eye / eye-off)
-                size: 20
-                color: Theme.surfaceVariantFg
-            }
+                StyledText {
+                    anchors.centerIn: parent
+                    text: root.showPassword ? "visibility_off" : "visibility"
+                    size: 20
+                    color: Theme.surfaceVariantFg
+                }
 
-            MouseArea {
-                id: toggleMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                propagateComposedEvents: true
-                onClicked: root.showPassword = !root.showPassword
+                MouseArea {
+                    id: toggleMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    propagateComposedEvents: true
+                    onClicked: root.showPassword = !root.showPassword
+                }
             }
         }
     }
