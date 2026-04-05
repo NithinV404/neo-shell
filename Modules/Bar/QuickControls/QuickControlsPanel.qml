@@ -290,123 +290,203 @@ PanelWindow {
                             implicitWidth: togglesGrid.quickToogleWidth
                             implicitHeight: togglesGrid.quickToogleHeight
                         }
-                        RevealItems {
-                            id: reveal
-                            Layout.fillWidth: true
+                        ColumnLayout {
                             Layout.columnSpan: 2
-                            Layout.topMargin: 4
-                            subItems: (AppAudioService.applicationStreams?.length ?? 0) > 0
-                            main: RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 0
+                            RevealItems {
+                                id: revealAudio
                                 Layout.fillWidth: true
-                                implicitWidth: parent.width
-                                Rectangle {
-                                    implicitHeight: 48
-                                    implicitWidth: 48
-                                    color: Theme.surfaceContainerHighest
-                                    radius: Settings.radius
-                                    StyledText {
-                                        anchors.centerIn: parent
-                                        color: AudioService.muted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
-                                        name: AudioService.getOutputIcon()
+                                Layout.columnSpan: 2
+                                subItems: (AppAudioService.applicationStreams?.length ?? 0) > 0
+                                main: RowLayout {
+                                    Layout.fillWidth: true
+                                    implicitWidth: parent.width
+                                    Rectangle {
+                                        implicitHeight: 48
+                                        implicitWidth: 48
+                                        color: Theme.surfaceContainerHighest
+                                        radius: Settings.radius
+                                        StyledText {
+                                            anchors.centerIn: parent
+                                            color: AudioService.muted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
+                                            name: AudioService.getOutputIcon()
+                                        }
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: AudioService.toggleMute()  // ← This toggles mute
+                                        }
                                     }
 
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: AudioService.toggleMute()  // ← This toggles mute
+                                    Slider {
+                                        Layout.fillWidth: true
+                                        value: AudioService.volume * 100
+                                        minValue: 0
+                                        maxValue: Settings.audioVolumeOverdrive ? 150 : 100
+                                        icon: ""  // Icon is separate
+                                        showValue: true
+
+                                        onMoved: newValue => {
+                                            AudioService.setVolume(newValue / 100);
+                                        }
                                     }
                                 }
-
-                                Slider {
+                                sub: ColumnLayout {
+                                    id: appStreamCol
                                     Layout.fillWidth: true
-                                    value: AudioService.volume * 100
-                                    minValue: 0
-                                    maxValue: Settings.audioVolumeOverdrive ? 150 : 100
-                                    icon: ""  // Icon is separate
-                                    showValue: true
+                                    width: parent.width
 
-                                    onMoved: newValue => {
-                                        AudioService.setVolume(newValue / 100);
+                                    Repeater {
+                                        model: AppAudioService.applicationStreams
+                                        delegate: RowLayout {
+                                            id: streamDelegate
+                                            required property var modelData
+                                            readonly property var node: AppAudioService.isValidNode(modelData) && modelData
+                                            readonly property real appVolume: node.audio.volume ?? 0
+                                            readonly property bool appMuted: node.audio.muted ?? true
+
+                                            property string resolvedIcon: ""
+
+                                            Component.onCompleted: resolveIcon()
+                                            onNodeChanged: resolveIcon()
+
+                                            function resolveIcon() {
+                                                let appName = "";
+                                                AppAudioService.getApplicationName(node, function (name) {
+                                                    appName = name;
+                                                });
+
+                                                if (appName.includes("electron") || appName.includes("Chromium")) {
+                                                    // Set a generic fallback icon immediately while we wait for resolution
+                                                    resolvedIcon = "chromium";
+
+                                                    AppAudioService.resolveAppName(node, function (name) {
+                                                        streamDelegate.resolvedIcon = name;
+                                                    });
+                                                } else {
+                                                    resolvedIcon = appName;
+                                                }
+                                            }
+
+                                            Layout.fillWidth: true
+                                            implicitWidth: parent.width
+
+                                            Rectangle {
+                                                implicitHeight: 48
+                                                implicitWidth: 48
+                                                color: Theme.surfaceContainerHighest
+                                                radius: Settings.radius
+
+                                                StyledText {
+                                                    anchors.centerIn: parent
+                                                    color: streamDelegate.appMuted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
+                                                    name: AppAudioService.getApplicationVolumeIcon(streamDelegate.node)
+                                                }
+
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    cursorShape: Qt.PointingHandCursor
+                                                    onClicked: AppAudioService.toggleApplicationMute(streamDelegate.node)
+                                                }
+                                            }
+
+                                            Slider {
+                                                Layout.fillWidth: true
+                                                implicitHeight: 30
+                                                // ← Use the properly bound property
+                                                value: Math.round(streamDelegate.appVolume * 100)
+                                                minValue: 0
+                                                maxValue: 100
+                                                icon: ""
+                                                showValue: true
+
+                                                onMoved: newValue => {
+                                                    AppAudioService.setApplicationVolume(streamDelegate.node, newValue);
+                                                }
+                                            }
+
+                                            AppIcon {
+                                                icon: streamDelegate.resolvedIcon
+                                                size: 30
+                                            }
+                                        }
                                     }
                                 }
                             }
-                            sub: ColumnLayout {
-                                id: appStreamCol
+                            RevealItems {
+                                id: revealBrightness
                                 Layout.fillWidth: true
-                                width: parent.width
-
-                                Repeater {
-                                    model: AppAudioService.applicationStreams
-                                    delegate: RowLayout {
-                                        id: streamDelegate
-                                        required property var modelData
-                                        readonly property var node: AppAudioService.isValidNode(modelData) && modelData
-                                        readonly property real appVolume: node.audio.volume ?? 0
-                                        readonly property bool appMuted: node.audio.muted ?? true
-
-                                        property string resolvedIcon: ""
-
-                                        Component.onCompleted: resolveIcon()
-                                        onNodeChanged: resolveIcon()
-
-                                        function resolveIcon() {
-                                            let appName = "";
-                                            AppAudioService.getApplicationName(node, function (name) {
-                                                appName = name;
-                                            });
-
-                                            if (appName.includes("electron") || appName.includes("Chromium")) {
-                                                // Set a generic fallback icon immediately while we wait for resolution
-                                                resolvedIcon = "chromium";
-
-                                                AppAudioService.resolveAppName(node, function (name) {
-                                                    streamDelegate.resolvedIcon = name;
-                                                });
-                                            } else {
-                                                resolvedIcon = appName;
-                                            }
+                                Layout.columnSpan: 2
+                                subItems: BrightnessService.monitors.length > 1
+                                property var currentScreen: BrightnessService && BrightnessService.getMonitorForScreen(root.screen)
+                                property real mainBrightness: currentScreen ? currentScreen.brightness : 0.0
+                                main: RowLayout {
+                                    Layout.fillWidth: true
+                                    implicitWidth: parent.width
+                                    Rectangle {
+                                        implicitHeight: 48
+                                        implicitWidth: 48
+                                        color: Theme.surfaceContainerHighest
+                                        radius: Settings.radius
+                                        StyledText {
+                                            anchors.centerIn: parent
+                                            color: AudioService.muted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
+                                            name: BrightnessService.getBrightnessIcon(revealBrightness.currentScreen.brightness)
                                         }
-
+                                    }
+                                    Slider {
                                         Layout.fillWidth: true
-                                        implicitWidth: parent.width
-
-                                        Rectangle {
-                                            implicitHeight: 48
-                                            implicitWidth: 48
-                                            color: Theme.surfaceContainerHighest
-                                            radius: Settings.radius
-
-                                            StyledText {
-                                                anchors.centerIn: parent
-                                                color: streamDelegate.appMuted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
-                                                name: AppAudioService.getApplicationVolumeIcon(streamDelegate.node)
-                                            }
-
-                                            MouseArea {
-                                                anchors.fill: parent
-                                                cursorShape: Qt.PointingHandCursor
-                                                onClicked: AppAudioService.toggleApplicationMute(streamDelegate.node)
-                                            }
+                                        value: Math.round(revealBrightness.mainBrightness * 100)
+                                        minValue: 0
+                                        maxValue: 100
+                                        icon: ""  // Icon is separate
+                                        showValue: true
+                                        onMoved: newValue => {
+                                            BrightnessService.setBrightness(newValue / 100);
                                         }
-
-                                        Slider {
+                                    }
+                                }
+                                sub: ColumnLayout {
+                                    id: monitorStreamCol
+                                    Layout.fillWidth: true
+                                    width: parent.width
+                                    Repeater {
+                                        model: BrightnessService.monitors.filter(m => m !== revealBrightness.currentScreen)
+                                        delegate: RowLayout {
+                                            id: brightnessStreamDelegate
+                                            required property var modelData
                                             Layout.fillWidth: true
-                                            implicitHeight: 30
-                                            // ← Use the properly bound property
-                                            value: Math.round(streamDelegate.appVolume * 100)
-                                            minValue: 0
-                                            maxValue: 100
-                                            icon: ""
-                                            showValue: true
+                                            implicitWidth: parent.width
 
-                                            onMoved: newValue => {
-                                                AppAudioService.setApplicationVolume(streamDelegate.node, newValue);
+                                            Rectangle {
+                                                implicitHeight: 48
+                                                implicitWidth: 48
+                                                color: Theme.surfaceContainerHighest
+                                                radius: Settings.radius
+
+                                                StyledText {
+                                                    anchors.centerIn: parent
+                                                    color: Theme.primaryContainerFg
+                                                    name: BrightnessService.getBrightnessIcon(brightnessStreamDelegate.modelData.brightness)
+                                                }
                                             }
-                                        }
 
-                                        AppIcon {
-                                            icon: streamDelegate.resolvedIcon
-                                            size: 30
+                                            Slider {
+                                                Layout.fillWidth: true
+                                                implicitHeight: 30
+                                                // ← Use the properly bound property
+                                                value: Math.round(brightnessStreamDelegate.modelData.brightness * 100)
+                                                minValue: 0
+                                                maxValue: 100
+                                                icon: ""
+                                                showValue: true
+
+                                                onMoved: newValue => {
+                                                    brightnessStreamDelegate.modelData.setBrightness(value / 100);
+                                                }
+                                            }
                                         }
                                     }
                                 }

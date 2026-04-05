@@ -27,6 +27,12 @@ Singleton {
     readonly property string _configUrl: StandardPaths.writableLocation(StandardPaths.ConfigLocation)
     readonly property string _configDir: Utils.strip(_configUrl)
 
+    property QtObject brightness: QtObject {
+        property bool enableDdcSupport: false
+        property var backlightDeviceMappings: []
+        property real enforceMinimum: 0.01
+    }
+
     Component.onCompleted: {
         loadSettings();
         detectDefault();
