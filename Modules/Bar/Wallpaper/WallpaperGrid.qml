@@ -8,8 +8,8 @@ import qs.Common
 
 Item {
     id: root
-    property int cellWidth: 200
-    property int cellHeight: 100
+    property int cellWidth: 180
+    property int cellHeight: 120
     property int padding: 12
     property int spacing: 8
     property int cellSize: 100
@@ -77,10 +77,8 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.secondaryContainer
+        color: Theme.surface
         radius: Settings.radius
-        border.width: 1
-        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
     }
 
     GridView {

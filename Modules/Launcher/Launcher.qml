@@ -1,6 +1,7 @@
 import qs.Services
 import qs.Common
 import qs.Widgets
+import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -140,6 +141,17 @@ Scope {
                 }
             }
 
+            DropShadow {
+                anchors.fill: launcherContainer
+                source: launcherContainer
+                horizontalOffset: 0
+                verticalOffset: 8
+                radius: 18
+                samples: 49
+                color: Qt.rgba(0, 0, 0, 0.35)
+                transparentBorder: true
+            }
+
             Rectangle {
                 id: launcherContainer
                 anchors.centerIn: parent
@@ -147,6 +159,8 @@ Scope {
                 height: root.showContainer ? 600 : 0
                 radius: Settings.radius
                 color: Theme.surface
+                border.width: 1
+                border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
                 clip: true
 
                 opacity: root.showContainer ? 1 : 0

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import qs.Services
 import qs.Common
@@ -60,12 +61,22 @@ PanelWindow {
         id: panelContainer
         x: Utils.clampScreenX(root.menuX, width, 5, root.screen)
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
-        implicitWidth: quickLayoutStack.width + 30
+        implicitWidth: quickLayoutStack.width + 40
         implicitHeight: quickLayoutStack.height
-        clip: true
-
+        clip: false
         state: root.visible ? "open" : "closed"
         transformOrigin: Item.Top
+
+        DropShadow {
+            anchors.fill: panelRect
+            source: panelRect
+            horizontalOffset: 0
+            verticalOffset: 8
+            radius: 18
+            samples: 49
+            color: Qt.rgba(0, 0, 0, 0.35)
+            transparentBorder: true
+        }
 
         states: [
             State {
@@ -115,9 +126,12 @@ PanelWindow {
         ]
 
         Rectangle {
+            id: panelRect
             anchors.fill: parent
             radius: Settings.radius
             color: Theme.surface
+            border.width: 1
+            border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
         }
 
         StackLayout {

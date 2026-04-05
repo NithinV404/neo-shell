@@ -1,4 +1,5 @@
 import QtQuick
+import Qt5Compat.GraphicalEffects
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell.Wayland
@@ -104,131 +105,148 @@ PanelWindow {
 
     // --- Menu popup ---
 
-    Rectangle {
+    Item {
         id: menuContainer
-
-        x: Utils.clampScreenX(root.menuX, width, 5, root.screen)
+        x: Utils.clampScreenX(root.menuX, width, 20, root.screen)
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
+        width: 224
+        height: backgroundRect.height + 24
+        transformOrigin: Item.Top
 
-        width: 200
-        height: outerColumn.implicitHeight  // driven entirely by content
-
-        color: Theme.surface
-        radius: Settings.radius
-        border.width: 1
-        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
-        clip: true
-
-        // Block click-through
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
+        DropShadow {
+            anchors.fill: backgroundRect
+            source: backgroundRect
+            horizontalOffset: 0
+            verticalOffset: 8
+            radius: 18
+            samples: 49
+            color: Qt.rgba(0, 0, 0, 0.35)
+            transparentBorder: true
         }
 
-        ColumnLayout {
-            id: outerColumn
+        Rectangle {
+            id: backgroundRect
             anchors.left: parent.left
             anchors.right: parent.right
-            spacing: 0
+            anchors.top: parent.top
+            anchors.margins: 0
 
-            // --- Menu items (padded) ---
+            height: outerColumn.implicitHeight
+
+            color: Theme.surface
+            radius: Settings.radius
+            border.width: 1
+            border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
+            clip: true
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+            }
+
             ColumnLayout {
-                Layout.fillWidth: true
-                Layout.margins: 8
-                spacing: 2
+                id: outerColumn
+                anchors.left: parent.left
+                anchors.right: parent.right
+                spacing: 0
 
-                Repeater {
-                    model: menuOpener.children
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.margins: 8
+                    spacing: 2
 
-                    delegate: Loader {
-                        id: delegateLoader
-                        required property var modelData
-                        Layout.fillWidth: true
-                        sourceComponent: modelData.isSeparator ? separatorComp : menuItemComp
+                    Repeater {
+                        model: menuOpener.children
 
-                        Component {
-                            id: menuItemComp
-                            Rectangle {
-                                implicitHeight: 30
-                                color: itemHover.containsMouse ? Theme.surfaceFg : Theme.surface
-                                radius: Settings.radius
+                        delegate: Loader {
+                            id: delegateLoader
+                            required property var modelData
+                            Layout.fillWidth: true
+                            sourceComponent: modelData.isSeparator ? separatorComp : menuItemComp
 
-                                MouseArea {
-                                    id: itemHover
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    onClicked: {
-                                        delegateLoader.modelData.triggered();
-                                        root.close();
+                            Component {
+                                id: menuItemComp
+                                Rectangle {
+                                    implicitHeight: 30
+                                    color: itemHover.containsMouse ? Theme.surfaceFg : Theme.surface
+                                    radius: Settings.radius
+
+                                    MouseArea {
+                                        id: itemHover
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        onClicked: {
+                                            delegateLoader.modelData.triggered();
+                                            root.close();
+                                        }
                                     }
-                                }
 
-                                RowLayout {
-                                    anchors.fill: parent
-                                    anchors.leftMargin: 8
-                                    anchors.rightMargin: 8
+                                    RowLayout {
+                                        anchors.fill: parent
+                                        anchors.leftMargin: 8
+                                        anchors.rightMargin: 8
 
-                                    Text {
-                                        text: delegateLoader.modelData.text
-                                        font.family: Settings.fontFamily
-                                        color: itemHover.containsMouse ? Theme.primaryFg : Theme.surfaceFg
-                                        Layout.fillWidth: true
-                                        elide: Text.ElideRight
-                                        antialiasing: true
+                                        Text {
+                                            text: delegateLoader.modelData.text
+                                            font.family: Settings.fontFamily
+                                            color: itemHover.containsMouse ? Theme.primaryFg : Theme.surfaceFg
+                                            Layout.fillWidth: true
+                                            elide: Text.ElideRight
+                                            antialiasing: true
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        Component {
-                            id: separatorComp
-                            Item {
-                                implicitHeight: 9
-                                Rectangle {
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.leftMargin: 4
-                                    anchors.rightMargin: 4
-                                    height: 1
-                                    color: Theme.surfaceFg
-                                    opacity: 0.5
+                            Component {
+                                id: separatorComp
+                                Item {
+                                    implicitHeight: 9
+                                    Rectangle {
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.leftMargin: 4
+                                        anchors.rightMargin: 4
+                                        height: 1
+                                        color: Theme.surfaceFg
+                                        opacity: 0.5
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            // --- Title bar (edge-to-edge, no negative margins needed) ---
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: 38
-                color: Theme.secondaryContainer
-                radius: Settings.radius
-                border.width: 1
-                border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
+                Rectangle {
+                    Layout.fillWidth: true
+                    implicitHeight: 38
+                    color: Theme.secondaryContainer
+                    radius: Settings.radius
+                    border.width: 1
+                    border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
 
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 8
-                    anchors.rightMargin: 8
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 8
+                        anchors.rightMargin: 8
 
-                    AppIcon {
-                        id: title_icon
-                        icon: root.title
-                        size: 20
-                        Layout.alignment: Qt.AlignVCenter
-                    }
+                        AppIcon {
+                            id: title_icon
+                            icon: root.title
+                            size: 20
+                            Layout.alignment: Qt.AlignVCenter
+                        }
 
-                    Text {
-                        id: title
-                        font.family: Settings.fontFamily
-                        color: Theme.surfaceFg
-                        antialiasing: true
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignVCenter
-                        elide: Text.ElideRight
+                        Text {
+                            id: title
+                            font.family: Settings.fontFamily
+                            color: Theme.surfaceFg
+                            antialiasing: true
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
+                            elide: Text.ElideRight
+                        }
                     }
                 }
             }

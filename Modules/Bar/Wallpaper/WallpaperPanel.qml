@@ -1,6 +1,7 @@
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import qs.Common
 import qs.Services
 import qs.Widgets
@@ -60,11 +61,22 @@ PanelWindow {
         id: panelContainer
         x: Utils.clampScreenX(root.menuX, width, 2, root.screen)
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
-        height: contentRect.height
-        width: contentRect.width
-        clip: true
+        width: contentRect.implicitWidth + 40
+        height: contentRect.height + 40
+        clip: false
         state: root.visible ? "open" : "closed"
         transformOrigin: Item.Top
+
+        DropShadow {
+            anchors.fill: contentRect
+            source: contentRect
+            horizontalOffset: 0
+            verticalOffset: 8
+            radius: 18
+            samples: 49
+            color: Qt.rgba(0, 0, 0, 0.35)
+            transparentBorder: true
+        }
 
         MouseArea {
             id: mouseArea
@@ -142,6 +154,8 @@ PanelWindow {
             id: contentRect
             color: Theme.surface
             radius: 26
+            border.width: 1
+            border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
             implicitWidth: Math.max(wallpaperGrid.implicitWidth, wallpaperbuttons.implicitWidth) + 20
             implicitHeight: wallpaperGrid.implicitHeight + wallpaperbuttons.height + 20
 
