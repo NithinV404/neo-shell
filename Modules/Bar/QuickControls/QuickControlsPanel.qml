@@ -151,15 +151,15 @@ PanelWindow {
                         readonly property int quickToogleHeight: 50
                         readonly property int quickToogleWidth: 170
                         columns: 2
-                        columnSpacing: 8
-                        rowSpacing: 8
+                        columnSpacing: 12
+                        rowSpacing: 12
                         anchors.centerIn: parent
 
                         Rectangle {
                             Layout.columnSpan: 2
                             Layout.fillWidth: true
                             Layout.preferredHeight: 26
-                            Layout.bottomMargin: 8
+                            Layout.bottomMargin: 4
                             radius: Settings.radius
                             color: "transparent" //Theme.surfaceContainerHighest
                             // border.width: 1
