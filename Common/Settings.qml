@@ -17,8 +17,7 @@ Singleton {
     property string defaultIconTheme: ""
     property bool hasTriedDefaultSettings: false
     property var availableIconThemes: []
-    property bool audioVolumeOverdrive: true
-    property int audioVolumeStep: 2
+
     property string wallpaperImage: ""
     property string wallpapersFolder: "~/Pictures/Wallpapers"
     property var wallpaperFolderImages: []
@@ -31,6 +30,12 @@ Singleton {
         property bool enableDdcSupport: false
         property var backlightDeviceMappings: []
         property real enforceMinimum: 0.01
+    }
+
+    property QtObject audio: QtObject {
+        property int volumeStep: 1
+        property bool volumeOverdrive: true
+        property bool volumeFeedback: false
     }
 
     Component.onCompleted: {
@@ -65,8 +70,11 @@ Singleton {
             "fontFamily": fontFamily,
             "iconTheme": iconTheme,
             "wallpaperFolderImages": wallpaperFolderImages,
-            "audioVolumeStep": audioVolumeStep,
-            "audioVolumeOverdrive": audioVolumeOverdrive,
+            "audio": {
+                "volumeStep": audio.volumeStep,
+                "volumeOverdrive": audio.volumeOverdrive,
+                "volumeFeedback": audio.volumeFeedback
+            },
             "wallpapersFolder": wallpapersFolder,
             "wallpaperImage": wallpaperImage,
             "defaultIconTheme": defaultIconTheme,
@@ -84,8 +92,9 @@ Singleton {
                 darkMode = settings.darkMode !== undefined ? settings.darkMode : "light";
                 fontFamily = settings.fontFamily !== undefined ? settings.fontFamily : "Adwaita Sans";
                 iconTheme = settings.iconTheme !== undefined ? settings.iconTheme : "System Default";
-                audioVolumeOverdrive = settings.audioVolumeOverdrive !== undefined ? settings.audioVolumeOverdrive : false;
-                audioVolumeStep = settings.audioVolumeStep !== undefined ? settings.audioVolumeStep : 1;
+                audio.volumeOverdrive = settings.audio.volumeOverdrive !== undefined ? settings.audio.volumeOverdrive : false;
+                audio.volumeStep = settings.audio.volumeStep !== undefined ? settings.audio.volumeStep : 1;
+                audio.volumeFeedback = settings.audio.volumeFeedback !== undefined ? settings.audio.volumeFeedback: false
                 wallpaperFolderImages = settings.wallpaperFolderImages !== undefined ? settings.wallpaperFolderImages : [];
                 wallpapersFolder = settings.wallpapersFolder !== undefined ? settings.wallpapersFolder : "~/Pictures/Wallpapers";
                 wallpaperImage = settings.wallpaperImage !== undefined ? settings.wallpaperImage : "";
