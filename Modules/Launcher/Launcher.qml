@@ -5,24 +5,24 @@ import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Io
 import Quickshell.Wayland
+import qs.Services.UI
 
 Scope {
     id: root
 
-    IpcHandler {
-        target: "launcher"
+    Connections {
+        target: LauncherService
 
-        function toggleLauncher() {
+        function onToggle() {
             root.toggle();
         }
 
-        function showLauncher() {
+        function onOpen() {
             root.open();
         }
 
-        function hideLauncher() {
+        function onClose() {
             root.close();
         }
     }

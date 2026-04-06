@@ -10,10 +10,11 @@ import Quickshell
 import QtQuick
 import Quickshell.Wayland
 import qs.Modules.Bar
+import qs.Modules.Launcher
 import qs.Modules
 import qs.Modals
 import qs.Common
-import qs.Modules.Launcher
+import qs.Services
 
 // import Niri
 
@@ -23,6 +24,7 @@ ShellRoot {
         if (this.WlrLayershell != null) {
             this.WlrLayershell.layer = WlrLayer.Top;
         }
+        IPCService.init();
     }
 
     // Process {
@@ -50,8 +52,8 @@ ShellRoot {
     }
 
     VolumeOSD {}
-    Launcher {}
     PowerMenu {}
+    Launcher {}
 
     // Bar on each screen
     Variants {
