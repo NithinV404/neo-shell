@@ -10,20 +10,22 @@ import Quickshell.Wayland
 Scope {
     id: root
 
-    PwObjectTracker {
-        objects: [Pipewire.defaultAudioSink]
-    }
-
     Connections {
-        target: Pipewire.defaultAudioSink?.audio ?? null
+            target: AudioService
 
-        function onVolumeChanged() {
-            root.open();
+            function onVolumeChanged() {
+                // ONLY show if we aren't dragging the panel slider
+                if (!AudioService.consumeOutputOSDSuppression()) {
+                    root.open();
+                }
+            }
+
+            function onMutedChanged() {
+                if (!AudioService.consumeOutputOSDSuppression()) {
+                    root.open();
+                }
+            }
         }
-        function onMutedChanged() {
-            root.open();
-        }
-    }
 
     property bool shouldShowOsd: false
     property bool animating: false
@@ -131,7 +133,7 @@ Scope {
                     id: volumeOSDLayout
                     anchors.centerIn: parent
                     spacing: 4
-                    property real volume: (Pipewire.defaultAudioSink?.audio.volume ?? 0)
+                    property real volume: (AudioService.volume ?? 0)
 
                     StyledText {
                         Layout.alignment: Qt.AlignVCenter
@@ -141,7 +143,7 @@ Scope {
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: AudioService.toggleMute()
+                            onClicked: AudioService.setOutputMuted(!AudioService.muted)
                         }
                     }
 
@@ -179,7 +181,7 @@ Scope {
                             Layout.fillWidth: true
                             implicitWidth: 120
                             progress: volumeOSDLayout.volume
-                            maxProgress: Settings.audioVolumeStep ? 1.5 : 1.0
+                            maxProgress: Settings.audio.volumeOverdrive ? 1.5 : 1.0
                         }
                     }
                 }
