@@ -20,6 +20,7 @@ PanelWindow {
 
     focusable: mouseArea.containsMouse || textField.focused
     WlrLayershell.layer: WlrLayer.Overlay
+    exclusionMode: ExclusionMode.Ignore
 
     signal menuClosed
 
@@ -62,7 +63,7 @@ PanelWindow {
         x: Utils.clampScreenX(root.menuX, width, 2, root.screen)
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
         width: contentRect.implicitWidth + 40
-        height: contentRect.height + 40
+        height: contentRect.height
         clip: false
         state: root.visible ? "open" : "closed"
         transformOrigin: Item.Top
