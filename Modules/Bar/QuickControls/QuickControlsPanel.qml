@@ -330,7 +330,7 @@ PanelWindow {
                                         MouseArea {
                                             anchors.fill: parent
                                             cursorShape: Qt.PointingHandCursor
-                                            onClicked: AudioService.toggleMute()  // ← This toggles mute
+                                            onClicked: AudioService.setOutputMuted(!AudioService.muted)  // ← This toggles mute
                                         }
                                     }
 
