@@ -32,7 +32,7 @@ PanelWindow {
     implicitHeight: 40
     WlrLayershell.namespace: "neoshell:bar"
     WlrLayershell.layer: WlrLayer.Top
-    WlrLayershell.exclusionMode: ExclusionMode.Ignore
+    WlrLayershell.exclusionMode: ExclusionMode.Auto
 
     Rectangle {
         anchors.fill: parent
