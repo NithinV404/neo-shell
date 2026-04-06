@@ -1,9 +1,9 @@
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
-import Quickshell.Io
 import QtQuick.Layouts
 import qs.Services
+import qs.Services.UI
 import qs.Widgets
 import qs.Common
 
@@ -77,13 +77,13 @@ Scope {
 
     Connections {
         target: PowerMenuService
-        function onToggleRequested() {
+        function onToggle() {
             root.toggle();
         }
-        function onOpenRequested() {
+        function onOpen() {
             root.open();
         }
-        function onCloseRequested() {
+        function onClose() {
             root.close();
         }
     }
