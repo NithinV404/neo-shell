@@ -8,21 +8,9 @@ import qs.Common
 
 Item {
     id: root
-    property var wifiService
-    property var wifiModalInstace: null
-    property alias wifi: root.wifiService
-    property var wifiNetworks: []
     signal goBack
     implicitHeight: 400
     implicitWidth: 350
-
-    Component.onCompleted: {
-        root.wifiService.addRef();
-    }
-
-    Component.onDestruction: {
-        root.wifiService.removeRef();
-    }
 
     Rectangle {
         anchors.fill: parent
@@ -30,37 +18,9 @@ Item {
         radius: 12
     }
 
-    function updateSortedNetworks() {
-        root.wifiNetworks = getSortedNetworks();
-    }
-
-    // Sorted network list
-    function getSortedNetworks() {
-        return root.wifiService.wifiNetworks.filter(w => w.connected === false).sort((a, b) => {
-            if (a.ssid === root.wifiService.currentWifiSSID)
-                return -1;
-            if (b.ssid === root.wifiService.currentWifiSSID)
-                return 1;
-            return b.signal - a.signal;
-        });
-    }
-
-    Connections {
-        target: root.wifiService
-        function onPasswordDialogShouldReopenChanged() {
-            wifiModalLoader.open("Invalid Password", wifiListContainer.lastAttemptSSID);
-        }
-        function onNetworksUpdated() {
-            root.updateSortedNetworks();
-        }
-        function onWifiInterfaceChanged() {
-            console.log(root.wifiService.wifiInterface);
-        }
-    }
-
     ColumnLayout {
         anchors {
-            fill : parent
+            fill: parent
             topMargin: 12
             bottomMargin: 12
         }
@@ -126,7 +86,7 @@ Item {
 
                     NumberAnimation on rotation {
                         id: rotationAnim
-                        running: root.wifiService.isScanning
+                        running: NetworkService.scanningActive
                         from: 0
                         to: 360
                         duration: 1000
@@ -144,18 +104,16 @@ Item {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            root.wifiService.scanWifi();
+                            NetworkService.scan();
                         }
                     }
                 }
 
                 Toggle {
                     id: wifiToggle
-                    checked: root.wifiService.wifiEnabled
+                    checked: NetworkService.wifiEnabled
                     onToggled: {
-                        if (!root.wifiService.wifiToggling) {
-                            root.wifiService.toggleWifiRadio();
-                        }
+                        NetworkService.setWifiEnabled(!NetworkService.wifiEnabled);
                     }
                 }
             }
@@ -182,40 +140,30 @@ Item {
 
                 property string activeInputSSID
                 property string lastAttemptSSID
-                property var availableNetworks: root.wifiNetworks.filter(a => !a.connected)
-                property var connectedNetworks: []
 
-                Component.onCompleted: updateConnectedNetworks()
+                property var connectedNetworks: {
+                    var list = [];
 
-                function updateConnectedNetworks() {
-                    wifiListContainer.connectedNetworks = getConnectedNetworks();
-                }
-
-                function getConnectedNetworks() {
-                    var networks = [];
-                    if (root.wifiService.ethernetConnected) {
-                        networks.push({
-                            "ssid": root.wifiService.ethernetInterface,
-                            "status": root.wifiService.ethernetConnected,
-                            "icon": root.wifiService.ethernetConnected ? "lan" : "signal_disconnected",
-                            "id": "lan"
+                    // Only add if actually connected and has data
+                    if (NetworkService.ethernetConnected && NetworkService.activeEthernetDetails.connectionName) {
+                        list.push({
+                            type: "ethernet",
+                            data: NetworkService.activeEthernetDetails
                         });
                     }
 
-                    if (root.wifiService.wifiConnected) {
-                        networks.push({
-                            "ssid": root.wifiService.currentWifiSSID,
-                            "status": root.wifiService.wifiConnected,
-                            "icon": root.wifiService.getWifiSignalIcon(root.wifiService.wifiSignalStrength),
-                            "id": "wifi"
+                    if (NetworkService.wifiConnected && NetworkService.activeWifiDetails.connectionName) {
+                        list.push({
+                            type: "wifi",
+                            data: NetworkService.activeWifiDetails
                         });
                     }
-                    return networks;
-                }
 
+                    return list;
+                }
                 Text {
                     Layout.leftMargin: 8
-                    visible: wifiListContainer.connectedNetworks.length > 0
+                    visible: NetworkService.activeEthernetDetails || NetworkService.activeWifiDetails
                     color: Qt.darker(Theme.primary)
                     font.family: Settings.fontFamily
                     text: "Connected networks"
@@ -269,7 +217,7 @@ Item {
                                 Layout.fillWidth: true
 
                                 StyledText {
-                                    name: connectedDelegateScope.modelData.icon
+                                    name: connectedDelegateScope.modelData.type == "ethernet" ? "lan" : NetworkService.getSignalInfo(connectedDelegateScope.modelData.data.signal, connectedDelegateScope.modelData.data.connected).icon
                                     color: Theme.primaryFg
                                     container: true
                                     containerColor: Theme.primary
@@ -283,7 +231,7 @@ Item {
 
                                     Text {
                                         text: {
-                                            let name = connectedDelegateScope.modelData.id;
+                                            let name = connectedDelegateScope.modelData.type;
                                             return name.charAt(0).toUpperCase() + name.slice(1);
                                         }
                                         color: Theme.surfaceFg
@@ -291,8 +239,8 @@ Item {
                                     }
                                     Text {
                                         text: {
-                                            var ssid = connectedDelegateScope.modelData.ssid;
-                                            if (ssid.length > 20)
+                                            var ssid = connectedDelegateScope.modelData.data.connectionName;
+                                            if (ssid > 20)
                                                 return ssid.slice(0, 18) + "...";
                                             else if (!ssid)
                                                 return "Hidden";
@@ -325,7 +273,8 @@ Item {
                                     Text {
                                         id: connectedConnectBtnText
                                         anchors.centerIn: parent
-                                        text: connectedDelegateScope.modelData.status ? "Disconnect" : "Connect"
+                                        visible: connectedDelegateScope.modelData.type == "wifi"
+                                        text: connectedDelegateScope.modelData.type == "wifi" ? "Disconnect" : "Connect"
                                         color: Theme.primaryFg
                                         font.pixelSize: 12
                                     }
@@ -335,11 +284,11 @@ Item {
                                         cursorShape: Qt.PointingHandCursor
                                         hoverEnabled: true
                                         onClicked: {
-                                            if (connectedDelegateScope.modelData.id == "wifi") {
+                                            if (connectedDelegateScope.modelData.type == "wifi") {
                                                 root.wifiService.disconnectWifi();
                                             } else {
-                                                if (root.wifiService.ethernetConnected) {
-                                                    root.wifiService.disconnectEthernet();
+                                                if (NetworkService.ethernetConnected) {
+                                                    NetworkService.disconnectEthernet();
                                                 } else {
                                                     root.wifiService.connectEthernet();
                                                 }
@@ -367,7 +316,7 @@ Item {
                     }
 
                     Loading {
-                        visible: root.wifiService.isScanning
+                        visible: NetworkService.scanningActive
                         implicitSize: 40
                         Layout.topMargin: 12
                         Layout.bottomMargin: 12
@@ -377,11 +326,12 @@ Item {
                         id: wifiColumn
                         Layout.fillWidth: true
                         spacing: 2
-                        visible: root.wifiService.wifiEnabled
+                        visible: NetworkService.wifiEnabled
 
                         Repeater {
                             id: wifiRepeater
-                            model: wifiListContainer.availableNetworks
+                            property var availableNetworks: Object.values(NetworkService.networks || {})
+                            model: availableNetworks
 
                             delegate: FocusScope {
                                 id: delegateScope
@@ -400,12 +350,6 @@ Item {
                                 readonly property string bssid: modelData.bssid ?? ""
                                 readonly property bool connected: modelData.connected ?? false
                                 readonly property bool saved: modelData.saved ?? false
-
-                                property bool isExpanded: wifiListContainer.activeInputSSID === delegateScope.ssid
-                                readonly property bool isCurrent: delegateScope.ssid === root.wifiService.currentWifiSSID
-                                readonly property bool isConnecting: root.wifiService.isConnecting && root.wifiService.connectingSSID === delegateScope.ssid
-                                readonly property bool isLastAttempt: wifiListContainer.lastAttemptSSID === delegateScope.ssid
-                                readonly property bool isErrorForThisRow: isLastAttempt && (root.wifiService.connectionStatus === "invalid_password" || root.wifiService.connectionStatus === "failed")
 
                                 // Helper properties for rounded corners
                                 readonly property bool isFirst: delegateScope.index === 0
@@ -449,7 +393,7 @@ Item {
                                             Layout.fillWidth: true
 
                                             StyledText {
-                                                name: root.wifiService.getWifiSignalIcon(delegateScope.signal)
+                                                name: NetworkService.getSignalInfo(delegateScope.signal, delegateScope.connected).icon
                                                 color: Theme.primaryFg
                                                 container: true
                                                 containerColor: Theme.primary
@@ -479,7 +423,7 @@ Item {
                                                 Text {
                                                     text: {
                                                         if (delegateScope.isConnecting) {
-                                                            return root.wifiService.connectionStatus;
+                                                            return "Connecting...";
                                                         }
                                                         if (delegateScope.connected) {
                                                             return "Connected";
@@ -512,7 +456,7 @@ Item {
                                                 Text {
                                                     id: connectBtnText
                                                     anchors.centerIn: parent
-                                                    text: delegateScope.isCurrent ? "Disconnect" : "Connect"
+                                                    text: delegateScope.connected ? "Disconnect" : "Connect"
                                                     color: Theme.primaryFg
                                                     font.pixelSize: 12
                                                 }
@@ -525,7 +469,7 @@ Item {
                                                     onClicked: {
                                                         if (delegateScope.isCurrent) {
                                                             wifiModalLoader.close();
-                                                            root.wifiService.disconnectWifi();
+                                                            NetworkService.disconnect(delegateScope.ssid);
                                                             wifiListContainer.activeInputSSID = "";
                                                             wifiListContainer.lastAttemptSSID = "";
                                                             return;
@@ -536,7 +480,7 @@ Item {
                                                         if (delegateScope.secured && !delegateScope.saved) {
                                                             wifiModalLoader.open("Connect to Wifi", delegateScope.ssid);
                                                         } else {
-                                                            root.wifiService.connectToWifi(delegateScope.ssid);
+                                                            root.wifiService.connect(delegateScope.ssid);
                                                         }
                                                     }
                                                 }
@@ -580,7 +524,7 @@ Item {
                                             elide: Text.ElideRight
                                         }
                                         onTriggered: {
-                                            root.wifiService.forgetWifiNetwork(delegateScope.ssid);
+                                            NetworkService.forget(delegateScope.ssid);
                                         }
                                     }
                                 }
@@ -591,12 +535,20 @@ Item {
 
                 // --- Empty State ---
                 HelpInfo {
-                    visible: !root.wifiService.wifiEnabled
+                    visible: !NetworkService.wifiEnabled
                     implicitHeight: 200
                     Layout.alignment: Qt.AlignCenter
                     Layout.fillWidth: true
-                    icon: "wifi_off"
-                    title: "Turn on wifi"
+                    icon: if (!NetworkService.wifiEnabled) {
+                        return "wifi_off";
+                    } else {
+                        return "warning";
+                    }
+                    title: if (!NetworkService.wifiEnabled) {
+                        return "Turn on wifi";
+                    } else {
+                        return "Wifi Adapter not found";
+                    }
                 }
             }
         }

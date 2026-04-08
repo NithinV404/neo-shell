@@ -78,22 +78,21 @@ Rectangle {
         QuickToggle {
             icon: {
                 name: {
-                    var ns = NetworkService;
-                    if (ns.ethernetConnected) {
+                    if (NetworkService.ethernetConnected) {
                         return "lan";
                     }
-                    if (ns.wifiEnabled && !ns.wifiConnected) {
+                    if (NetworkService.wifiEnabled && !NetworkService.wifiConnected) {
                         return "signal_wifi_bad";
                     }
-                    if (ns.wifiEnabled && ns.wifiConnected) {
-                        return ns.getWifiSignalIcon(ns.wifiSignalStrength);
+                    if (NetworkService.wifiEnabled && NetworkService.wifiConnected) {
+                        return NetworkService.getSignalInfo(NetworkService.activeWifiDetails.signal, NetworkService.connected).icon;
                     }
 
                     return "signal_disconnected";
                 }
             }
             title: {
-                var name = NetworkService.networkStatus;
+                var name = NetworkService.ethernetConnected && "Ethernet" || NetworkService.wifiConnected && "Wifi";
                 return name.charAt(0).toUpperCase() + name.slice(1);
             }
             status: {
@@ -103,7 +102,7 @@ Rectangle {
                 if (ns.wifiEnabled && !ns.wifiConnected)
                     return "Wifi available";
                 if (ns.wifiEnabled && ns.wifiConnected)
-                    return ns.currentWifiSSID;
+                    return ns.activeWifiDetails.connectionName;
                 return "No internet";
             }
 

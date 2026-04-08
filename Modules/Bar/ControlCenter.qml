@@ -166,7 +166,6 @@ PanelWindow {
                 id: wifiPanelPanel
                 asynchronous: true
                 sourceComponent: NetworkPanel {
-                    wifi: NetworkService
                     onGoBack: quickLayoutStack.currentIndex = 0
                     anchors.fill: parent
                 }

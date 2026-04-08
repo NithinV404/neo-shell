@@ -77,15 +77,15 @@ Rectangle {
         // --- ICON - 1: Ethernet ---
         StyledText {
             name: {
-                var ns = NetworkService;
-                if (ns.ethernetConnected) {
+
+                if (NetworkService.ethernetConnected) {
                     return "lan";
                 }
-                if (ns.wifiEnabled && !ns.wifiConnected) {
+                if (NetworkService.wifiEnabled && !NetworkService.wifiConnected) {
                     return "signal_wifi_bad";
                 }
-                if (ns.wifiEnabled && ns.wifiConnected) {
-                    return ns.getWifiSignalIcon(ns.wifiSignalStrength);
+                if (NetworkService.wifiEnabled && NetworkService.wifiConnected) {
+                    return NetworkService.getSignalInfo(NetworkService.activeWifiDetails.signal, NetworkService.activeWifiDetails.connected).icon;
                 }
 
                 return "signal_disconnected";
