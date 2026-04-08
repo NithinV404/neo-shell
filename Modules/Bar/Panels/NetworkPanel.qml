@@ -140,8 +140,27 @@ Item {
 
                 property string activeInputSSID
                 property string lastAttemptSSID
+                property var connectedNetworks: []
 
-                property var connectedNetworks: {
+                Component.onCompleted: getConnectedNetworks()
+
+                Connections {
+                    target: NetworkService
+
+                    function onWifiConnectedChanged() {
+                        Qt.callLater(() => wifiListContainer.getConnectedNetworks());
+                    }
+
+                    function onEthernetConnectedChanged() {
+                        Qt.callLater(() => wifiListContainer.getConnectedNetworks());
+                    }
+
+                    function onWifiEnabledChanged() {
+                        Qt.callLater(() => wifiListContainer.getConnectedNetworks());
+                    }
+                }
+
+                function getConnectedNetworks() {
                     var list = [];
 
                     // Only add if actually connected and has data
@@ -159,11 +178,12 @@ Item {
                         });
                     }
 
-                    return list;
+                    connectedNetworks = list;
                 }
+
                 Text {
                     Layout.leftMargin: 8
-                    visible: NetworkService.activeEthernetDetails || NetworkService.activeWifiDetails
+                    visible: NetworkService.ethernetConnected || NetworkService.wifiConnected
                     color: Qt.darker(Theme.primary)
                     font.family: Settings.fontFamily
                     text: "Connected networks"
@@ -309,6 +329,7 @@ Item {
 
                     Text {
                         Layout.leftMargin: 8
+                        visible: NetworkService.wifiEnabled
                         color: Qt.darker(Theme.primary)
                         font.family: Settings.fontFamily
                         text: "Available networks"
@@ -532,24 +553,23 @@ Item {
                         }
                     }
                 }
-
-                // --- Empty State ---
-                HelpInfo {
-                    visible: !NetworkService.wifiEnabled
-                    implicitHeight: 200
-                    Layout.alignment: Qt.AlignCenter
-                    Layout.fillWidth: true
-                    icon: if (!NetworkService.wifiEnabled) {
-                        return "wifi_off";
-                    } else {
-                        return "warning";
-                    }
-                    title: if (!NetworkService.wifiEnabled) {
-                        return "Turn on wifi";
-                    } else {
-                        return "Wifi Adapter not found";
-                    }
-                }
+            }
+        }
+        // --- Empty State ---
+        HelpInfo {
+            visible: !NetworkService.wifiEnabled
+            Layout.fillHeight: true
+            Layout.alignment: Qt.AlignCenter
+            Layout.fillWidth: true
+            icon: if (!NetworkService.wifiEnabled) {
+                return "wifi_off";
+            } else {
+                return "warning";
+            }
+            title: if (!NetworkService.wifiEnabled) {
+                return "Turn on wifi";
+            } else {
+                return "Wifi Adapter not found";
             }
         }
     }
