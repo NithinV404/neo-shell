@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Services.Pipewire
 import qs.Widgets
 import qs.Services
 import qs.Common
@@ -11,21 +10,21 @@ Scope {
     id: root
 
     Connections {
-            target: AudioService
+        target: AudioService
 
-            function onVolumeChanged() {
-                // ONLY show if we aren't dragging the panel slider
-                if (!AudioService.consumeOutputOSDSuppression()) {
-                    root.open();
-                }
-            }
-
-            function onMutedChanged() {
-                if (!AudioService.consumeOutputOSDSuppression()) {
-                    root.open();
-                }
+        function onVolumeChanged() {
+            // ONLY show if we aren't dragging the panel slider
+            if (!AudioService.consumeOutputOSDSuppression()) {
+                root.open();
             }
         }
+
+        function onMutedChanged() {
+            if (!AudioService.consumeOutputOSDSuppression()) {
+                root.open();
+            }
+        }
+    }
 
     property bool shouldShowOsd: false
     property bool animating: false
@@ -133,7 +132,14 @@ Scope {
                     id: volumeOSDLayout
                     anchors.centerIn: parent
                     spacing: 4
-                    property real volume: (AudioService.volume ?? 0)
+                    property real volume: AudioService.volume
+
+                    Behavior on volume {
+                        NumberAnimation {
+                            duration: 200
+                            easing.type: Easing.OutCubic
+                        }
+                    }
 
                     StyledText {
                         Layout.alignment: Qt.AlignVCenter

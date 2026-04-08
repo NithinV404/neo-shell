@@ -12,6 +12,7 @@ Item {
     property var bs
     property alias bluetooth: root.bs
     implicitHeight: 400
+    implicitWidth: 350
 
     signal goBack
 
@@ -52,14 +53,16 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.surface
+        color: "transparent"
         radius: 12
     }
 
     ColumnLayout {
-        anchors.fill: parent
-        anchors.topMargin: 12
-        spacing: 12
+    anchors {
+        fill : parent
+        topMargin: 12
+        bottomMargin: 12
+    }
 
         // --- Header (Fixed, doesn't scroll) ---
         Rectangle {

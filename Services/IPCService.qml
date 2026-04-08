@@ -9,7 +9,8 @@ import qs.Services
 Singleton {
     id: root
 
-    function init() {}
+    function init() {
+    }
 
     IpcHandler {
         target: "launcher"
@@ -47,25 +48,23 @@ Singleton {
         target: "media"
 
         function playPause() {
-            MediaService.playPause()
+            MediaService.playPause();
         }
 
         function play() {
-            MediaService.play()
+            MediaService.play();
         }
 
         function pause() {
-            MediaService.pause()
+            MediaService.pause();
         }
 
-        function next()
-        {
-            MediaService.next()
+        function next() {
+            MediaService.next();
         }
 
-        function previous()
-        {
-            MediaService.previous()
+        function prev() {
+            MediaService.previous();
         }
     }
 
@@ -84,10 +83,8 @@ Singleton {
             AudioService.setOutputMuted(!AudioService.muted);
         }
 
-        function inputMute()
-        {
-            AudioService.setInputMuted(!AudioService.inputMuted)
+        function inputMute() {
+            AudioService.setInputMuted(!AudioService.inputMuted);
         }
     }
-
 }

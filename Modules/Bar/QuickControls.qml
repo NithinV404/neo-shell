@@ -3,6 +3,10 @@ import QtQuick
 import qs.Services
 import qs.Widgets
 import qs.Common
+import qs.Modules
+import qs.Modules.Bar
+import qs.Modules.Bar.Panels
+
 
 Rectangle {
     id: root
@@ -121,7 +125,7 @@ Rectangle {
     Loader {
         id: panel
         active: false
-        sourceComponent: QuickControlsPanel {
+        sourceComponent: ControlCenter {
             screen: root.screen
             onMenuClosed: {
                 panel.active = false;

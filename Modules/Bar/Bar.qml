@@ -2,9 +2,9 @@
 
 import Quickshell
 import QtQuick
-import qs.Modules.Bar.BackgroundApps
-import qs.Modules.Bar.QuickControls
+import qs.Modules
 import qs.Modules.Bar
+import qs.Modules.Bar.Panels
 import qs.Services
 import qs.Common
 import Quickshell.Wayland

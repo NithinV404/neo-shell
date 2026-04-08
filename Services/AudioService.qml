@@ -23,7 +23,7 @@ Singleton {
     readonly property bool hasInput: !!source
     readonly property list<PwNode> sinks: deviceNodes.sinks
     readonly property list<PwNode> sources: deviceNodes.sources
-    readonly property real maxVolume: Settings.volumeOverdrive ? 1.5 : 1.0
+    readonly property real maxVolume: Settings.audio.volumeOverdrive ? 1.5 : 1.0
     readonly property real epsilon: 0.005
 
     // Fallback state sourced from wpctl when PipeWire node values go stale.
@@ -1236,5 +1236,142 @@ Singleton {
             return;
         }
         Pipewire.preferredDefaultAudioSource = newSource;
+    }
+
+    function isValidNode(node) {
+        return node && node.ready;
+    }
+
+    function getApplicationName(node, cb) {
+        if (!isValidNode(node)) {
+            return "Unknown Application";
+        }
+
+        const props = node.properties || {};
+        const desc = node.description || {};
+
+        if (props["pipewire.access.portal.app_id"]) {
+            let appId = props["pipewire.access.portal.app_id"];
+            cb(appId);
+            return;
+        }
+
+        let name = props["application.name"] || props["media.title"] || props["media.name"];
+
+        if (!name && props["application.id"]) {
+            let id = props["application.id"].split('.').pop();
+            name = id.charAt(0).toUpperCase() + id.slice(1);
+        }
+
+        if (!name && props["application.process.binary"]) {
+            name = props["application.process.binary"].split('/').pop();
+        }
+
+        if (name.includes("electron") || name.includes("chromium")) {
+            name = "chromium";
+            resolveAppName(node, function (name) {
+                name = name;
+            });
+        }
+
+        if (!name && desc) {
+            name = desc;
+        }
+
+        cb(name);
+    }
+
+    function resolveAppName(node, callback) {
+        let props = node.properties;
+        // --- Native apps: /proc works fine ---
+        let procId = props["application.process.id"]?.toString();
+        if (!procId) {
+            if (callback)
+                callback("unknown");
+            return;
+        }
+
+        if (root.resolvedIcons[procId]) {
+            if (callback)
+                callback(root.resolvedIcons[procId]);
+            return;
+        }
+
+        let proc = resolverComponent.createObject(root, {
+            "command": ["cat", "/proc/" + procId + "/environ"],
+            "pid": procId,
+            "callback": callback
+        });
+        proc.running = true;
+    }
+
+    Component {
+        id: resolverComponent
+        Process {
+            id: procResolver
+            property var callback: null
+            property string result: ""
+            property string pid
+
+            stdout: SplitParser {
+                splitMarker: ""
+                onRead: data => {
+                    result += data;
+                }
+            }
+
+            onExited: (exitCode, exitStatus) => {
+                let appName = "unknown";
+                if (exitCode === 0 && result.length > 0) {
+                    let data = result.trim().split("\0");
+                    for (let part of data) {
+                        if (part.startsWith("CHROME_DESKTOP=")) {
+                            appName = part.split("=").slice(1).join("=");
+                            appName = appName.replace(".desktop", "");
+                            break;
+                        }
+                        if (part.startsWith("GDK_PROGRAM_CLASS=")) {
+                            appName = part.split("=").slice(1).join("=");
+                            break;
+                        }
+                    }
+                    let newCache = root.resolvedIcons;
+                    newCache[procResolver.pid] = appName;
+                    root.resolvedIcons = newCache;
+
+                    if (procResolver.callback && typeof procResolver.callback === "function") {
+                        procResolver.callback(appName);
+                    }
+
+                    procResolver.destroy();
+                }
+            }
+        }
+    }
+
+    function getApplicationVolumeIcon(node) {
+        if (!node || !node.audio) {
+            return "volume_off";
+        }
+
+        if (node.ready === false) {
+            return "volume_off";
+        }
+
+        // Check muted first
+        if (node.audio.muted) {
+            return "volume_off";
+        }
+
+        // Convert 0.0-1.0 to 0-100
+        let volume = (node.audio.volume ?? 0) * 100;
+
+        if (volume > 60) {
+            return "volume_up";
+        } else if (volume > 0) {
+            return "volume_down";
+        } else {
+            return "volume_off";
+        }
     }
 }

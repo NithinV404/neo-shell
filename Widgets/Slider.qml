@@ -8,7 +8,7 @@ Item {
     id: root
 
     implicitWidth: 200
-    implicitHeight: 40
+    implicitHeight: 60
 
     property real value: 0.5
     property real minValue: 0.0
@@ -27,7 +27,9 @@ Item {
 
     Rectangle {
         id: background
-        anchors.fill: parent
+        height: parent.height - 24
+        width: parent.width
+        anchors.centerIn: parent
         radius: Settings.radius
         color: Theme.surfaceContainerHighest
 
@@ -62,7 +64,7 @@ Item {
         Rectangle {
             id: handle
             width: 12
-            height: parent.height + 28
+            height: parent.height + 24
             radius: 5
             color: Theme.surface
             anchors.verticalCenter: parent.verticalCenter

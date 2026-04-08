@@ -1,21 +1,20 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Services
-import qs.Common
 
 Rectangle {
     id: root
     property bool expanded: false
-    property alias main: mainComponent.children
-    property alias sub: subComponent.children
+    property alias main: mainComponent.sourceComponent
+    property alias sub: subComponent.sourceComponent
     property bool subItems: true
 
     color: Theme.surface
     radius: 8
 
-    // Proper size calculation
-    implicitWidth: contentLayout.implicitWidth + 16
-    implicitHeight: contentLayout.implicitHeight + 16
+    // Use Layout attached properties for sizing
+    Layout.fillWidth: true
+    implicitHeight: contentLayout.implicitHeight
 
     ColumnLayout {
         id: contentLayout
@@ -23,20 +22,17 @@ Rectangle {
         anchors.margins: 2
         spacing: 8
 
-        // Main row with content + arrow
         RowLayout {
             Layout.fillWidth: true
             spacing: 2
 
-            // Container for main content
-            Item {
+            // Use Loader for main content with explicit sizing
+            Loader {
                 id: mainComponent
                 Layout.fillWidth: true
-                implicitHeight: childrenRect.height
-                implicitWidth: childrenRect.width
+                Layout.preferredHeight: item ? item.implicitHeight : 48
             }
 
-            // Arrow button on the right
             StyledText {
                 id: dropdown_icon
                 name: "keyboard_arrow_down"
@@ -59,22 +55,13 @@ Rectangle {
             }
         }
 
-        // Expandable sub content
-        Item {
+        Loader {
             id: subComponent
             Layout.fillWidth: true
             clip: true
             visible: root.expanded
             opacity: root.expanded ? 1 : 0
-            implicitHeight: childrenRect.height
-            implicitWidth: childrenRect.width
-
-            Behavior on implicitHeight {
-                NumberAnimation {
-                    duration: 200
-                    easing.type: Easing.OutCubic
-                }
-            }
+            Layout.preferredHeight: root.expanded && item ? item.implicitHeight : 0
 
             Behavior on opacity {
                 NumberAnimation {

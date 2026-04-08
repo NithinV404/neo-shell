@@ -5,6 +5,7 @@ import Quickshell.Services.SystemTray
 import qs.Services
 import qs.Widgets
 import qs.Common
+import qs.Modules.Bar.BackgroundApps
 
 Rectangle {
     id: root

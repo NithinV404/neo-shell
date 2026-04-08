@@ -12,9 +12,9 @@ Item {
     property var wifiModalInstace: null
     property alias wifi: root.wifiService
     property var wifiNetworks: []
-    implicitHeight: 400
-
     signal goBack
+    implicitHeight: 400
+    implicitWidth: 350
 
     Component.onCompleted: {
         root.wifiService.addRef();
@@ -59,9 +59,11 @@ Item {
     }
 
     ColumnLayout {
-        anchors.fill: parent
-        anchors.topMargin: 12
-
+        anchors {
+            fill : parent
+            topMargin: 12
+            bottomMargin: 12
+        }
         // --- Header ---
         Rectangle {
             Layout.fillWidth: true
@@ -70,18 +72,16 @@ Item {
             color: Theme.surfaceContainerHighest
 
             RowLayout {
-                Layout.alignment: Qt.AlignTop
-                implicitWidth: parent.width - 10
-                Layout.margins: 2
-
+                anchors {
+                    leftMargin: 4
+                    rightMargin: 4
+                    fill: parent
+                }
                 Rectangle {
                     implicitWidth: 35
                     implicitHeight: 35
                     radius: Settings.radius
                     color: !backButtonHover.containsMouse ? Theme.primary : Qt.darker(Theme.primary)
-                    Layout.topMargin: 3.5
-                    Layout.leftMargin: 4
-                    Layout.rightMargin: 8
 
                     Behavior on color {
                         ColorAnimation {
@@ -166,7 +166,6 @@ Item {
             id: wifiFlickable
             Layout.fillHeight: true
             Layout.fillWidth: true
-            Layout.topMargin: 2
             contentHeight: wifiListContainer.height
             clip: true
             boundsBehavior: Flickable.StopAtBounds
