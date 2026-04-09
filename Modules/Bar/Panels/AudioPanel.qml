@@ -23,6 +23,7 @@ Item {
             topMargin: 12
             bottomMargin: 12
         }
+
         // --- Header ---
         Rectangle {
             Layout.fillWidth: true
@@ -36,6 +37,7 @@ Item {
                     rightMargin: 4
                     fill: parent
                 }
+
                 Rectangle {
                     id: backButton
                     implicitWidth: 35
@@ -43,14 +45,12 @@ Item {
                     radius: Settings.radius
                     color: !backButtonHover.containsMouse ? Theme.primary : Qt.darker(Theme.primary)
 
-
                     Behavior on color {
                         ColorAnimation {
                             duration: 200
                             easing.type: Easing.OutCubic
                         }
                     }
-
 
                     StyledText {
                         name: "chevron_backward"
@@ -68,19 +68,168 @@ Item {
 
                 Item { Layout.fillWidth: true }
 
-                   Text {
-                       text: "Audio"
-                       color: Theme.surfaceFg
-                       font.family: Settings.fontFamily
-                       font.pixelSize: 16
-                   }
+                Text {
+                    text: "Audio"
+                    color: Theme.surfaceFg
+                    font.family: Settings.fontFamily
+                    font.pixelSize: 16
+                }
 
-                   Item { Layout.fillWidth: true }
-
+                Item { Layout.fillWidth: true }
             }
         }
-        // --- Empty State ---
 
+        // --- Volume Overdrive M3 Expressive Card ---
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.leftMargin: 2
+            Layout.rightMargin: 2
+            Layout.topMargin: 8
+            implicitHeight: overdriveRow.implicitHeight + 20
+            radius: Settings.radius
+
+            color: Settings.audio.volumeOverdrive
+                   ? Qt.alpha(Theme.primary, 0.13)
+                   : Theme.surfaceContainerHighest
+
+            // Subtle border when active
+            border.width: Settings.audio.volumeOverdrive ? 1 : 0
+            border.color: Qt.alpha(Theme.primary, 0.5)
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: 250
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            // Ripple/hover effect
+            HoverHandler { id: overdriveHover }
+
+            Rectangle {
+                anchors.fill: parent
+                radius: parent.radius
+                color: overdriveHover.hovered ? Qt.alpha(Theme.primary, 0.06) : "transparent"
+
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 200
+                        easing.type: Easing.OutCubic
+                    }
+                }
+            }
+
+            RowLayout {
+                id: overdriveRow
+                anchors {
+                    fill: parent
+                    leftMargin: 10
+                    rightMargin: 10
+                    topMargin: 10
+                    bottomMargin: 10
+                }
+
+                // Leading icon container
+                Rectangle {
+                    implicitWidth: 42
+                    implicitHeight: 42
+                    radius: Settings.radius
+                    color: Settings.audio.volumeOverdrive
+                           ? Theme.primary
+                           : Theme.surfaceContainerHighest
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+
+
+                    StyledText {
+                        anchors.centerIn: parent
+                        name: Settings.audio.volumeOverdrive ? "volume_up" : "volume_down"
+                        color: Settings.audio.volumeOverdrive
+                               ? Theme.primaryFg
+                               : Qt.darker(Theme.primary)
+                        size: 20
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                    }
+                }
+
+                Item
+                {
+                    Layout.fillWidth: true
+                }
+
+                // Text block
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+
+                    Text {
+                        text: "Volume Overdrive"
+                        color: Theme.surfaceFg
+                        font.family: Settings.fontFamily
+                        font.pixelSize: 14
+                        font.weight: Font.Medium
+                    }
+
+                    Text {
+                        text: Settings.audio.volumeOverdrive
+                              ? "Allows volume above 100%"
+                              : "Volume limited to 100%"
+                        color: Qt.alpha(Theme.surfaceFg, 0.6)
+                        font.family: Settings.fontFamily
+                        font.pixelSize: 11
+
+                        Behavior on color {
+                            ColorAnimation { duration: 200 }
+                        }
+                    }
+                }
+
+                Item
+                {
+                    Layout.fillWidth: true
+                }
+
+                // Trailing toggle
+                Toggle {
+                    checked: Settings.audio.volumeOverdrive
+                    onToggled: {
+                        Settings.setVolumeOverdrive(!Settings.audio.volumeOverdrive)
+                    }
+                }
+            }
+
+            // Make the whole card tappable
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Settings.setVolumeOverdrive(!Settings.audio.volumeOverdrive)
+            }
+        }
+
+        // --- Divider ---
+        Rectangle {
+            Layout.topMargin: 8
+            Layout.bottomMargin: 8
+            Layout.alignment: Qt.AlignHCenter
+            implicitWidth: parent.width - 40
+            implicitHeight: 1
+            color: Qt.alpha(Theme.primary, 0.25)
+            radius: 100
+        }
+
+        // --- Empty State ---
         HelpInfo {
             visible: !AudioService.sinks.length === 0 || !AudioService.sources.length === 0
             Layout.fillHeight: true
@@ -101,11 +250,8 @@ Item {
 
             clip: true
             boundsBehavior: Flickable.StopAtBounds
-
-            // Enable scrolling only when content is taller than view
             interactive: contentHeight > height
 
-            // Optional: Scroll indicator
             ScrollBar.vertical: ScrollBar {
                 policy: contentFlickable.contentHeight > contentFlickable.height ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
             }
@@ -115,7 +261,7 @@ Item {
                 width: parent.width
                 spacing: 8
 
-                // --- OUTPUT DEVICES SECTION (SINKS) - AT TOP ---
+                // --- OUTPUT DEVICES SECTION (SINKS) ---
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 8
@@ -149,15 +295,22 @@ Item {
 
                                 property bool isStart: index === 0
                                 property bool isLast: index === audioSinksRepeater.count - 1
+                                property bool isActive: modelData.id == AudioService.sink.id
 
                                 width: parent.width
-                                implicitHeight: devicesLayout.implicitHeight + 20
-                                border.width: audioDevicesSinkDelegate.modelData.id == AudioService.sink.id ? 1 : 0
-                                border.color: Theme.tertiary
                                 clip: true
 
-                                Layout.leftMargin: 2
-                                Layout.rightMargin: 2
+                                implicitHeight: devicesLayout.implicitHeight + 20
+
+                                Behavior on implicitHeight {
+                                    NumberAnimation {
+                                        duration: 200
+                                        easing.type: Easing.OutCubic
+                                    }
+                                }
+
+                                border.width: isActive ? 1 : 0
+                                border.color: Theme.tertiary
 
                                 topLeftRadius: isStart ? 24 : 4
                                 topRightRadius: isStart ? 24 : 4
@@ -167,17 +320,8 @@ Item {
                                 color: sinksHoverHandler.containsMouse ? Qt.lighter(Theme.surfaceContainerHighest, 1.1) : Theme.surfaceContainerHighest
 
                                 Behavior on color {
-                                    ColorAnimation {
-                                        duration: 150
-                                    }
+                                    ColorAnimation { duration: 150 }
                                 }
-
-                                Behavior on implicitHeight {
-                                                                    NumberAnimation {
-                                                                        duration: 200
-                                                                        easing.type: Easing.OutBack
-                                                                    }
-                                                                }
 
                                 ColumnLayout {
                                     id: devicesLayout
@@ -200,9 +344,7 @@ Item {
                                         }
 
                                         TapHandler {
-                                            onTapped: {
-                                                AudioService.setAudioSink(modelData)
-                                            }
+                                            onTapped: AudioService.setAudioSink(modelData)
                                         }
 
                                         StyledText {
@@ -236,10 +378,27 @@ Item {
                                     }
 
                                     RowLayout {
-                                        visible: audioDevicesSinkDelegate.modelData.id == AudioService.sink.id
+                                        id: sinkSliderRow
+                                        clip: true
                                         Layout.fillWidth: true
                                         Layout.leftMargin: 4
                                         Layout.rightMargin: 12
+                                        Layout.preferredHeight: isActive ? implicitHeight : 0
+                                        opacity: isActive ? 1.0 : 0.0
+
+                                        Behavior on Layout.preferredHeight {
+                                            NumberAnimation {
+                                                duration: 200
+                                                easing.type: Easing.OutCubic
+                                            }
+                                        }
+
+                                        Behavior on opacity {
+                                            NumberAnimation {
+                                                duration: 150
+                                                easing.type: Easing.OutCubic
+                                            }
+                                        }
 
                                         Rectangle {
                                             Layout.preferredHeight: 40
@@ -273,10 +432,7 @@ Item {
                                             maxValue: Settings.audio.volumeOverdrive ? 150 : 100
                                             icon: ""
                                             showValue: true
-
-                                            onMoved: newValue => {
-                                                AudioService.setVolume(newValue / 100)
-                                            }
+                                            onMoved: newValue => AudioService.setVolume(newValue / 100)
                                         }
                                     }
                                 }
@@ -285,7 +441,7 @@ Item {
                     }
                 }
 
-                // --- INPUT DEVICES SECTION (SOURCES) - AT BOTTOM ---
+                // --- INPUT DEVICES SECTION (SOURCES) ---
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 8
@@ -319,15 +475,22 @@ Item {
 
                                 property bool isStart: index === 0
                                 property bool isLast: index === audioSourcesRepeater.count - 1
+                                property bool isActive: modelData.id == AudioService.source.id
 
                                 width: parent.width
-                                implicitHeight: inputdevicesLayout.implicitHeight + 20
-                                border.width: audioDevicesDelegate.modelData.id == AudioService.source.id ? 1 : 0
-                                border.color: Theme.tertiary
                                 clip: true
 
-                                Layout.leftMargin: 2
-                                Layout.rightMargin: 2
+                                implicitHeight: inputdevicesLayout.implicitHeight + 20
+
+                                Behavior on implicitHeight {
+                                    NumberAnimation {
+                                        duration: 200
+                                        easing.type: Easing.OutCubic
+                                    }
+                                }
+
+                                border.width: isActive ? 1 : 0
+                                border.color: Theme.tertiary
 
                                 topLeftRadius: isStart ? 24 : 4
                                 topRightRadius: isStart ? 24 : 4
@@ -342,13 +505,6 @@ Item {
                                         easing.type: Easing.OutCubic
                                     }
                                 }
-
-                                Behavior on implicitHeight {
-                                                                    NumberAnimation {
-                                                                        duration: 200
-                                                                        easing.type: Easing.OutBack
-                                                                    }
-                                                                }
 
                                 ColumnLayout {
                                     id: inputdevicesLayout
@@ -369,9 +525,7 @@ Item {
                                         }
 
                                         TapHandler {
-                                            onTapped: {
-                                                AudioService.setAudioSource(modelData)
-                                            }
+                                            onTapped: AudioService.setAudioSource(modelData)
                                         }
 
                                         StyledText {
@@ -405,10 +559,27 @@ Item {
                                     }
 
                                     RowLayout {
-                                        visible: audioDevicesDelegate.modelData.id == AudioService.source.id
+                                        id: sourceSliderRow
+                                        clip: true
                                         Layout.fillWidth: true
                                         Layout.leftMargin: 4
                                         Layout.rightMargin: 12
+                                        Layout.preferredHeight: isActive ? implicitHeight : 0
+                                        opacity: isActive ? 1.0 : 0.0
+
+                                        Behavior on Layout.preferredHeight {
+                                            NumberAnimation {
+                                                duration: 200
+                                                easing.type: Easing.OutCubic
+                                            }
+                                        }
+
+                                        Behavior on opacity {
+                                            NumberAnimation {
+                                                duration: 150
+                                                easing.type: Easing.OutCubic
+                                            }
+                                        }
 
                                         Rectangle {
                                             Layout.preferredHeight: 40
@@ -442,10 +613,7 @@ Item {
                                             maxValue: Settings.audio.volumeOverdrive ? 150 : 100
                                             icon: ""
                                             showValue: true
-
-                                            onMoved: newValue => {
-                                                AudioService.setInputVolume(newValue / 100)
-                                            }
+                                            onMoved: newValue => AudioService.setInputVolume(newValue / 100)
                                         }
                                     }
                                 }

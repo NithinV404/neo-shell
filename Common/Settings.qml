@@ -161,6 +161,12 @@ Singleton {
         saveSettings();
     }
 
+    function setVolumeOverdrive(value)
+    {
+        audio.volumeOverdrive = value
+        saveSettings()
+    }
+
     function updateAppsColorScheme() {
         setGtkColorScheme();
         setQtColorScheme();
