@@ -61,8 +61,8 @@ PanelWindow {
         id: panelContainer
         x: Utils.clampScreenX(root.menuX, width, 5, root.screen)
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
-        implicitWidth: quickLayoutStack.implicitWidth + 40
-        implicitHeight: quickLayoutStack.implicitHeight + 24
+        implicitWidth: quickLayoutStack.trackedWidth + 40
+        implicitHeight: quickLayoutStack.trackedHeight + 24
         clip: false
         state: root.visible ? "open" : "closed"
         transformOrigin: Item.Top
@@ -137,12 +137,14 @@ PanelWindow {
             currentIndex: 0
             clip: true
             property QtObject currentItem: children[currentIndex]
-            implicitHeight: currentItem.implicitHeight
-            implicitWidth: currentItem.implicitWidth
+            property real trackedHeight: currentItem.implicitHeight
+            property real trackedWidth: currentItem.implicitWidth
+            width: trackedWidth
+            height: trackedHeight
             anchors.margins: 12
             anchors.centerIn: parent
 
-            Behavior on implicitHeight {
+            Behavior on trackedHeight {
                 enabled: root.isVisible
                 NumberAnimation {
                     duration: 220
@@ -150,7 +152,7 @@ PanelWindow {
                 }
             }
 
-            Behavior on implicitWidth {
+            Behavior on trackedWidth {
                 enabled: root.isVisible
                 NumberAnimation {
                     duration: 220
