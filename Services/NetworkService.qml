@@ -342,9 +342,9 @@ Singleton {
         let icon = "";
         if (isConnected) {
             if (root._networkConnectivity === "limited") {
-                icon = "wifi_exclamation";
+                icon = "perm_scan_wifi";
             } else if (root._networkConnectivity === "portal" || root._networkConnectivity === "unknown") {
-                icon = "wifi_question";
+                icon = "signal_wifi_statusbar_not_connected";
             }
         }
         const label = signal >= 80 ? "wifi.signal.excellent" : signal >= 60 ? "wifi.signal.good" : signal >= 35 ? "wifi.signal.fair" : signal >= 15 ? "wifi.signal.poor" : "wifi.signal.weak";

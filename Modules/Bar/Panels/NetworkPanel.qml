@@ -501,7 +501,7 @@ Item {
                                                         if (delegateScope.secured && !delegateScope.saved) {
                                                             wifiModalLoader.open("Connect to Wifi", delegateScope.ssid);
                                                         } else {
-                                                            root.wifiService.connect(delegateScope.ssid);
+                                                            NetworkService.connect(delegateScope.ssid);
                                                         }
                                                     }
                                                 }
