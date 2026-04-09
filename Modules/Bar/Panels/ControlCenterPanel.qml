@@ -167,7 +167,7 @@ Item {
                 title: "Audio"
                 status: AudioService.source.name
                 onClicked: {
-                    quickLayoutStack.currentIndex = 3
+                    quickLayoutStack.currentIndex = 3;
                 }
                 onMenuClicked: {
                     quickLayoutStack.currentIndex = 3;
@@ -219,7 +219,6 @@ Item {
                     sub: ColumnLayout {
                         id: appStreamCol
                         Layout.fillWidth: true
-                        width: parent.width
                         Repeater {
                             model: AudioService.appStreams
                             delegate: RowLayout {
