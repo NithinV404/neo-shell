@@ -16,6 +16,11 @@ Item {
     property string icon: ""
     property bool showValue: true
     property color accentColor: Theme.primary
+    property color bgColor: Theme.surface
+    property color hintColor: Theme.surfaceContainerHighest
+    property color textColorFilled: Theme.primaryFg
+    property color textColorUnfilled: Theme.surfaceFg
+    property color textColorMuted: Theme.surfaceVariantFg
 
     signal moved(real newValue)
 
@@ -31,7 +36,7 @@ Item {
         width: parent.width
         anchors.centerIn: parent
         radius: Settings.radius
-        color: Theme.surfaceContainerHighest
+        color: root.hintColor
 
         // Clipping container - this is the key!
         Item {
@@ -66,7 +71,7 @@ Item {
             width: 12
             height: parent.height + 24
             radius: 5
-            color: Theme.surface
+            color: root.bgColor
             anchors.verticalCenter: parent.verticalCenter
             x: (parent.width - 10) * root.normalizedValue
             Behavior on x {
@@ -79,7 +84,7 @@ Item {
 
             Rectangle {
                 id: handleFill
-                color: Theme.primary
+                color: root.accentColor
                 height: parent.height - 8
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -97,7 +102,7 @@ Item {
                 visible: root.icon !== ""
                 name: root.icon
                 size: 18
-                color: root.normalizedValue > 0.15 ? Theme.primaryFg : Theme.surfaceVariantFg
+                color: root.normalizedValue > 0.15 ? root.textColorFilled : root.textColorUnfilled
 
                 Behavior on color {
                     ColorAnimation {
@@ -116,7 +121,7 @@ Item {
                 font.family: Settings.fontFamily
                 font.pixelSize: 13
                 font.weight: Font.Medium
-                color: root.normalizedValue > 0.85 ? Theme.primaryFg : Theme.surfaceFg
+                color: root.normalizedValue > 0.85 ? root.textColorFilled : root.textColorUnfilled
 
                 Behavior on color {
                     ColorAnimation {
