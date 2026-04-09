@@ -162,6 +162,16 @@ Item {
             QuickToggle {
                 implicitWidth: togglesGrid.quickToogleWidth
                 implicitHeight: togglesGrid.quickToogleHeight
+                icon: AudioService.getOutputIcon() ?? AudioService.getInputIcon() ?? "devices_off"
+                active: Settings.source != "" || Settings.sink != ""
+                title: "Audio"
+                status: AudioService.source.name
+                onClicked: {
+                    quickLayoutStack.currentIndex = 3
+                }
+                onMenuClicked: {
+                    quickLayoutStack.currentIndex = 3;
+                }
             }
             ColumnLayout {
                 Layout.columnSpan: 2

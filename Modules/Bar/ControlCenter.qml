@@ -175,8 +175,16 @@ PanelWindow {
                 id: bluetoothPanel
                 asynchronous: true
                 sourceComponent: BluetoothPanel {
-                    implicitHeight: 400
                     bluetooth: BluetoothService
+                    onGoBack: quickLayoutStack.currentIndex = 0
+                    anchors.fill: parent
+                }
+            }
+
+            Loader {
+                id: audioPanel
+                asynchronous: true
+                sourceComponent: AudioPanel {
                     onGoBack: quickLayoutStack.currentIndex = 0
                     anchors.fill: parent
                 }
