@@ -381,12 +381,25 @@ Item {
 
                                             Text {
                                                 Layout.fillWidth: true
-                                                text: audioDevicesSinkDelegate.modelData.name || "Unknown Device"
+                                                text: audioDevicesSinkDelegate.modelData.nickname || "Unknown Device"
                                                 color: isActive ? Theme.primary : Theme.surfaceFg
                                                 font.pixelSize: 14
                                                 font.family: Settings.fontFamily
                                                 font.weight: isActive ? Font.Medium : Font.Normal
                                                 elide: Text.ElideRight
+
+                                                Behavior on color {
+                                                    ColorAnimation {
+                                                        duration: 150
+                                                    }
+                                                }
+                                            }
+
+                                            Text {
+                                                Layout.fillWidth: true
+                                                text: audioDevicesSinkDelegate.modelData.name
+                                                color: isActive ? Qt.alpha(Theme.primary, 0.7) : Qt.lighter(Theme.surfaceFg)
+                                                font.pixelSize: 11
 
                                                 Behavior on color {
                                                     ColorAnimation {
@@ -610,12 +623,25 @@ Item {
 
                                             Text {
                                                 Layout.fillWidth: true
-                                                text: audioDevicesDelegate.modelData.name || "Unknown Device"
+                                                text: audioDevicesDelegate.modelData.nickname || "Unknown Device"
                                                 color: isActive ? Theme.primary : Theme.surfaceFg
                                                 font.pixelSize: 14
                                                 font.family: Settings.fontFamily
                                                 font.weight: isActive ? Font.Medium : Font.Normal
                                                 elide: Text.ElideRight
+
+                                                Behavior on color {
+                                                    ColorAnimation {
+                                                        duration: 150
+                                                    }
+                                                }
+                                            }
+
+                                            Text {
+                                                Layout.fillWidth: true
+                                                text: audioDevicesDelegate.modelData.name
+                                                color: isActive ? Qt.alpha(Theme.primary, 0.7) : Qt.lighter(Theme.surfaceFg)
+                                                font.pixelSize: 11
 
                                                 Behavior on color {
                                                     ColorAnimation {

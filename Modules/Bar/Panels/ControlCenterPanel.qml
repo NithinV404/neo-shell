@@ -165,12 +165,24 @@ Item {
                 icon: AudioService.getOutputIcon() ?? AudioService.getInputIcon() ?? "devices_off"
                 active: Settings.source != "" || Settings.sink != ""
                 title: "Audio"
-                status: AudioService.source.name
+                status: AudioService.source.nickname
                 onClicked: {
                     quickLayoutStack.currentIndex = 3;
                 }
                 onMenuClicked: {
                     quickLayoutStack.currentIndex = 3;
+                }
+            }
+            QuickToggle {
+                implicitWidth: togglesGrid.quickToogleWidth
+                implicitHeight: togglesGrid.quickToogleHeight
+                icon: PowerProfileService.getIcon(PowerProfileService.profile)
+                active: true
+                hasSubMenu: false
+                title: "Power Profile"
+                status: PowerProfileService.getName(PowerProfileService.profile)
+                onClicked: {
+                    PowerProfileService.cycleProfile();
                 }
             }
             ColumnLayout {
