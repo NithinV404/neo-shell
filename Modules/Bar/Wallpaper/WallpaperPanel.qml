@@ -190,7 +190,6 @@ PanelWindow {
                         icon: "save"
                         text: "Save"
                         implicitHeight: parent.height
-                        radius: Settings.radius
                         bgColor: Theme.primary
                         textColor: Theme.primaryFg
                         onClicked: {
@@ -202,7 +201,6 @@ PanelWindow {
                         icon: "refresh"
                         text: "Regenerate Colors"
                         implicitHeight: parent.height
-                        radius: Settings.radius
                         bgColor: Theme.primary
                         textColor: Theme.primaryFg
                         onClicked: {

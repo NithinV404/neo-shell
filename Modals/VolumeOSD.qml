@@ -136,7 +136,7 @@ Scope {
 
                     Behavior on volume {
                         NumberAnimation {
-                            duration: 200
+                            duration: 100
                             easing.type: Easing.OutCubic
                         }
                     }

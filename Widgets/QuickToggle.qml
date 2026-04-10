@@ -6,30 +6,23 @@ import qs.Common
 Rectangle {
     id: root
 
-    // --- 1. API ---
+    clip: true
+    property point parentPos: root.mapToItem(null, 0, 0)
     property string icon: "help"
     property alias title: subText.text
     property alias status: subTextInfo.text
     property bool hasSubMenu: true
-    // The most important part of a toggle: Is it ON or OFF?
     property bool active: false
-
     property int setPadding: 4
-    property int setRadius: Settings.radius //
+    property int setRadius: Settings.radius
 
     signal clicked
     signal menuClicked
 
-    // --- 2. APPEARANCE ---
-
     radius: setRadius
-
-    // Color Logic:
-    // ON  = Primary Color (Colorful)
-    // OFF = Surface Container Highest (Dark Grey/Neutral)
+    scale: toggleMenuMouse.pressed || toggleButtonMouse.pressed ? 0.95 : 1
     color: (!root.hasSubMenu && root.active) ? Theme.primary : Theme.surfaceContainerHighest
 
-    // Smooth color transition
     Behavior on color {
         ColorAnimation {
             duration: 200
@@ -37,14 +30,30 @@ Rectangle {
         }
     }
 
-    // --- 3. INTERACTION ---
+    Behavior on scale {
+        NumberAnimation {
+            duration: 100
+            easing.type: Easing.OutBack
+        }
+    }
 
-    // Hover Overlay (Makes it lighten slightly when hovered)
+    MouseArea {
+        id: toggleMenuMouse
+        anchors.fill: parent
+        hoverEnabled: true
+        propagateComposedEvents: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: {
+            Effects.animation.ripple(root, root.parentPos.x, root.parentPos.y);
+            root.hasSubMenu ? root.menuClicked() : root.clicked();
+        }
+    }
+
     Rectangle {
         anchors.fill: parent
         radius: root.radius
         color: "white"
-        opacity: mouseArea.containsMouse ? 0.08 : 0
+        opacity: toggleMenuMouse.containsMouse ? 0.08 : 0
         Behavior on opacity {
             NumberAnimation {
                 duration: 150
@@ -55,24 +64,19 @@ Rectangle {
     RowLayout {
         anchors.fill: parent
         anchors.margins: root.setPadding
-        spacing: 8 // A bit more breathing room between icon and text
+        spacing: 8
 
-        // --- 4. ICON CONTAINER ---
         Rectangle {
             id: toggleBox
             Layout.fillHeight: true
-            // TRICK: Make width match height to keep it a perfect circle/square
             Layout.preferredWidth: height
 
-            // Color Logic:
-            // ON  = Dark Text on Bright Background -> Icon Box becomes transparent or slightly darkened
-            // OFF = Grey Background -> Icon Box becomes the "Primary" accent
             color: {
                 if (!root.hasSubMenu && root.active)
                     return "transparent";
                 if (root.active)
                     return !root.hasSubMenu ? Theme.primary : Qt.darker(Theme.primary, 1.2);
-                if (toggleButton.containsMouse)
+                if (toggleButtonMouse.containsMouse)
                     return Theme.tertiary;
                 return root.hasSubMenu ? Theme.surfaceContainerLow : "transparent";
             }
@@ -88,26 +92,27 @@ Rectangle {
             StyledText {
                 name: root.icon
                 anchors.centerIn: parent
-                size: 20 // Slightly larger icon
-
-                // Icon Color: Contrast against the box
-                color: root.active ? Theme.primaryFg : (toggleButton.containsMouse ? Theme.tertiaryFg : Theme.secondaryContainerFg)
+                size: 20
+                color: root.active ? Theme.primaryFg : (toggleButtonMouse.containsMouse ? Theme.tertiaryFg : Theme.secondaryContainerFg)
             }
 
             MouseArea {
-                id: toggleButton
+                id: toggleButtonMouse
                 anchors.fill: parent
-                onClicked: root.clicked()
+                onClicked: {
+                    Effects.animation.ripple(root, root.parentPos.x, root.parentPos.y);
+                    root.clicked();
+                }
                 hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
             }
         }
 
         Item {
-            // 1. Layout Properties (Since parent is RowLayout)
+
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            // 2. The Text Content
             ColumnLayout {
                 id: textCol
                 anchors.verticalCenter: parent.verticalCenter
@@ -140,22 +145,6 @@ Rectangle {
                     elide: Text.ElideRight
                 }
             }
-
-            // 3. The MouseArea (LAST CHILD = ON TOP)
-            MouseArea {
-                id: menuToggle
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                hoverEnabled: true
-                onClicked: root.hasSubMenu ? root.menuClicked() : root.clicked()
-            }
         }
-    }
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        propagateComposedEvents: true
-        cursorShape: Qt.PointingHandCursor
     }
 }
