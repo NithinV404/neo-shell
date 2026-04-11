@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Services
+import qs.Common
 
 Rectangle {
     id: root
@@ -10,21 +11,28 @@ Rectangle {
     property bool subItems: true
 
     color: Theme.surface
-    radius: 8
+    radius: Settings.radius
 
     // Use Layout attached properties for sizing
     Layout.fillWidth: true
     implicitHeight: contentLayout.implicitHeight
 
+    Behavior on color {
+        ColorAnimation {
+            duration: 200
+            easing.type: Easing.OutCubic
+        }
+    }
+
     ColumnLayout {
         id: contentLayout
         anchors.fill: parent
-        anchors.margins: 2
-        spacing: 8
+        anchors.margins: 4
+        spacing: 0
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: 2
+            spacing: 0
 
             // Use Loader for main content with explicit sizing
             Loader {

@@ -188,12 +188,12 @@ Item {
             ColumnLayout {
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
-                spacing: 0
+                spacing: 4
                 RevealItems {
                     id: revealAudio
                     Layout.fillWidth: true
-                    Layout.columnSpan: 2
                     subItems: (AudioService.appStreams?.length ?? 0) > 0
+                    color: expanded ? Theme.surfaceContainerLowest : Theme.surface
                     main: RowLayout {
                         Layout.fillWidth: true
                         implicitWidth: parent.width
@@ -316,6 +316,7 @@ Item {
                         }
                     }
                 }
+
                 RevealItems {
                     id: revealBrightness
                     Layout.fillWidth: true
