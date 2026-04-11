@@ -165,7 +165,7 @@ Item {
                 icon: AudioService.getOutputIcon() ?? AudioService.getInputIcon() ?? "devices_off"
                 active: Settings.source != "" || Settings.sink != ""
                 title: "Audio"
-                status: AudioService.source.nickname
+                status: AudioService.source.nickname || AudioService.source.description || "Unknown Device"
                 onClicked: {
                     quickLayoutStack.currentIndex = 3;
                 }
@@ -188,7 +188,7 @@ Item {
             ColumnLayout {
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
-                spacing: 4
+                spacing: 2
                 RevealItems {
                     id: revealAudio
                     Layout.fillWidth: true
@@ -321,6 +321,7 @@ Item {
                     id: revealBrightness
                     Layout.fillWidth: true
                     Layout.columnSpan: 2
+                    color: expanded ? Theme.surfaceContainerLowest : Theme.surface
                     subItems: BrightnessService.monitors.length > 1
                     property var currentScreen: BrightnessService && BrightnessService.getMonitorForScreen(root.screen)
                     property real mainBrightness: currentScreen ? currentScreen.brightness : 0.0
