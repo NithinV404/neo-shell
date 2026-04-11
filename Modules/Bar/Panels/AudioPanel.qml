@@ -314,7 +314,7 @@ Item {
                                 Rectangle {
                                     anchors.fill: parent
                                     radius: parent.radius
-                                    color: sinksHoverHandler.hovered && !audioDevicesDelegate.isActive ? Qt.alpha(Theme.primary, 0.06) : "transparent"
+                                    color: sinksHoverHandler.hovered && !audioDevicesSinkDelegate.isActive ? Qt.alpha(Theme.primary, 0.06) : "transparent"
 
                                     Behavior on color {
                                         ColorAnimation {

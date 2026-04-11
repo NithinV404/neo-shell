@@ -14,7 +14,7 @@ QtObject {
 
                 Component.onCompleted: {
                     width = parent.width
-                    height = parent.width
+                    height = Math.max(parent.width, parent.height)
                     opacity = 0
                     destroy(400)
                 }

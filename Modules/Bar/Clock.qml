@@ -11,7 +11,7 @@ Rectangle {
     id: root
     required property var screen
     property var activePanel: null
-    implicitWidth: timeRow.implicitWidth + 16
+    implicitWidth: timeRow.implicitWidth + 30
     implicitHeight: 30
     color: clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer
     radius: Settings.radius
@@ -69,6 +69,7 @@ Rectangle {
             font.pixelSize: 16
             font.family: Settings.fontFamily
             font.bold: true
+            elide: Text.ElideMiddle
             Layout.alignment: Qt.AlignVCenter
         }
 
@@ -87,6 +88,7 @@ Rectangle {
             text: Qt.formatDateTime(clock.date, "ddd, MM/d")
             color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
             font.pixelSize: 14
+            elide: Text.ElideMiddle
             font.family: Settings.fontFamily
             Layout.alignment: Qt.AlignVCenter
         }

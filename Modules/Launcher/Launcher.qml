@@ -168,21 +168,21 @@ Scope {
 
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: 220
+                        duration: 200
                         easing.type: Easing.OutCubic
                     }
                 }
 
                 Behavior on scale {
                     NumberAnimation {
-                        duration: 220
+                        duration: 200
                         easing.type: Easing.OutCubic
                     }
                 }
 
                 Behavior on height {
                     NumberAnimation {
-                        duration: 220
+                        duration: 200
                         easing.type: Easing.OutCubic
                     }
                 }

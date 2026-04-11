@@ -5,6 +5,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Bluetooth
+import "../Helpers/IconCategorizer.js" as IconHelper
 
 Singleton {
     id: root
@@ -84,37 +85,7 @@ Singleton {
         const name = (device.name || device.deviceName || "").toLowerCase();
         const icon = (device.icon || "").toLowerCase();
 
-        const audioKeywords = ["headset", "audio", "headphone", "airpod", "arctis"];
-        if (audioKeywords.some(keyword => icon.includes(keyword) || name.includes(keyword))) {
-            return "headset";
-        }
-
-        if (icon.includes("mouse") || name.includes("mouse")) {
-            return "mouse";
-        }
-
-        if (icon.includes("keyboard") || name.includes("keyboard")) {
-            return "keyboard";
-        }
-
-        const phoneKeywords = ["phone", "iphone", "android", "samsung"];
-        if (phoneKeywords.some(keyword => icon.includes(keyword) || name.includes(keyword))) {
-            return "smartphone";
-        }
-
-        if (icon.includes("watch") || name.includes("watch")) {
-            return "watch";
-        }
-
-        if (icon.includes("speaker") || name.includes("speaker")) {
-            return "speaker";
-        }
-
-        if (icon.includes("display") || name.includes("tv")) {
-            return "tv";
-        }
-
-        return "bluetooth";
+        return IconHelper.getDeviceIcon(name) || IconHelper.getDeviceIcon(icon);
     }
 
     function canConnect(device) {

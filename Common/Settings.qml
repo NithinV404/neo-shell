@@ -17,7 +17,7 @@ Singleton {
     property string defaultIconTheme: ""
     property bool hasTriedDefaultSettings: false
     property var availableIconThemes: []
-
+    property int duration: 300
     property string wallpaperImage: ""
     property string wallpapersFolder: "~/Pictures/Wallpapers"
     property var wallpaperFolderImages: []
@@ -94,7 +94,7 @@ Singleton {
                 iconTheme = settings.iconTheme !== undefined ? settings.iconTheme : "System Default";
                 audio.volumeOverdrive = settings.audio.volumeOverdrive !== undefined ? settings.audio.volumeOverdrive : false;
                 audio.volumeStep = settings.audio.volumeStep !== undefined ? settings.audio.volumeStep : 1;
-                audio.volumeFeedback = settings.audio.volumeFeedback !== undefined ? settings.audio.volumeFeedback: false
+                audio.volumeFeedback = settings.audio.volumeFeedback !== undefined ? settings.audio.volumeFeedback : false;
                 wallpaperFolderImages = settings.wallpaperFolderImages !== undefined ? settings.wallpaperFolderImages : [];
                 wallpapersFolder = settings.wallpapersFolder !== undefined ? settings.wallpapersFolder : "~/Pictures/Wallpapers";
                 wallpaperImage = settings.wallpaperImage !== undefined ? settings.wallpaperImage : "";
@@ -161,10 +161,9 @@ Singleton {
         saveSettings();
     }
 
-    function setVolumeOverdrive(value)
-    {
-        audio.volumeOverdrive = value
-        saveSettings()
+    function setVolumeOverdrive(value) {
+        audio.volumeOverdrive = value;
+        saveSettings();
     }
 
     function updateAppsColorScheme() {

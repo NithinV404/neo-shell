@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pipewire
 import qs.Common
+import "../Helpers/IconCategorizer.js" as IconHelper
 
 Singleton {
     id: root
@@ -37,6 +38,10 @@ Singleton {
 
     signal volumeAtMaximum
     signal volumeAtMinimum
+
+    function getDeviceIcon(name) {
+        IconHelper.getDeviceIcon(name);
+    }
 
     function clampOutputVolume(vol: real): real {
         if (vol === undefined || isNaN(vol)) {

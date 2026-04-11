@@ -57,11 +57,11 @@ Item {
     }
 
     ColumnLayout {
-    anchors {
-        fill : parent
-        topMargin: 12
-        bottomMargin: 12
-    }
+        anchors {
+            fill: parent
+            topMargin: 12
+            bottomMargin: 12
+        }
 
         // --- Header (Fixed, doesn't scroll) ---
         Rectangle {
@@ -229,12 +229,12 @@ Item {
                                 width: parent.width
                                 height: 48
 
-                                topLeftRadius: isStart ? 24 : 4
-                                topRightRadius: isStart ? 24 : 4
-                                bottomLeftRadius: isLast ? 24 : 4
-                                bottomRightRadius: isLast ? 24 : 4
+                                topLeftRadius: isStart ? Settings.radius : 4
+                                topRightRadius: isStart ? Settings.radius : 4
+                                bottomLeftRadius: isLast ? Settings.radius : 4
+                                bottomRightRadius: isLast ? Settings.radius : 4
 
-                                color: pairedDeviceHover.containsMouse ? Qt.lighter(Theme.surfaceContainerHighest, 1.1) : Theme.surfaceContainerHighest
+                                color: pairedDeviceHover.containsMouse ? Qt.lighter(Theme.surfaceContainerHighest, 1.1) : pairedDeviceDelegate.modelData.connected ? Qt.alpha(Theme.primary, 0.13) : Theme.surfaceContainerHighest
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -314,13 +314,6 @@ Item {
                                         size: 24
                                         color: Theme.primary
                                     }
-
-                                    Rectangle {
-                                        width: 8
-                                        height: 8
-                                        radius: 4
-                                        color: pairedDeviceDelegate.modelData.connected ? "green" : Theme.surfaceVariantFg
-                                    }
                                 }
 
                                 MouseArea {
@@ -389,10 +382,10 @@ Item {
                                 width: parent.width
                                 height: 48
 
-                                topLeftRadius: isStart ? 12 : 4
-                                topRightRadius: isStart ? 12 : 4
-                                bottomLeftRadius: isLast ? 12 : 4
-                                bottomRightRadius: isLast ? 12 : 4
+                                topLeftRadius: isStart ? Settings.radius : 4
+                                topRightRadius: isStart ? Settings.radius : 4
+                                bottomLeftRadius: isLast ? Settings.radius : 4
+                                bottomRightRadius: isLast ? Settings.radius : 4
 
                                 color: availableDeviceHover.containsMouse ? Qt.lighter(Theme.surfaceContainerHighest, 1.1) : Theme.surfaceContainerHighest
 
@@ -404,13 +397,16 @@ Item {
 
                                 RowLayout {
                                     anchors.fill: parent
-                                    anchors.leftMargin: 12
+                                    anchors.leftMargin: 8
                                     anchors.rightMargin: 12
                                     spacing: 12
 
                                     StyledText {
                                         name: root.bs.getDeviceIcon(availableDeviceDelegate.modelData)
-                                        color: Theme.surfaceFg
+                                        color: Theme.primaryFg
+                                        container: true
+                                        containerColor: Theme.primary
+                                        size: 20
                                     }
 
                                     Text {
@@ -422,7 +418,7 @@ Item {
                                     }
 
                                     StyledText {
-                                        name: root.bs.getSignalIcon(availableDeviceDelegate.modelData)
+                                        name: root.bs.getSignalIcon(root.bs.getSignalStrength(availableDeviceDelegate.modelData))
                                         color: Theme.surfaceFg
                                         size: 16
                                     }

@@ -4,7 +4,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import qs.Common
-import "../Common/fzf.js" as Fzf
+import "../Helpers/fzf.js" as Fzf
 
 Singleton {
     id: root
