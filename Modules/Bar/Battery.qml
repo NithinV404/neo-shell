@@ -9,8 +9,8 @@ Rectangle {
     // Size it properly for a panel icon
     visible: BatteryService
     implicitWidth: 30
-    implicitHeight: 30
-    color: Theme.surfaceContainerHighest
+    implicitHeight: 28
+    color: Theme.surfaceContainer
     radius: 100
 
     WavyCircle {

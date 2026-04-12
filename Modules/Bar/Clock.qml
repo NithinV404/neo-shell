@@ -12,7 +12,7 @@ Rectangle {
     required property var screen
     property var activePanel: null
     implicitWidth: timeRow.implicitWidth + 30
-    implicitHeight: 30
+    implicitHeight: 28
     color: clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer
     radius: Settings.radius
     // border.width: 1
@@ -60,17 +60,17 @@ Rectangle {
     RowLayout {
         id: timeRow
         anchors.centerIn: parent
-        spacing: 8
+        spacing: 4
 
         // Time
         Text {
+            id: textTime
             text: Qt.formatDateTime(clock.date, "hh:mm ap")
             color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
-            font.pixelSize: 16
+            font.pixelSize: 14
             font.family: Settings.fontFamily
-            font.bold: true
-            elide: Text.ElideMiddle
-            Layout.alignment: Qt.AlignVCenter
+            font.weight: 600
+            Layout.alignment: Qt.AlignCenter
         }
 
         // Separator
@@ -85,12 +85,12 @@ Rectangle {
 
         // Date
         Text {
-            text: Qt.formatDateTime(clock.date, "ddd, MM/d")
+            text: Qt.formatDateTime(clock.date, "ddd MM/d")
             color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
-            font.pixelSize: 14
-            elide: Text.ElideMiddle
+            font.pixelSize: 12
             font.family: Settings.fontFamily
-            Layout.alignment: Qt.AlignVCenter
+            Layout.alignment: Qt.AlignCenter
+            Layout.topMargin: 1
         }
     }
     LazyLoader {

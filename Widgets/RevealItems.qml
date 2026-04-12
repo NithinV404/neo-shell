@@ -15,6 +15,7 @@ Rectangle {
 
     // Use Layout attached properties for sizing
     Layout.fillWidth: true
+
     implicitHeight: contentLayout.implicitHeight
 
     Behavior on color {
@@ -24,13 +25,21 @@ Rectangle {
         }
     }
 
+    Behavior on implicitHeight {
+        NumberAnimation {
+            duration: 200
+            easing.type: Easing.OutCubic
+        }
+    }
+
     ColumnLayout {
         id: contentLayout
-        anchors.fill: parent
-        anchors.margins: 4
+        anchors.centerIn: parent
+        width: parent.width - 20
         spacing: 0
 
         RowLayout {
+            Layout.alignment: Qt.AlignCenter
             Layout.fillWidth: true
             spacing: 0
 
@@ -39,6 +48,7 @@ Rectangle {
                 id: mainComponent
                 Layout.fillWidth: true
                 Layout.preferredHeight: item ? item.implicitHeight : 48
+                Layout.alignment: Qt.AlignCenter
             }
 
             StyledText {

@@ -85,10 +85,8 @@ Item {
                 return "?";
             }
         }
-        mipmap: true
         asynchronous: true
         implicitSize: root.size
-
         onStatusChanged: {
             if (status === Image.Error || status === Image.Null) {
                 console.info(`Failed to Load icon for ${root.iconName}`);

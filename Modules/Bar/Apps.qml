@@ -9,9 +9,9 @@ Rectangle {
 
     property string screenName: ""
 
-    implicitWidth: windowsRow.implicitWidth + 12
-    implicitHeight: windowsRow.implicitHeight
-    color: "transparent"
+    implicitWidth: windowsRow.implicitWidth + 10
+    implicitHeight: 28
+    color: Theme.surfaceContainer
     radius: Settings.radius
     visible: groupedApps.length > 0
 
@@ -71,7 +71,8 @@ Rectangle {
     RowLayout {
         id: windowsRow
         anchors.centerIn: parent
-        spacing: 6
+        spacing: 2
+
         Repeater {
             model: root.groupedApps
 
@@ -87,66 +88,59 @@ Rectangle {
                 readonly property bool hasMultiple: windowCount > 1
                 readonly property bool isAnyFocused: modelData.hasAnyFocused
 
+                // Fixed: Make delegate a perfect square with room for indicator
                 implicitWidth: 20
-                implicitHeight: 30
-                Layout.alignment: Qt.AlignVCenter
+                implicitHeight: 20
+                Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
 
-                // Hover highlight
-                Rectangle {
-                    anchors.fill: parent
-                    radius: Settings.radius
-                    color: Theme.surfaceContainerHighest
-                    opacity: iconMouse.containsMouse ? 0.8 : 0.0
 
-                    Behavior on opacity {
-                        NumberAnimation {
-                            duration: 150
-                            easing.type: Easing.OutCubic
+                // Container for icon + indicator to keep them centered together
+                Item {
+                    anchors.centerIn: parent
+                    width: icon.size
+                    height: icon.size
+
+                    AppIcon {
+                        id: icon
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        size: 16
+                        icon: appDelegate.appId
+
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 150
+                                easing.type: Easing.OutCubic
+                            }
                         }
                     }
+
                 }
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: -1
+                        visible: appDelegate.isAnyFocused
+                        width: appDelegate.hasMultiple ? 12 : 4
+                        height: 4
+                        z: 1
+                        radius: Settings.radius
+                        color: appDelegate.isAnyFocused ? Theme.primary : Theme.surfaceVariant
 
-                AppIcon {
-                    id: icon
-                    anchors.verticalCenter: parent.verticalCenter
-                    size: 20
-                    icon: appDelegate.appId
-                    opacity: appDelegate.isAnyFocused ? 1.0 : 0.6
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: 220
+                                easing.type: Easing.OutCubic
+                            }
+                        }
 
-                    Behavior on opacity {
-                        NumberAnimation {
-                            duration: 150
-                            easing.type: Easing.OutCubic
+                        Behavior on height {
+                            NumberAnimation {
+                                duration: 220
+                                easing.type: Easing.OutCubic
+                            }
                         }
                     }
-                }
-
-                // Indicator: dot for single, line for multiple
-                Rectangle {
-                    z: 1
-                    anchors.bottom: icon.bottom
-                    anchors.horizontalCenter: icon.horizontalCenter
-                    anchors.bottomMargin: -4
-                    visible: appDelegate.isAnyFocused
-                    width: appDelegate.hasMultiple ? 12 : 4
-                    height: 4
-                    radius: height / 2
-                    color: appDelegate.isAnyFocused ? Theme.primary : Theme.surfaceVariant
-
-                    Behavior on width {
-                        NumberAnimation {
-                            duration: 220
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-
-                    Behavior on height {
-                        NumberAnimation {
-                            duration: 220
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-                }
 
                 MouseArea {
                     id: iconMouse
@@ -155,7 +149,6 @@ Rectangle {
                     cursorShape: Qt.PointingHandCursor
 
                     onClicked: {
-                        // Cycle through windows of this app
                         const wins = appDelegate.windows;
 
                         if (wins.length === 1) {
@@ -163,7 +156,6 @@ Rectangle {
                             return;
                         }
 
-                        // Find currently focused window index
                         let focusedIdx = -1;
                         for (let i = 0; i < wins.length; i++) {
                             if (wins[i].is_focused) {
@@ -172,7 +164,6 @@ Rectangle {
                             }
                         }
 
-                        // Focus next window in cycle
                         const nextIdx = (focusedIdx + 1) % wins.length;
                         NiriService.focusWindow(wins[nextIdx].id);
                     }

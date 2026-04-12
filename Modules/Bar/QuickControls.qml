@@ -7,7 +7,6 @@ import qs.Modules
 import qs.Modules.Bar
 import qs.Modules.Bar.Panels
 
-
 Rectangle {
     id: root
 
@@ -15,8 +14,8 @@ Rectangle {
     property var activePanel: null
     readonly property int iconSize: 16
     implicitWidth: layout.implicitWidth + 18
-    implicitHeight: parent.height * 0.75
-    color: quickControlsPanel.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
+    implicitHeight: 28
+    color: quickControlsPanel.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
 
@@ -77,7 +76,6 @@ Rectangle {
         // --- ICON - 1: Ethernet ---
         StyledText {
             name: {
-
                 if (NetworkService.ethernetConnected) {
                     return "lan";
                 }

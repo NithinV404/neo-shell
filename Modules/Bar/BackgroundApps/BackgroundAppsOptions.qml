@@ -167,15 +167,26 @@ PanelWindow {
                             Component {
                                 id: menuItemComp
                                 Rectangle {
+                                    id: item
+                                    property point pos: item.mapFromGlobal(0, null)
                                     implicitHeight: 30
-                                    color: itemHover.containsMouse ? Theme.surfaceFg : Theme.surface
+                                    color: itemHover.containsMouse ? Theme.surfaceContainerHighest : Theme.surface
                                     radius: Settings.radius
+                                    clip: true
+
+                                    Behavior on color {
+                                        ColorAnimation {
+                                            duration: 100
+                                            easing.type: Easing.OutCubic
+                                        }
+                                    }
 
                                     MouseArea {
                                         id: itemHover
                                         anchors.fill: parent
                                         hoverEnabled: true
                                         onClicked: {
+                                            Effects.animation.ripple(item, pos.x, pos.y);
                                             delegateLoader.modelData.triggered();
                                             root.close();
                                         }
@@ -189,7 +200,7 @@ PanelWindow {
                                         Text {
                                             text: delegateLoader.modelData.text
                                             font.family: Settings.fontFamily
-                                            color: itemHover.containsMouse ? Theme.primaryFg : Theme.surfaceFg
+                                            color: itemHover.containsMouse ? Theme.surfaceFg : Theme.surfaceFg
                                             Layout.fillWidth: true
                                             elide: Text.ElideRight
                                             antialiasing: true
@@ -221,7 +232,7 @@ PanelWindow {
                 Rectangle {
                     Layout.fillWidth: true
                     implicitHeight: 38
-                    color: Theme.secondaryContainer
+                    color: Theme.surfaceContainer
                     radius: Settings.radius
                     border.width: 1
                     border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)

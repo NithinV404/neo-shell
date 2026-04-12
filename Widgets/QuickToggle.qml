@@ -21,7 +21,7 @@ Rectangle {
 
     radius: setRadius
     scale: toggleMenuMouse.pressed || toggleButtonMouse.pressed ? 0.95 : 1
-    color: (!root.hasSubMenu && root.active) ? Theme.primary : Theme.surfaceContainerHighest
+    color: (!root.hasSubMenu && root.active) ? Theme.primary : Theme.surfaceContainerHigh
 
     Behavior on color {
         ColorAnimation {

@@ -15,13 +15,14 @@ Item {
     property real maxValue: 1.0
     property string icon: ""
     property bool showValue: true
-    property color accentColor: Theme.primary
-    property color bgColor: Theme.surface
-    property color hintColor: Theme.surfaceContainerHighest
+    property color colorUnfilled: Theme.primary
+    property color colorFilled: Theme.surface
+    property color containerBackground: Theme.surface
     property color textColorFilled: Theme.primaryFg
     property color textColorUnfilled: Theme.surfaceFg
     property color textColorMuted: Theme.surfaceVariantFg
 
+    signal iconPress
     signal moved(real newValue)
 
     readonly property real normalizedValue: {
@@ -36,9 +37,8 @@ Item {
         width: parent.width
         anchors.centerIn: parent
         radius: Settings.radius
-        color: root.hintColor
+        color: root.colorFilled
 
-        // Clipping container - this is the key!
         Item {
             id: fillClipper
             anchors.left: parent.left
@@ -55,7 +55,6 @@ Item {
                 }
             }
 
-            // Fill is always full parent width with proper radius
             Rectangle {
                 id: progressFill
                 anchors.left: parent.left
@@ -63,7 +62,7 @@ Item {
                 anchors.bottom: parent.bottom
                 width: background.width
                 radius: background.radius
-                color: root.accentColor
+                color: root.colorUnfilled
             }
         }
         Rectangle {
@@ -71,7 +70,7 @@ Item {
             width: 12
             height: parent.height + 24
             radius: 5
-            color: root.bgColor
+            color: root.containerBackground
             anchors.verticalCenter: parent.verticalCenter
             x: (parent.width - 10) * root.normalizedValue
             Behavior on x {
@@ -84,11 +83,11 @@ Item {
 
             Rectangle {
                 id: handleFill
-                color: root.accentColor
+                color: Theme.primary
                 height: parent.height - 8
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: parent.width - 8
+                width: mouseArea.pressed ? parent.width - 10 : parent.width - 8
                 radius: Settings.radius
             }
         }
@@ -107,6 +106,13 @@ Item {
                 Behavior on color {
                     ColorAnimation {
                         duration: 150
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed: {
+                        root.iconPress;
                     }
                 }
             }
@@ -149,7 +155,6 @@ Item {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-
             onPressed: mouse => updateValue(mouse.x)
             onPositionChanged: mouse => {
                 if (pressed)

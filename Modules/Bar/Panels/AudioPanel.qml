@@ -345,7 +345,7 @@ Item {
                                         }
 
                                         TapHandler {
-                                            onTapped: AudioService.setAudioSink(modelData)
+                                            onTapped: AudioService.setAudioSink(audioDevicesSinkDelegate.modelData)
                                         }
 
                                         // Icon container with dynamic color
@@ -466,11 +466,9 @@ Item {
                                         }
 
                                         Slider {
+                                            containerBackground: Theme.secondaryFg
                                             Layout.fillWidth: true
                                             value: AudioService.volume * 100
-                                            bgColor: Theme.secondaryFg
-                                            accentColor: Theme.primary  // Use primary when active
-                                            hintColor: Theme.secondaryContainer
                                             textColorFilled: Theme.primaryFg
                                             textColorUnfilled: isActive ? Qt.alpha(Theme.primary, 0.7) : Theme.secondaryContainerFg
                                             implicitHeight: 52
@@ -708,11 +706,9 @@ Item {
                                         }
 
                                         Slider {
+                                            containerBackground: Theme.secondaryFg
                                             Layout.fillWidth: true
                                             value: AudioService.inputVolume * 100
-                                            bgColor: Theme.secondaryFg
-                                            accentColor: Theme.primary
-                                            hintColor: isActive ? Qt.alpha(Theme.primary, 0.3) : Theme.secondaryContainer
                                             textColorFilled: Theme.primaryFg
                                             textColorUnfilled: isActive ? Qt.alpha(Theme.primary, 0.7) : Theme.secondaryContainerFg
                                             implicitHeight: 52

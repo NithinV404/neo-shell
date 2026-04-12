@@ -149,7 +149,7 @@ Rectangle {
                                     menuX: localPos.x,
                                     menuY: localPos.y + root.height + 4,
                                     title: modelData.title,
-                                    icon: modelData.icon
+                                    titleIcon: modelData.icon
                                 });
                                 root.activeMenuInstance = newmenu;
                             }
