@@ -51,7 +51,7 @@ Item {
         height: 80
 
         radius: Settings.radius
-        color: Theme.surfaceContainer
+        color: Theme.secondaryContainer
         border.color: inputField.activeFocus ? Theme.tertiary : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
         border.width: inputField.activeFocus ? 1.5 : 1
         RowLayout {
