@@ -1,3 +1,4 @@
+import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -304,14 +305,10 @@ Item {
                                         cursorShape: Qt.PointingHandCursor
                                         hoverEnabled: true
                                         onClicked: {
-                                            if (connectedDelegateScope.modelData.type == "wifi") {
-                                                root.wifiService.disconnectWifi();
+                                            if (connectedDelegateScope.modelData.type == "wifi" && connectedDelegateScope.modelData.connected) {
+                                                NetworkService.disconnect();
                                             } else {
-                                                if (NetworkService.ethernetConnected) {
-                                                    NetworkService.disconnectEthernet();
-                                                } else {
-                                                    root.wifiService.connectEthernet();
-                                                }
+                                                NetworkService.connect();
                                             }
                                         }
                                     }
@@ -365,12 +362,13 @@ Item {
                                 required property var modelData
 
                                 // Extract properties from modelData
+                                readonly property string mode: modelData.ssid ?? "new"
                                 readonly property string ssid: modelData.ssid ?? ""
                                 readonly property int signal: modelData.signal ?? 0
-                                readonly property bool secured: modelData.secured ?? false
+                                readonly property string security: modelData.security
                                 readonly property string bssid: modelData.bssid ?? ""
                                 readonly property bool connected: modelData.connected ?? false
-                                readonly property bool saved: modelData.saved ?? false
+                                readonly property bool saved: modelData.existing ?? false
 
                                 // Helper properties for rounded corners
                                 readonly property bool isFirst: delegateScope.index === 0
@@ -443,13 +441,13 @@ Item {
 
                                                 Text {
                                                     text: {
-                                                        if (delegateScope.isConnecting) {
+                                                        if (NetworkService.connecting && NetworkService.connectingTo == delegateScope.ssid) {
                                                             return "Connecting...";
                                                         }
                                                         if (delegateScope.connected) {
                                                             return "Connected";
                                                         } else {
-                                                            return delegateScope.saved ? "Saved" : delegateScope.secured ? "Secured" : "Open";
+                                                            return delegateScope.saved ? "Saved" : delegateScope.security != "--" ? delegateScope.security : "Open";
                                                         }
                                                     }
                                                     font.pixelSize: 11
@@ -488,18 +486,16 @@ Item {
                                                     cursorShape: Qt.PointingHandCursor
                                                     hoverEnabled: true
                                                     onClicked: {
-                                                        if (delegateScope.isCurrent) {
-                                                            wifiModalLoader.close();
+                                                        if (delegateScope.connected) {
                                                             NetworkService.disconnect(delegateScope.ssid);
                                                             wifiListContainer.activeInputSSID = "";
                                                             wifiListContainer.lastAttemptSSID = "";
                                                             return;
                                                         }
-
                                                         wifiListContainer.lastAttemptSSID = delegateScope.ssid;
 
-                                                        if (delegateScope.secured && !delegateScope.saved) {
-                                                            wifiModalLoader.open("Connect to Wifi", delegateScope.ssid);
+                                                        if (delegateScope.security != "--" && !delegateScope.saved) {
+                                                            wifiModalLoader.openWifiModal("Connect to Wifi", delegateScope.ssid);
                                                         } else {
                                                             NetworkService.connect(delegateScope.ssid);
                                                         }
@@ -575,39 +571,30 @@ Item {
     }
 
     // --- Global Modal Loader ---
-    Loader {
-        id: wifiModalLoader
-        active: false
-        asynchronous: true
-
-        function open(title, ssid) {
-            active = true;
-            Qt.callLater(() => {
-                if (item) {
-                    item.open(title, ssid);
-                }
-            });
-        }
-
-        function close() {
-            active = false;
-        }
-
-        sourceComponent: WifiModal {
-            onConnect: function (ssid, password) {
-                root.wifiService.connectToWifi(ssid, password);
-            }
-            onCancel: function (ssid) {
-                if (root.wifiService.connectionError) {
-                    root.wifiService.forgetWifiNetwork(ssid);
-                    root.wifiService.isConnecting = false;
-                    wifiListContainer.lastAttemptSSID = "";
-                    wifiListContainer.activeInputSSID = "";
+    LazyLoader {
+            id: wifiModalLoader
+            active: false
+            function openWifiModal(title, ssid) {
+                wifiModalLoader.active = true;
+                if (wifiModalLoader.item) {
+                    wifiModalLoader.item.open(title, ssid);
+                    return;
                 }
             }
-            onMenuClosed: {
-                wifiModalLoader.active = false;
+
+            component: WifiModal {
+                id: wifiModal
+                onConnectRequested: (ssid, password) => {
+                    NetworkService.connect(ssid, password);
+                }
+
+                onCancelRequested: (ssid) => {
+                    console.log("Connection cancelled for:", ssid);
+                }
+
+                onMenuClosed: {
+                    wifiModalLoader.active = false;
+                }
             }
         }
-    }
-}
+        }

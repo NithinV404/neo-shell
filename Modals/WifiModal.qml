@@ -17,24 +17,25 @@ PanelWindow {
     }
 
     color: "transparent"
-
-    WlrLayershell.layer: WlrLayer.Top
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
     focusable: true
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
-    required property var onConnect
-    required property var onCancel
+    // ✅ Fixed: Use proper signal declarations (no 'on' prefix in declaration)
+    signal connectRequested(string ssid, string password)
+    signal cancelRequested(string ssid)
+    signal menuClosed()
+
     property string ssid
     property string title
     property bool opened: false
-
-    signal menuClosed
 
     function open(title, networkSsid) {
         root.ssid = networkSsid || "Unknown Network";
         root.title = title || "Modal";
         passwordInput.clear();
         root.opened = true;
+        root.visible = true;  // ✅ Ensure visibility
         openTimer.start();
     }
 
@@ -53,20 +54,14 @@ PanelWindow {
         id: closeTimer
         repeat: false
         interval: 220
-        onTriggered: root.menuClosed()
-    }
-
-    // Backdrop
-    Rectangle {
-        anchors.fill: parent
-        color: "#000000"
-        opacity: root.opened ? 0.5 : 0
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 220
-            }
+        onTriggered: {
+            root.menuClosed();  // ✅ Emit signal properly
+            root.visible = false;  // ✅ Hide window after animation
         }
     }
+
+    // ✅ Fixed: Check if visible before processing events
+    visible: false
 
     MouseArea {
         anchors.fill: parent
@@ -76,9 +71,8 @@ PanelWindow {
             const p = mapToItem(modalContainer, mouse.x, mouse.y);
             const inside = (p.x >= 0 && p.x <= modalContainer.width && p.y >= 0 && p.y <= modalContainer.height);
             if (!inside) {
-                if (root.onCancel) {
-                    root.onCancel(root.ssid);
-                }
+                // ✅ Fixed: Use proper signal emission syntax
+                root.cancelRequested(root.ssid);
                 root.close();
             }
         }
@@ -151,7 +145,7 @@ PanelWindow {
                 spacing: 4
 
                 Text {
-                    id: title
+                    id: titleText  // ✅ Renamed to avoid conflict with property
                     text: root.title
                     font.family: Settings.fontFamily
                     font.pixelSize: 24
@@ -188,8 +182,8 @@ PanelWindow {
                     placeholder: "Enter network password"
                     password: true
                     onAccepted: {
-                        if (passwordInput.text.length >= 8 && root.onConnect) {
-                            root.onConnect(root.ssid, passwordInput.text);
+                        if (passwordInput.text.length >= 8) {
+                            root.connectRequested(root.ssid, passwordInput.text);
                             root.close();
                         }
                     }
@@ -211,9 +205,7 @@ PanelWindow {
                 Button {
                     text: "Cancel"
                     onClicked: {
-                        if (root.onCancel) {
-                            root.onCancel(root.ssid);
-                        }
+                        root.cancelRequested(root.ssid);
                         root.close();
                     }
                 }
@@ -223,9 +215,7 @@ PanelWindow {
                     primary: true
                     enabled: passwordInput.text.length >= 8
                     onClicked: {
-                        if (root.onConnect) {
-                            root.onConnect(root.ssid, passwordInput.text);
-                        }
+                        root.connectRequested(root.ssid, passwordInput.text);
                         root.close();
                     }
                 }
@@ -236,9 +226,7 @@ PanelWindow {
     Shortcut {
         sequence: "Escape"
         onActivated: {
-            if (root.onCancel) {
-                root.onCancel(root.ssid);
-            }
+            root.cancelRequested(root.ssid);
             root.close();
         }
     }
