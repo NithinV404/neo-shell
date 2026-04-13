@@ -70,7 +70,7 @@ Item {
             GridLayout {
                 id: togglesGrid
                 readonly property int quickToogleHeight: 50
-                readonly property int quickToogleWidth: 170
+                readonly property int quickToogleWidth: 160
                 anchors.centerIn: parent
                 columns: 2
                 columnSpacing: 12
@@ -156,6 +156,7 @@ Item {
                     icon: "dark_mode"
                     title: "Dark mode"
                     active: Settings.darkMode
+                    // widgetSize: QuickToggle.WidgetSize.One
                     hasSubMenu: false
                     onClicked: Settings.setDarkMode(!Settings.darkMode)
                     implicitWidth: togglesGrid.quickToogleWidth

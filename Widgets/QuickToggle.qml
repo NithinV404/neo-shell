@@ -5,16 +5,22 @@ import qs.Common
 
 Rectangle {
     id: root
-
     clip: true
-    property point parentPos: root.mapToItem(null, 0, 0)
+
+    enum WidgetSize {
+        One,
+        Two
+    }
+
+    readonly property point parentPos: root.mapToItem(null, 0, 0)
+    property int widgetSize: QuickToggle.WidgetSize.Two
     property string icon: "help"
     property alias title: subText.text
     property alias status: subTextInfo.text
     property bool hasSubMenu: true
     property bool active: false
-    property int setPadding: 4
-    property int setRadius: Settings.radius
+    property int setPadding: 6
+    property int setRadius: active ? Settings.radius - 4 : Settings.radius
 
     signal clicked
     signal menuClicked
@@ -26,13 +32,20 @@ Rectangle {
     Behavior on color {
         ColorAnimation {
             duration: 200
-            easing.type: Easing.OutQuad
+            easing.type: Easing.OutCubic
         }
     }
 
     Behavior on scale {
         NumberAnimation {
             duration: 100
+            easing.type: Easing.OutBack
+        }
+    }
+
+    Behavior on radius {
+        NumberAnimation {
+            duration: 200
             easing.type: Easing.OutBack
         }
     }
@@ -51,6 +64,7 @@ Rectangle {
 
     Rectangle {
         anchors.fill: parent
+
         radius: root.radius
         color: "white"
         opacity: toggleMenuMouse.containsMouse ? 0.08 : 0
@@ -109,10 +123,9 @@ Rectangle {
         }
 
         Item {
-
-            Layout.fillWidth: true
+            Layout.fillWidth: visible
             Layout.fillHeight: true
-
+            visible: root.widgetSize === QuickToggle.WidgetSize.Two
             ColumnLayout {
                 id: textCol
                 anchors.verticalCenter: parent.verticalCenter
