@@ -207,8 +207,8 @@ Singleton {
         if (_loading || !wallpaperImage)
             return;
 
-        const imagePath = Utils.strip(wallpaperImage);
-        const configPath = Utils.strip(Utils.config) + "/quickshell/Matugen/config/neoshell.toml";
+        const imagePath = Utils.stringify(wallpaperImage);
+        const configPath = Utils.stringify(Utils.config) + "/quickshell/Matugen/config/neoshell.toml";
         const command = `matugen image "${imagePath}" -c "${configPath}" --source-color-index 1 `;
         Quickshell.execDetached(["sh", "-c", command]);
     }

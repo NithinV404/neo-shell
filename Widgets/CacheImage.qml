@@ -15,6 +15,7 @@ Image {
     sourceSize.width: maxCacheSize
     sourceSize.height: maxCacheSize
     smooth: true
+
     onImagePathChanged: {
         if (!imagePath) {
             source = "";
@@ -23,7 +24,7 @@ Image {
         }
 
         imageHash = "";
-        hashProcess.command = ["sha256sum", Utils.strip(imagePath)];
+        hashProcess.command = ["sha256sum", Utils.stringify(imagePath)];
         hashProcess.running = true;
     }
     onCachePathChanged: {
