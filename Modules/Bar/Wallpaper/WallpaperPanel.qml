@@ -44,7 +44,6 @@ PanelWindow {
         bottom: true
     }
 
-    // Click-outside-to-close
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton
@@ -143,7 +142,7 @@ PanelWindow {
                     }
                     ScriptAction {
                         script: {
-                            root.visible = false;  // Hide window AFTER animation
+                            root.visible = false;
                             root.menuClosed();
                         }
                     }
@@ -157,55 +156,64 @@ PanelWindow {
             radius: 26
             border.width: 1
             border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
-            implicitWidth: Math.max(wallpaperGrid.implicitWidth, wallpaperbuttons.implicitWidth) + 20
-            implicitHeight: wallpaperGrid.implicitHeight + wallpaperbuttons.height + 20
+            implicitWidth: wallpaperGrid.implicitWidth + 40
+            implicitHeight: wallpaperGrid.implicitHeight + 80
 
-            ColumnLayout {
-                anchors.centerIn: parent
-                WallpaperGrid {
-                    id: wallpaperGrid
-                    Layout.alignment: Qt.AlignCenter
-                }
-                RowLayout {
-                    id: wallpaperbuttons
-                    InputField {
-                        id: textField
-                        Layout.fillWidth: true
-                        placeholder: Settings.wallpapersFolder
-                        edit: true
-                        implicitHeight: 48
+            WallpaperGrid {
+                id: wallpaperGrid
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.margins: 20
+            }
 
-                        Keys.onPressed: event => {
-                            if (event.key === Qt.Key_Escape) {
-                                textField.clearFocus();  // Triggers editingFinished automatically
-                                event.accepted = true;
-                            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                                Settings.saveWallpapersFolderPath(textField.text);
-                                textField.clearFocus();
-                            }
-                        }
-                    }
+            RowLayout {
+                id: floatingControls
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.margins: 20
+                anchors.bottomMargin: 20
+                spacing: 12
 
-                    Button {
-                        icon: "save"
-                        text: "Save"
-                        implicitHeight: parent.height
-                        bgColor: Theme.primary
-                        textColor: Theme.primaryFg
-                        onClicked: {
+                InputField {
+                    id: textField
+                    Layout.fillWidth: true
+                    placeholder: Settings.wallpapersFolder
+                    edit: true
+                    implicitHeight: 40
+
+                    Keys.onPressed: event => {
+                        if (event.key === Qt.Key_Escape) {
+                            textField.clearFocus();
+                            event.accepted = true;
+                        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                             Settings.saveWallpapersFolderPath(textField.text);
                             textField.clearFocus();
                         }
                     }
-                    Button {
-                        icon: "refresh"
-                        text: "Regenerate Colors"
-                        implicitHeight: parent.height
-                        bgColor: Theme.primary
-                        textColor: Theme.primaryFg
-                        onClicked: {
-                            Settings.updateMatugenColors();
-                        }
+                }
+
+                Button {
+                    icon: "save"
+                    text: "Save"
+                    implicitHeight: 40
+                    bgColor: Theme.primary
+                    textColor: Theme.primaryFg
+                    onClicked: {
+                        Settings.saveWallpapersFolderPath(textField.text);
+                        textField.clearFocus();
+                    }
+                }
+
+                Button {
+                    icon: "refresh"
+                    text: "Regenerate"
+                    implicitHeight: 40
+                    bgColor: Theme.primary
+                    textColor: Theme.primaryFg
+                    onClicked: {
+                        Settings.updateMatugenColors();
                     }
                 }
             }

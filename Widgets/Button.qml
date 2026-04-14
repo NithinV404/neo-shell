@@ -6,7 +6,6 @@ import qs.Common
 
 Item {
     id: root
-    clip: true
     implicitWidth: buttonContent.width + 24
     implicitHeight: 40
     property point pos: root.mapFromGlobal(null, 0)
@@ -23,6 +22,17 @@ Item {
     property color disabledColor: Qt.darker(bgColor, 1.8)
 
     signal clicked
+
+    DropShadow {
+        anchors.fill: button
+        source: button
+        horizontalOffset: 0
+        verticalOffset: 6
+        radius: 16
+        samples: 41
+        color: Qt.rgba(0, 0, 0, 0.25)
+        transparentBorder: true
+    }
 
     Rectangle {
         id: button
@@ -56,13 +66,13 @@ Item {
             StyledText {
                 visible: root.icon !== ""
                 text: root.icon
-                size: 24
+                size: root.height * 0.45
                 color: !root.enabled ? Qt.darker(root.textColor) : root.textColor
             }
 
             Text {
                 text: root.text
-                font.pixelSize: root.height * 0.28
+                font.pixelSize: root.height * 0.30
                 font.family: Settings.fontFamily
                 font.weight: Font.Medium
                 color: !root.enabled ? Qt.darker(root.textColor, 1.4) : root.textColor

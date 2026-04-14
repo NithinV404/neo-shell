@@ -153,14 +153,12 @@ Item {
                     }
                 }
                 QuickToggle {
-                    icon: "dark_mode"
+                    icon: Settings.darkMode ? "dark_mode" : "light_mode"
                     title: "Dark mode"
                     active: Settings.darkMode
-                    // widgetSize: QuickToggle.WidgetSize.One
+                    widgetSize: QuickToggle.WidgetSize.Compact
                     hasSubMenu: false
                     onClicked: Settings.setDarkMode(!Settings.darkMode)
-                    implicitWidth: togglesGrid.quickToogleWidth
-                    implicitHeight: togglesGrid.quickToogleHeight
                 }
                 QuickToggle {
                     implicitWidth: togglesGrid.quickToogleWidth

@@ -13,6 +13,7 @@ Item {
     property bool showPassword: false
     property bool edit: false
     readonly property bool focused: inputField.activeFocus
+    property real fontSizeRatio: 0.35
 
     signal editingFinished
     signal accepted
@@ -67,7 +68,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 verticalAlignment: TextInput.AlignVCenter
                 color: Theme.surfaceVariantFg
-                font.pixelSize: 16
+                font.pixelSize: Math.max(12, root.height * root.fontSizeRatio)
                 font.family: Settings.fontFamily
                 clip: true
                 echoMode: root.password && !root.showPassword ? TextInput.Password : TextInput.Normal
@@ -84,7 +85,7 @@ Item {
                     font.family: Settings.fontFamily
                     text: root.placeholder
                     color: Theme.surfaceVariantFg
-                    font.pixelSize: 16
+                    font.pixelSize: Math.max(12, root.height * root.fontSizeRatio)
                     visible: !inputField.text && !inputField.activeFocus
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -101,7 +102,7 @@ Item {
                 StyledText {
                     anchors.centerIn: parent
                     text: root.showPassword ? "visibility_off" : "visibility"
-                    size: 20
+                    size: Math.max(16, root.height * 0.35)
                     color: Theme.surfaceVariantFg
                 }
 

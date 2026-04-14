@@ -13,7 +13,7 @@ Item {
     property int padding: 12
     property int spacing: 8
     property int cellSize: 100
-    property int noOfCols: 5
+    property int noOfCols: 4
     // GridView cellWidth includes spacing
     readonly property int gridCellWidth: cellWidth + spacing
     readonly property int gridCellHeight: cellHeight + spacing

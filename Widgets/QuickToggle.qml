@@ -3,38 +3,83 @@ import QtQuick.Layouts
 import qs.Services
 import qs.Common
 
-Rectangle {
+Item {
     id: root
     clip: true
 
     enum WidgetSize {
-        One,
-        Two
+        Compact,
+        Normal
     }
 
     readonly property point parentPos: root.mapToItem(null, 0, 0)
-    property int widgetSize: QuickToggle.WidgetSize.Two
+    property int widgetSize: QuickToggle.WidgetSize.Normal
+    property real baseWidth: {
+        switch (widgetSize) {
+        case QuickToggle.WidgetSize.Normal:
+            return 160;
+        case QuickToggle.WidgetSize.Compact:
+            return 60;
+        default:
+            return 160;
+        }
+    }
+
+    property real baseHeight: 50
     property string icon: "help"
     property alias title: subText.text
     property alias status: subTextInfo.text
     property bool hasSubMenu: true
     property bool active: false
-    property int setPadding: 6
-    property int setRadius: active ? Settings.radius - 4 : Settings.radius
+    property int padding: 6
+    property int radius: active ? Settings.radius - 4 : Settings.radius
+
+    implicitHeight: baseHeight
+    implicitWidth: baseWidth
 
     signal clicked
     signal menuClicked
 
-    radius: setRadius
-    scale: toggleMenuMouse.pressed || toggleButtonMouse.pressed ? 0.95 : 1
-    color: (!root.hasSubMenu && root.active) ? Theme.primary : Theme.surfaceContainerHigh
+    Rectangle {
+        id: quickToggle
+        anchors.fill: parent
+        radius: root.radius
+        color: {
+            if (!root.hasSubMenu) {
+                if (root.active) {
+                    if (root.widgetSize === QuickToggle.WidgetSize.Compact) {
+                        return toggleButtonMouse.containsMouse ? Qt.darker(Theme.primary) : Theme.primary;
+                    } else {
+                        return toggleMenuMouse.containsMouse ? Qt.darker(Theme.primary) : Theme.primary;
+                    }
+                } else {
+                    return toggleButtonMouse.containsMouse ? Qt.darker(Theme.surfaceContainerHigh) : Theme.surfaceContainerHigh;
+                }
+            } else {
+                if (root.active) {
+                    return toggleMenuMouse.containsMouse ? Qt.darker(Theme.surfaceContainerHigh) : Theme.surfaceContainerHigh;
+                } else {
+                    return toggleMenuMouse.containsMouse ? Qt.darker(Theme.surfaceContainerHigh) : Theme.surfaceContainerHigh;
+                }
+            }
+        }
 
-    Behavior on color {
-        ColorAnimation {
-            duration: 200
-            easing.type: Easing.OutCubic
+        Behavior on radius {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutBack
+            }
+        }
+
+        Behavior on color {
+            ColorAnimation {
+                duration: 200
+                easing.type: Easing.OutCubic
+            }
         }
     }
+
+    scale: toggleMenuMouse.pressed || toggleButtonMouse.pressed ? 0.95 : 1
 
     Behavior on scale {
         NumberAnimation {
@@ -43,59 +88,47 @@ Rectangle {
         }
     }
 
-    Behavior on radius {
-        NumberAnimation {
-            duration: 200
-            easing.type: Easing.OutBack
-        }
-    }
-
     MouseArea {
         id: toggleMenuMouse
         anchors.fill: parent
-        hoverEnabled: true
         propagateComposedEvents: true
+        hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: {
             Effects.animation.ripple(root, root.parentPos.x, root.parentPos.y);
-            root.hasSubMenu ? root.menuClicked() : root.clicked();
-        }
-    }
-
-    Rectangle {
-        anchors.fill: parent
-
-        radius: root.radius
-        color: "white"
-        opacity: toggleMenuMouse.containsMouse ? 0.08 : 0
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 150
-            }
+            if (root.hasSubMenu)
+                root.menuClicked();
+            else
+                root.clicked();
         }
     }
 
     RowLayout {
         anchors.fill: parent
-        anchors.margins: root.setPadding
+        anchors.margins: root.padding
         spacing: 8
 
         Rectangle {
             id: toggleBox
             Layout.fillHeight: true
             Layout.preferredWidth: height
+            Layout.alignment: root.widgetSize === QuickToggle.WidgetSize.Normal ? Qt.AlignLeft : Qt.AlignHCenter
 
             color: {
-                if (!root.hasSubMenu && root.active)
-                    return "transparent";
-                if (root.active)
-                    return !root.hasSubMenu ? Theme.primary : Qt.darker(Theme.primary, 1.2);
-                if (toggleButtonMouse.containsMouse)
-                    return Theme.tertiary;
-                return root.hasSubMenu ? Theme.surfaceContainerLow : "transparent";
+                {
+                    if (!root.hasSubMenu) {
+                        return "transparent";
+                    } else {
+                        if (root.active) {
+                            return toggleButtonMouse.containsMouse ? Qt.darker(Theme.primary) : Theme.primary;
+                        } else {
+                            return toggleButtonMouse.containsMouse ? Qt.darker(Theme.surfaceContainerHigh) : Theme.surfaceContainerHigh;
+                        }
+                    }
+                }
             }
 
-            radius: root.radius - root.setPadding
+            radius: root.radius - root.padding
 
             Behavior on color {
                 ColorAnimation {
@@ -107,25 +140,27 @@ Rectangle {
                 name: root.icon
                 anchors.centerIn: parent
                 size: 20
-                color: root.active ? Theme.primaryFg : (toggleButtonMouse.containsMouse ? Theme.tertiaryFg : Theme.secondaryContainerFg)
+                color: root.active ? Theme.primaryFg : Theme.surfaceFg
             }
 
             MouseArea {
                 id: toggleButtonMouse
                 anchors.fill: parent
                 onClicked: {
-                    Effects.animation.ripple(root, root.parentPos.x, root.parentPos.y);
                     root.clicked();
                 }
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
+                propagateComposedEvents: true
             }
         }
 
         Item {
-            Layout.fillWidth: visible
+            Layout.fillWidth: true
+            Layout.preferredWidth: root.widgetSize === QuickToggle.WidgetSize.Normal ? -1 : 0
             Layout.fillHeight: true
-            visible: root.widgetSize === QuickToggle.WidgetSize.Two
+            visible: root.widgetSize === QuickToggle.WidgetSize.Normal
+
             ColumnLayout {
                 id: textCol
                 anchors.verticalCenter: parent.verticalCenter
