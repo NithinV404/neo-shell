@@ -8,6 +8,7 @@ Rectangle {
     id: root
 
     property string screenName: ""
+    property real appLimit: 10
 
     implicitWidth: windowsRow.implicitWidth + 10
     implicitHeight: 28
@@ -74,7 +75,7 @@ Rectangle {
         spacing: 2
 
         Repeater {
-            model: root.groupedApps
+            model: root.groupedApps.slice(0, root.appLimit)
 
             delegate: Item {
                 id: appDelegate
@@ -92,7 +93,6 @@ Rectangle {
                 implicitWidth: 20
                 implicitHeight: 20
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-
 
                 // Container for icon + indicator to keep them centered together
                 Item {
@@ -114,33 +114,32 @@ Rectangle {
                             }
                         }
                     }
-
                 }
-                    Rectangle {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: -1
-                        visible: appDelegate.isAnyFocused
-                        width: appDelegate.hasMultiple ? 12 : 4
-                        height: 4
-                        z: 1
-                        radius: Settings.radius
-                        color: appDelegate.isAnyFocused ? Theme.primary : Theme.surfaceVariant
+                Rectangle {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: -1
+                    visible: appDelegate.isAnyFocused
+                    width: appDelegate.hasMultiple ? 12 : 4
+                    height: 4
+                    z: 1
+                    radius: Settings.radius
+                    color: appDelegate.isAnyFocused ? Theme.primary : Theme.surfaceVariant
 
-                        Behavior on width {
-                            NumberAnimation {
-                                duration: 220
-                                easing.type: Easing.OutCubic
-                            }
-                        }
-
-                        Behavior on height {
-                            NumberAnimation {
-                                duration: 220
-                                easing.type: Easing.OutCubic
-                            }
+                    Behavior on width {
+                        NumberAnimation {
+                            duration: 220
+                            easing.type: Easing.OutCubic
                         }
                     }
+
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: 220
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                }
 
                 MouseArea {
                     id: iconMouse
@@ -168,6 +167,21 @@ Rectangle {
                         NiriService.focusWindow(wins[nextIdx].id);
                     }
                 }
+            }
+        }
+        Rectangle {
+            visible: root.groupedApps.length > root.appLimit
+            implicitHeight: 20
+            implicitWidth: 20
+            color: Theme.secondaryContainer
+            radius: Settings.radius
+
+            Text {
+                anchors.centerIn: parent
+                text: root.groupedApps.length - root.appLimit
+                font.family: Settings.fontFamily
+                font.pixelSize: parent.height * 0.6
+                color: Theme.secondaryContainerFg
             }
         }
     }
