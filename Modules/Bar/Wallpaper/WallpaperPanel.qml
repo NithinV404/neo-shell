@@ -18,7 +18,7 @@ PanelWindow {
     property bool visible: false
     property bool isVisible: false
 
-    focusable: mouseArea.containsMouse || textField.focused
+    focusable: textFieldHover.hovered || textField.focused
     WlrLayershell.layer: WlrLayer.Overlay
     exclusionMode: ExclusionMode.Ignore
 
@@ -88,6 +88,7 @@ PanelWindow {
                 if (!insideInputFieldArea) {
                     textField.clearFocus();
                 }
+                mouse.accepted = false;
             }
         }
 
@@ -181,6 +182,10 @@ PanelWindow {
                     placeholder: Settings.wallpapersFolder
                     edit: true
                     implicitHeight: 40
+
+                    HoverHandler {
+                        id: textFieldHover
+                    }
 
                     Keys.onPressed: event => {
                         if (event.key === Qt.Key_Escape) {
