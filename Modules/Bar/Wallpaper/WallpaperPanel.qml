@@ -61,7 +61,7 @@ PanelWindow {
         id: panelContainer
         x: Utils.clampScreenX(root.menuX, width, 2, root.screen)
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
-        width: contentRect.implicitWidth + 40
+        width: contentRect.implicitWidth
         height: contentRect.height
         clip: false
         state: root.visible ? "open" : "closed"
@@ -157,24 +157,23 @@ PanelWindow {
             border.width: 1
             border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
             implicitWidth: wallpaperGrid.implicitWidth + 40
-            implicitHeight: wallpaperGrid.implicitHeight + 80
+            implicitHeight: wallpaperGrid.implicitHeight + 40
 
             WallpaperGrid {
                 id: wallpaperGrid
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.margins: 20
+                anchors {
+                    centerIn: parent
+                }
             }
 
             RowLayout {
                 id: floatingControls
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
+                anchors.bottom: wallpaperGrid.bottom
+                anchors.left: wallpaperGrid.left
+                anchors.right: wallpaperGrid.right
                 anchors.margins: 20
-                anchors.bottomMargin: 20
                 spacing: 12
+                z: 2
 
                 InputField {
                     id: textField

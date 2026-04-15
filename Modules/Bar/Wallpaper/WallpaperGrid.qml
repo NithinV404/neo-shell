@@ -10,17 +10,17 @@ Item {
     id: root
     property int cellWidth: 180
     property int cellHeight: 120
-    property int padding: 12
+    property int padding: 2
     property int spacing: 8
     property int cellSize: 100
     property int noOfCols: 4
+    property int noOfRows: 3
     // GridView cellWidth includes spacing
     readonly property int gridCellWidth: cellWidth + spacing
     readonly property int gridCellHeight: cellHeight + spacing
 
-    // Match exactly what GridView needs
-    implicitWidth: (gridCellWidth * noOfCols) + (padding * 2)
-    implicitHeight: Math.min(300, (gridCellHeight * 3) + (padding * 2))
+    implicitWidth: (gridCellWidth * noOfCols) - spacing
+    implicitHeight: (gridCellHeight * noOfRows) - spacing
     property string folderPath: Utils.resolvePath(Settings.wallpapersFolder)
     property var imageFiles: []
 
@@ -83,10 +83,10 @@ Item {
 
     GridView {
         id: gridView
-        anchors.fill: parent
-        anchors.margins: root.padding
-        cellWidth: root.cellWidth + root.spacing
-        cellHeight: root.cellHeight + root.spacing
+        width: root.gridCellWidth * root.noOfCols
+        height: root.gridCellHeight * root.noOfRows
+        cellWidth: root.gridCellWidth
+        cellHeight: root.gridCellHeight
         model: root.imageFiles
         cacheBuffer: 300
         clip: true
@@ -98,7 +98,7 @@ Item {
             color: Theme.surfaceContainer
             radius: Settings.radius
             clip: true
-            readonly property bool isSelected: Utils.strip(Settings.wallpaperImage) == modelData
+            readonly property bool isSelected: decodeURIComponent(Utils.strip(Settings.wallpaperImage)) === modelData
 
             required property string modelData
             required property int index
@@ -117,7 +117,7 @@ Item {
             Rectangle {
                 id: mask
                 anchors.fill: img
-                border.width: Utils.strip(Settings.wallpaperImage) == imageCell.modelData ? 2 : 0
+                border.width: imageCell.isSelected ? 2 : 0
                 border.color: Theme.primary
                 radius: Settings.radius
                 clip: true
