@@ -13,9 +13,6 @@ Rectangle {
     color: Theme.surface
     radius: Settings.radius
 
-    // Use Layout attached properties for sizing
-    Layout.fillWidth: true
-
     height: contentLayout.implicitHeight
 
     Behavior on color {
@@ -34,8 +31,9 @@ Rectangle {
 
     ColumnLayout {
         id: contentLayout
-        anchors.centerIn: parent
-        width: parent.width - 20
+        anchors.margins: 6
+        width: parent.width - 12
+        x: 6
         spacing: 0
 
         RowLayout {

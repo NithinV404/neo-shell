@@ -6,7 +6,7 @@ import qs.Common
 Item {
     id: root
     property real progress: 0.5
-    property real maxProgress: 1.5  // ← Add max value (150% for PipeWire)
+    property real maxProgress: 1.5
     property color bgColor: Theme.surface
     property color progressColor: Theme.primary
     property color inactiveColor: Theme.surfaceContainerHighest

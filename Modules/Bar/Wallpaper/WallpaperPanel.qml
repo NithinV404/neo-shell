@@ -29,7 +29,7 @@ PanelWindow {
         root.menuX = x - panelContainer.width / 2;
         root.menuY = y;
         root.visible = true;
-        Utils.timer(30, () => {
+        Utils.timer(10, () => {
             root.isVisible = true;
         }, root);
     }
@@ -100,103 +100,96 @@ PanelWindow {
             }
         }
 
-        Rectangle {
+        Item {
             id: contentRect
-            clip: true
-            color: Theme.surface
-            radius: 26
-            border.width: 1
-                border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
-                implicitWidth: wallpaperGrid.implicitWidth + 40
-                implicitHeight: wallpaperGrid.implicitHeight + 40
-                height: root.isVisible ? implicitHeight : 0
-                opacity: root.isVisible ? 1 : 0
-                width: implicitWidth
+            clip: false
+            width: wallpaperGrid.width + 40
+            height: root.isVisible ? wallpaperGrid.height + 40 : 0
+            opacity: root.isVisible ? 1 : 0
 
-                Behavior on opacity {
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 300
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            Behavior on height {
+                SequentialAnimation {
                     NumberAnimation {
                         duration: 300
-                        easing.type: Easing.OutCubic
+                        easing.type: Easing.OutBack
                     }
-                }
 
-                Behavior on height {
-                    SequentialAnimation {
-                        NumberAnimation {
-                            duration: 300
-                            easing.type: Easing.OutBack
-                        }
-
-                        ScriptAction {
-                            script: {
-                                if (!root.isVisible) {
-                                    root.visible = false;
-                                    root.menuClosed();
-                                }
+                    ScriptAction {
+                        script: {
+                            if (!root.isVisible) {
+                                root.visible = false;
+                                root.menuClosed();
                             }
                         }
                     }
                 }
-                WallpaperGrid {
-                    id: wallpaperGrid
-                    anchors {
-                        centerIn: parent
-                    }
-                }
+            }
+            WallpaperGrid {
+                id: wallpaperGrid
+                x: 20
+                y: 20
+            }
 
-                RowLayout {
-                    id: floatingControls
-                    anchors.bottom: wallpaperGrid.bottom
-                    anchors.left: wallpaperGrid.left
-                    anchors.right: wallpaperGrid.right
-                    spacing: 12
-                    z: 2
+            RowLayout {
+                id: floatingControls
+                anchors.bottom: wallpaperGrid.bottom
+                anchors.left: wallpaperGrid.left
+                anchors.right: wallpaperGrid.right
+                spacing: 12
+                z: 2
 
-                    InputField {
-                        id: textField
-                        Layout.fillWidth: true
-                        placeholder: Settings.wallpapersFolder
-                        edit: true
-                        implicitHeight: 40
+                InputField {
+                    id: textField
+                    Layout.fillWidth: true
+                    placeholder: Settings.wallpapersFolder
+                    edit: true
+                    implicitHeight: 40
 
-                        HoverHandler {
-                            id: textFieldHover
-                        }
-
-                        Keys.onPressed: event => {
-                            if (event.key === Qt.Key_Escape) {
-                                textField.clearFocus();
-                                event.accepted = true;
-                            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                                Settings.saveWallpapersFolderPath(textField.text);
-                                textField.clearFocus();
-                            }
-                        }
+                    HoverHandler {
+                        id: textFieldHover
                     }
 
-                    Button {
-                        icon: "save"
-                        text: "Save"
-                        implicitHeight: 40
-                        bgColor: Theme.primary
-                        textColor: Theme.primaryFg
-                        onClicked: {
+                    Keys.onPressed: event => {
+                        if (event.key === Qt.Key_Escape) {
+                            textField.clearFocus();
+                            event.accepted = true;
+                        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                             Settings.saveWallpapersFolderPath(textField.text);
                             textField.clearFocus();
                         }
                     }
+                }
 
-                    Button {
-                        icon: "refresh"
-                        text: "Regenerate"
-                        implicitHeight: 40
-                        bgColor: Theme.primary
-                        textColor: Theme.primaryFg
-                        onClicked: {
-                            Settings.updateMatugenColors();
-                        }
+                Button {
+                    icon: "save"
+                    text: "Save"
+                    implicitHeight: 40
+                    bgColor: Theme.primary
+                    textColor: Theme.primaryFg
+                    onClicked: {
+                        Settings.saveWallpapersFolderPath(textField.text);
+                        textField.clearFocus();
+                    }
+                }
+
+                Button {
+                    icon: "refresh"
+                    text: "Regenerate"
+                    implicitHeight: 40
+                    bgColor: Theme.primary
+                    textColor: Theme.primaryFg
+                    onClicked: {
+                        Settings.updateMatugenColors();
                     }
                 }
             }
         }
     }
+}

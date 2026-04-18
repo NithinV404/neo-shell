@@ -9,7 +9,7 @@ Item {
     id: root
     signal goBack
     implicitHeight: 400
-    implicitWidth: 350
+    implicitWidth: 400
 
     Rectangle {
         anchors.fill: parent

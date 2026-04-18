@@ -11,7 +11,7 @@ Item {
     id: root
     signal goBack
     implicitHeight: 400
-    implicitWidth: 350
+    implicitWidth: 400
 
     Rectangle {
         anchors.fill: parent
@@ -572,29 +572,29 @@ Item {
 
     // --- Global Modal Loader ---
     LazyLoader {
-            id: wifiModalLoader
-            active: false
-            function openWifiModal(title, ssid) {
-                wifiModalLoader.active = true;
-                if (wifiModalLoader.item) {
-                    wifiModalLoader.item.open(title, ssid);
-                    return;
-                }
-            }
-
-            component: WifiModal {
-                id: wifiModal
-                onConnectRequested: (ssid, password) => {
-                    NetworkService.connect(ssid, password);
-                }
-
-                onCancelRequested: (ssid) => {
-                    console.log("Connection cancelled for:", ssid);
-                }
-
-                onMenuClosed: {
-                    wifiModalLoader.active = false;
-                }
+        id: wifiModalLoader
+        active: false
+        function openWifiModal(title, ssid) {
+            wifiModalLoader.active = true;
+            if (wifiModalLoader.item) {
+                wifiModalLoader.item.open(title, ssid);
+                return;
             }
         }
+
+        component: WifiModal {
+            id: wifiModal
+            onConnectRequested: (ssid, password) => {
+                NetworkService.connect(ssid, password);
+            }
+
+            onCancelRequested: ssid => {
+                console.log("Connection cancelled for:", ssid);
+            }
+
+            onMenuClosed: {
+                wifiModalLoader.active = false;
+            }
         }
+    }
+}

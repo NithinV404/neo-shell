@@ -123,26 +123,25 @@ PanelWindow {
 
         StackLayout {
             id: quickLayoutStack
-            readonly property int itemHeight: {
-                let currentItem = children[currentIndex];
-                let h = currentItem.item ? currentItem.item.implicitHeight : currentItem.implicitHeight;
-                return h > 0 ? h : 350;
-            }
-            readonly property int itemWidth: {
-                let currentItem = children[currentIndex];
-                let w = currentItem.item ? currentItem.item.implicitWidth : currentItem.implicitWidth;
-                return w > 0 ? w : 350;
-            }
+            readonly property var currentItem: children[currentIndex] && children[currentIndex].item
+            readonly property int itemHeight: (currentItem && currentItem.implicitHeight) ?? controlPanel.implicitHeight
+            readonly property int itemWidth: (currentItem && currentItem.implicitWidth) ?? controlPanel.implicitWidth
+
             height: itemHeight
             width: itemWidth
             currentIndex: 0
             clip: true
-            anchors.fill: parent
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
             anchors.margins: 12
+            x: 12
+            y: 12
             visible: root.visible
 
             ControlCenterPanel {
-                id: controlCenterPanel
+                id: controlPanel
                 screen: root.screen
             }
 

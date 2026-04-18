@@ -12,7 +12,6 @@ Item {
     implicitWidth: layout.implicitWidth
     ColumnLayout {
         id: layout
-        anchors.centerIn: parent
         Rectangle {
             Layout.columnSpan: 2
             Layout.alignment: Qt.AlignRight
@@ -69,7 +68,7 @@ Item {
             Flow {
                 id: togglesGrid
                 anchors.centerIn: parent
-                width: 332
+                width: 350
                 spacing: 12
 
                 QuickToggle {
@@ -180,11 +179,12 @@ Item {
         }
         ColumnLayout {
             spacing: 6
+            Layout.fillWidth: true
+            Layout.columnSpan: 2
             RevealItems {
                 id: revealAudio
-                implicitHeight: revealAudio.height
-                Layout.alignment: Qt.AlignCenter
                 Layout.fillWidth: true
+                Layout.alignment: Qt.AlignCenter
                 subItems: (AudioService.appStreams?.length ?? 0) > 0
                 color: Theme.surfaceContainer
                 main: Slider {
@@ -206,7 +206,7 @@ Item {
                 }
                 sub: ColumnLayout {
                     id: appStreamCol
-                    Layout.fillWidth: true
+                    implicitWidth: parent.width
                     Repeater {
                         model: AudioService.appStreams
                         delegate: RowLayout {
@@ -274,7 +274,6 @@ Item {
 
             RevealItems {
                 id: revealBrightness
-                implicitHeight: revealBrightness.height
                 Layout.fillWidth: true
                 Layout.columnSpan: 2
                 color: Theme.surfaceContainer

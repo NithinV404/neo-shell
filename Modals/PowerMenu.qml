@@ -122,7 +122,12 @@ Scope {
             // Main focusable container
             Item {
                 id: keyHandler
-                anchors.fill: parent
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                    right: parent.right
+                    left: parent.left
+                }
                 focus: true
 
                 Component.onCompleted: {
@@ -150,13 +155,13 @@ Scope {
                 Rectangle {
                     id: logoutMenuContainer
                     anchors.centerIn: parent
-                    implicitHeight: root.visible ? (root.items.length * 50) + 40 : 0
-                    implicitWidth: 300
+                    height: root.visible ? (root.items.length * 50) + 40 : 0
+                    width: 300
                     color: Theme.surface
                     radius: Settings.radius
                     clip: true
 
-                    Behavior on implicitHeight {
+                    Behavior on height {
                         SequentialAnimation {
                             NumberAnimation {
                                 duration: 220
