@@ -16,8 +16,8 @@ PanelWindow {
     property real menuY: 0
     property alias posX: root.menuX
     property alias posY: root.menuY
-    property bool visible: false
     property bool isVisible: false
+    visible: false
 
     signal menuClosed
 
@@ -25,11 +25,13 @@ PanelWindow {
         root.menuX = x;
         root.menuY = y;
         root.visible = true;
-        root.isVisible = true;
+        Utils.timer(30, () => {
+            root.isVisible = true;
+        }, root);
     }
 
     function close() {
-        root.visible = false;
+        root.isVisible = false;
     }
 
     color: "transparent"
@@ -61,104 +63,83 @@ PanelWindow {
         id: panelContainer
         x: Utils.clampScreenX(root.menuX, width, 5, root.screen)
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
-        implicitWidth: quickLayoutStack.trackedWidth + 40
-        implicitHeight: quickLayoutStack.trackedHeight + 24
-        clip: false
-        state: root.visible ? "open" : "closed"
-        transformOrigin: Item.Top
+        width: quickLayoutStack.itemWidth + 24
+        height: root.isVisible ? quickLayoutStack.itemHeight + 24 : 0
+        opacity: root.isVisible ? 1 : 0
 
-        DropShadow {
-            anchors.fill: panelRect
-            source: panelRect
-            horizontalOffset: 0
-            verticalOffset: 8
-            radius: 18
-            samples: 49
-            color: Qt.rgba(0, 0, 0, 0.35)
-            transparentBorder: true
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.OutCubic
+            }
         }
 
-        states: [
-            State {
-                name: "closed"
-                PropertyChanges {
-                    target: panelContainer
-                    opacity: 0
-                    scale: 0.9
-                }
-            },
-            State {
-                name: "open"
-                PropertyChanges {
-                    target: panelContainer
-                    opacity: 1
-                    scale: 1
-                }
+        Behavior on width {
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.OutCubic
             }
-        ]
+        }
 
-        transitions: [
-            Transition {
-                id: openAnim
-                from: "closed"
-                to: "open"
-                reversible: true
-                SequentialAnimation {
-                    ScriptAction {
-                        script: {
-                            if (!root.visible) {
-                                root.isVisible = false;
-                                root.menuClosed();
-                            }
-                        }
-                    }
-                    ParallelAnimation {
-                        NumberAnimation {
-                            properties: "opacity,scale"
-                            duration: 220
-                            easing.type: Easing.OutCubic
+        Behavior on height {
+            SequentialAnimation {
+                NumberAnimation {
+                    duration: 300
+                    easing.type: Easing.OutBack
+                }
+                ScriptAction {
+                    script: {
+                        if (!root.isVisible) {
+                            root.visible = false;
+                            root.menuClosed();
                         }
                     }
                 }
             }
-        ]
+        }
 
         Rectangle {
             id: panelRect
-            anchors.fill: parent
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+                left: parent.left
+                right: parent.right
+            }
             radius: Settings.radius
             color: Theme.surface
             border.width: 1
             border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
+            layer.enabled: true
+            layer.effect: DropShadow {
+                horizontalOffset: 0
+                verticalOffset: 8
+                radius: 18
+                samples: 17
+                color: Qt.rgba(0, 0, 0, 0.35)
+                transparentBorder: true
+            }
         }
 
         StackLayout {
             id: quickLayoutStack
+            readonly property int itemHeight: {
+                let currentItem = children[currentIndex];
+                let h = currentItem.item ? currentItem.item.implicitHeight : currentItem.implicitHeight;
+                return h > 0 ? h : 350;
+            }
+            readonly property int itemWidth: {
+                let currentItem = children[currentIndex];
+                let w = currentItem.item ? currentItem.item.implicitWidth : currentItem.implicitWidth;
+                return w > 0 ? w : 350;
+            }
+            height: itemHeight
+            width: itemWidth
             currentIndex: 0
             clip: true
-            property QtObject currentItem: children[currentIndex]
-            property real trackedHeight: currentItem.implicitHeight
-            property real trackedWidth: currentItem.implicitWidth
-            width: trackedWidth
-            height: trackedHeight
+            anchors.fill: parent
             anchors.margins: 12
-            anchors.centerIn: parent
-
-            Behavior on trackedHeight {
-                enabled: root.isVisible
-                NumberAnimation {
-                    duration: 220
-                    easing.type: Easing.OutBack
-                }
-            }
-
-            Behavior on trackedWidth {
-                enabled: root.isVisible
-                NumberAnimation {
-                    duration: 220
-                    easing.type: Easing.OutBack
-                }
-            }
+            visible: root.visible
 
             ControlCenterPanel {
                 id: controlCenterPanel
@@ -166,29 +147,23 @@ PanelWindow {
 
             Loader {
                 id: wifiPanelPanel
-                asynchronous: true
                 sourceComponent: NetworkPanel {
                     onGoBack: quickLayoutStack.currentIndex = 0
-                    anchors.fill: parent
                 }
             }
 
             Loader {
                 id: bluetoothPanel
-                asynchronous: true
                 sourceComponent: BluetoothPanel {
                     bluetooth: BluetoothService
                     onGoBack: quickLayoutStack.currentIndex = 0
-                    anchors.fill: parent
                 }
             }
 
             Loader {
                 id: audioPanel
-                asynchronous: true
                 sourceComponent: AudioPanel {
                     onGoBack: quickLayoutStack.currentIndex = 0
-                    anchors.fill: parent
                 }
             }
         }

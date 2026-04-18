@@ -17,7 +17,13 @@ PanelWindow {
     property int menuX: 0
     property int menuY: 0
 
-    Component.onCompleted: open()
+    Component.onCompleted:{
+        open()
+        const opener = menuItemsRetriver(menuHandler)
+        opener.onChildrenChanged.connect(()=> {
+            itemsRepeater.model = opener.children
+        })
+    }
 
     function open() {
         menuContainer.opacity = 0;
@@ -82,9 +88,14 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
 
+    function menuItemsRetriver(menu): QtObject {
+        const qsMenuOpenerQml = Qt.createQmlObject(`import Quickshell; QsMenuOpener{}`, root)
+        qsMenuOpenerQml.menu = menu
+        return qsMenuOpenerQml
+    }
+
     QsMenuOpener {
         id: menuOpener
-        menu: root.menuHandler
     }
 
     anchors {
@@ -139,6 +150,8 @@ PanelWindow {
             border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
             clip: true
 
+
+
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
@@ -155,8 +168,9 @@ PanelWindow {
                     Layout.margins: 8
                     spacing: 2
 
+
                     Repeater {
-                        model: menuOpener.children
+                        id: itemsRepeater
 
                         delegate: Loader {
                             id: delegateLoader

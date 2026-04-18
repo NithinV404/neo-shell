@@ -27,22 +27,23 @@ Scope {
         }
     }
 
-    property bool showLauncher: false
-    property bool showContainer: false
-    property int selectedIndex: 0  // Track selected item
+    property bool visible: false
+
+    // Track selected item
+    property int selectedIndex: 0
 
     // All apps from service
-    readonly property var allApps: AppService.applications
+    property var apps: AppService.applications
+
+    // Search Index
+    property bool isVisible: false
 
     // Search query
     property string searchQuery: ""
 
-    // Filtered apps - computed locally
-    readonly property var apps: {
-        if (!searchQuery || searchQuery.trim().length === 0) {
-            return allApps;
-        }
-        return AppService.searchApplications(searchQuery);
+    // Search
+    onSearchQueryChanged: {
+        root.apps = searchQuery.trim().length > 0 ? AppService.searchApplications(searchQuery) : AppService.applications;
     }
 
     // Reset selection when apps list changes
@@ -53,17 +54,16 @@ Scope {
     function open() {
         searchQuery = "";
         selectedIndex = 0;  // Reset selection
-        root.showLauncher = true;
-        openTimer.start();
+        root.visible = true;
+        Utils.timer(30, () => root.isVisible = true, root);
     }
 
     function close() {
-        root.showContainer = false;
-        closeTimer.start();
+        root.isVisible = false;
     }
 
     function toggle() {
-        root.showLauncher ? root.close() : root.open();
+        root.visible ? root.close() : root.open();
     }
 
     function launchApp(app) {
@@ -77,34 +77,19 @@ Scope {
         }
     }
 
-    Timer {
-        id: openTimer
-        interval: 10
-        onTriggered: root.showContainer = true
-    }
-
-    Timer {
-        id: closeTimer
-        interval: 220
-        onTriggered: {
-            root.showLauncher = false;
-            searchQuery = "";
-            selectedIndex = 0;
-        }
-    }
-
     LazyLoader {
         id: appLauncherLoader
-        active: root.showLauncher
+        active: root.visible
 
         PanelWindow {
             id: launcherWindow
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
             WlrLayershell.layer: WlrLayer.Overlay
             anchors.bottom: true
-            anchors.left: true
             anchors.right: true
+            anchors.left: true
             anchors.top: true
+            visible: root.visible
             color: "transparent"
 
             function moveSelectionUp() {
@@ -141,49 +126,49 @@ Scope {
                 }
             }
 
-            DropShadow {
-                anchors.fill: launcherContainer
-                source: launcherContainer
-                horizontalOffset: 0
-                verticalOffset: 8
-                radius: 18
-                samples: 49
-                color: Qt.rgba(0, 0, 0, 0.35)
-                transparentBorder: true
-            }
-
             Rectangle {
                 id: launcherContainer
-                anchors.centerIn: parent
+                anchors.top: parent.top
+                anchors.left: parent.left
+                //anchors.topMargin: (parent.height - 600) / 2
+                //anchors.horizontalCenter: parent.horizontalCenter
                 width: 450
-                height: root.showContainer ? 600 : 0
+                height: root.isVisible ? 600 : 0
+                opacity: root.isVisible ? 1 : 0
                 radius: Settings.radius
                 color: Theme.surface
                 border.width: 1
                 border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
-                clip: true
-
-                opacity: root.showContainer ? 1 : 0
-                scale: root.showContainer ? 1 : 0.94
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 0
+                    verticalOffset: 8
+                    radius: 18
+                    samples: 49
+                    color: Qt.rgba(0, 0, 0, 0.35)
+                    transparentBorder: true
+                }
 
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: 200
-                        easing.type: Easing.OutCubic
-                    }
-                }
-
-                Behavior on scale {
-                    NumberAnimation {
-                        duration: 200
+                        duration: 300
                         easing.type: Easing.OutCubic
                     }
                 }
 
                 Behavior on height {
-                    NumberAnimation {
-                        duration: 200
-                        easing.type: Easing.OutCubic
+                    SequentialAnimation {
+                        NumberAnimation {
+                            duration: 300
+                            easing.type: Easing.OutBack
+                        }
+                        ScriptAction {
+                            script: {
+                                if (!root.isVisible) {
+                                    root.visible = false;
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -242,6 +227,7 @@ Scope {
                             id: searchField
                             anchors.left: parent.left
                             anchors.right: parent.right
+                            implicitHeight: 48
                             password: false
 
                             onTextChanged: {
@@ -253,7 +239,7 @@ Scope {
                         }
 
                         Timer {
-                            running: root.showContainer
+                            running: root.visible
                             interval: 50
                             onTriggered: searchField.setFocus()
                         }
@@ -297,12 +283,6 @@ Scope {
                             readonly property bool isHovered: delegateMouse.containsMouse
 
                             color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Theme.surface
-
-                            Behavior on color {
-                                ColorAnimation {
-                                    duration: 150
-                                }
-                            }
 
                             RowLayout {
                                 anchors.fill: parent

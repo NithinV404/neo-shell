@@ -16,7 +16,7 @@ Rectangle {
     // Use Layout attached properties for sizing
     Layout.fillWidth: true
 
-    implicitHeight: contentLayout.implicitHeight
+    height: contentLayout.implicitHeight
 
     Behavior on color {
         ColorAnimation {
@@ -25,7 +25,7 @@ Rectangle {
         }
     }
 
-    Behavior on implicitHeight {
+    Behavior on height {
         NumberAnimation {
             duration: 200
             easing.type: Easing.OutCubic

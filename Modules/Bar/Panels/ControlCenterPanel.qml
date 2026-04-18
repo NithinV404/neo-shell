@@ -7,13 +7,11 @@ import qs.Common
 import Quickshell.Services.Pipewire
 
 Item {
-    implicitHeight: mainContainer.implicitHeight
-    implicitWidth: mainContainer.implicitWidth
-
+    implicitHeight: layout.implicitHeight
+    implicitWidth: layout.implicitWidth
     ColumnLayout {
-        id: mainContainer
-        implicitHeight: 200
-        implicitWidth: 200
+        id: layout
+        anchors.centerIn: parent
         Rectangle {
             Layout.columnSpan: 2
             Layout.alignment: Qt.AlignRight
@@ -62,19 +60,16 @@ Item {
 
         Rectangle {
             id: togglePanel
-            implicitHeight: togglesGrid.height + 10
-            implicitWidth: togglesGrid.width + 10
+            implicitHeight: togglesGrid.height + 20
+            implicitWidth: togglesGrid.width + 20
             radius: Settings.radius
             color: Theme.surfaceContainer
 
-            GridLayout {
+            Flow {
                 id: togglesGrid
-                readonly property int quickToogleHeight: 50
-                readonly property int quickToogleWidth: 160
                 anchors.centerIn: parent
-                columns: 2
-                columnSpacing: 12
-                rowSpacing: 12
+                width: 332
+                spacing: 12
 
                 QuickToggle {
                     icon: {
@@ -109,8 +104,6 @@ Item {
 
                     active: NetworkService.wifiEnabled || NetworkService.ethernetConnected
                     onMenuClicked: quickLayoutStack.currentIndex = 1
-                    implicitWidth: togglesGrid.quickToogleWidth
-                    implicitHeight: togglesGrid.quickToogleHeight
                 }
 
                 QuickToggle {
@@ -144,8 +137,7 @@ Item {
                         }
                         return null;
                     }
-                    implicitWidth: togglesGrid.quickToogleWidth
-                    implicitHeight: togglesGrid.quickToogleHeight
+
                     active: BluetoothService.enabled
                     onMenuClicked: quickLayoutStack.currentIndex = 2
                     onClicked: {
@@ -161,8 +153,6 @@ Item {
                     onClicked: Settings.setDarkMode(!Settings.darkMode)
                 }
                 QuickToggle {
-                    implicitWidth: togglesGrid.quickToogleWidth
-                    implicitHeight: togglesGrid.quickToogleHeight
                     icon: AudioService.getOutputIcon() ?? AudioService.getInputIcon() ?? "devices_off"
                     active: Settings.source != "" || Settings.sink != ""
                     title: "Audio"
@@ -175,9 +165,8 @@ Item {
                     }
                 }
                 QuickToggle {
-                    implicitWidth: togglesGrid.quickToogleWidth
-                    implicitHeight: togglesGrid.quickToogleHeight
                     icon: PowerProfileService.getIcon(PowerProfileService.profile)
+                    widgetSize: QuickToggle.WidgetSize.Compact
                     active: true
                     hasSubMenu: false
                     title: "Power Profile"
@@ -192,8 +181,9 @@ Item {
             spacing: 6
             RevealItems {
                 id: revealAudio
-                Layout.fillWidth: true
+                implicitHeight: revealAudio.height
                 Layout.alignment: Qt.AlignCenter
+                Layout.fillWidth: true
                 subItems: (AudioService.appStreams?.length ?? 0) > 0
                 color: Theme.surfaceContainer
                 main: Slider {
@@ -283,6 +273,7 @@ Item {
 
             RevealItems {
                 id: revealBrightness
+                implicitHeight: revealBrightness.height
                 Layout.fillWidth: true
                 Layout.columnSpan: 2
                 color: Theme.surfaceContainer
@@ -295,7 +286,7 @@ Item {
                     value: Math.round(revealBrightness.mainBrightness * 100)
                     minValue: 0
                     maxValue: 100
-                    icon: BrightnessService.getBrightnessIcon(revealBrightness.currentScreen.brightness)  // Icon is separate
+                    icon: BrightnessService.getBrightnessIcon(revealBrightness.mainBrightness)  // Icon is separate
                     showValue: true
                     onMoved: newValue => {
                         BrightnessService.setBrightness(newValue / 100);

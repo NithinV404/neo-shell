@@ -138,4 +138,18 @@ QtObject {
         scoredApps.sort((a, b) => b.score - a.score);
         return scoredApps.slice(0, 50).map(item => item.app);
     }
+
+    function timer(interval, callback, root): QtObject {
+        const t = Qt.createQmlObject(`import QtQuick
+        Timer
+        { id: timer
+          interval: ${interval}
+          running: true
+        }`, root);
+        t.triggered.connect(() => {
+            callback();
+            t.destroy();
+        });
+        return t;
+    }
 }

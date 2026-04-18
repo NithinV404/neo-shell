@@ -15,8 +15,9 @@ PanelWindow {
     property real menuY: 0
     property alias posX: root.menuX
     property alias posY: root.menuY
-    property bool visible: false
     property bool isVisible: false
+
+    visible: false
 
     focusable: textFieldHover.hovered || textField.focused
     WlrLayershell.layer: WlrLayer.Overlay
@@ -28,11 +29,13 @@ PanelWindow {
         root.menuX = x - panelContainer.width / 2;
         root.menuY = y;
         root.visible = true;
-        root.isVisible = true;
+        Utils.timer(30, () => {
+            root.isVisible = true;
+        }, root);
     }
 
     function close() {
-        root.visible = false;
+        root.isVisible = false;
     }
 
     color: "transparent"
@@ -61,22 +64,9 @@ PanelWindow {
         id: panelContainer
         x: Utils.clampScreenX(root.menuX, width, 2, root.screen)
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
-        width: contentRect.implicitWidth
+        width: contentRect.width
         height: contentRect.height
-        clip: false
-        state: root.visible ? "open" : "closed"
         transformOrigin: Item.Top
-
-        DropShadow {
-            anchors.fill: contentRect
-            source: contentRect
-            horizontalOffset: 0
-            verticalOffset: 8
-            radius: 18
-            samples: 49
-            color: Qt.rgba(0, 0, 0, 0.35)
-            transparentBorder: true
-        }
 
         MouseArea {
             id: mouseArea
@@ -92,132 +82,119 @@ PanelWindow {
             }
         }
 
-        Behavior on height {
-            NumberAnimation {
-                duration: 220
-                easing.type: Easing.OutCubic
+        Rectangle {
+            id: shadowRect
+            width: contentRect.width
+            height: contentRect.height
+            radius: 26
+            color: Theme.surface
+            opacity: contentRect.opacity
+            layer.enabled: true
+            layer.effect: DropShadow {
+                horizontalOffset: 0
+                verticalOffset: 8
+                radius: 18
+                samples: 49
+                color: Qt.rgba(0, 0, 0, 0.35)
+                transparentBorder: true
             }
         }
 
-        states: [
-            State {
-                name: "closed"
-                PropertyChanges {
-                    target: panelContainer
-                    opacity: 0
-                    scale: 0.9
-                    height: 0
-                }
-            },
-            State {
-                name: "open"
-                PropertyChanges {
-                    target: panelContainer
-                    opacity: 1
-                    scale: 1
-                    height: contentRect.height
-                }
-            }
-        ]
-
-        transitions: [
-            Transition {
-                from: "closed"
-                to: "open"
-                NumberAnimation {
-                    target: panelContainer
-                    properties: "opacity,scale,height"
-                    duration: 220
-                    easing.type: Easing.OutCubic
-                }
-            },
-            Transition {
-                from: "open"
-                to: "closed"
-                SequentialAnimation {
-                    NumberAnimation {
-                        target: panelContainer
-                        properties: "opacity,scale,height"
-                        duration: 220
-                        easing.type: Easing.InCubic
-                    }
-                    ScriptAction {
-                        script: {
-                            root.visible = false;
-                            root.menuClosed();
-                        }
-                    }
-                }
-            }
-        ]
-
         Rectangle {
             id: contentRect
+            clip: true
             color: Theme.surface
             radius: 26
             border.width: 1
-            border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
-            implicitWidth: wallpaperGrid.implicitWidth + 40
-            implicitHeight: wallpaperGrid.implicitHeight + 40
+                border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
+                implicitWidth: wallpaperGrid.implicitWidth + 40
+                implicitHeight: wallpaperGrid.implicitHeight + 40
+                height: root.isVisible ? implicitHeight : 0
+                opacity: root.isVisible ? 1 : 0
+                width: implicitWidth
 
-            WallpaperGrid {
-                id: wallpaperGrid
-                anchors {
-                    centerIn: parent
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
                 }
-            }
 
-            RowLayout {
-                id: floatingControls
-                anchors.bottom: wallpaperGrid.bottom
-                anchors.left: wallpaperGrid.left
-                anchors.right: wallpaperGrid.right
-                anchors.margins: 20
-                spacing: 12
-                z: 2
+                Behavior on height {
+                    SequentialAnimation {
+                        NumberAnimation {
+                            duration: 300
+                            easing.type: Easing.OutBack
+                        }
 
-                InputField {
-                    id: textField
-                    Layout.fillWidth: true
-                    placeholder: Settings.wallpapersFolder
-                    edit: true
-                    implicitHeight: 40
+                        ScriptAction {
+                            script: {
+                                if (!root.isVisible) {
+                                    root.visible = false;
+                                    root.menuClosed();
+                                }
+                            }
+                        }
+                    }
+                }
+                WallpaperGrid {
+                    id: wallpaperGrid
+                    anchors {
+                        centerIn: parent
+                    }
+                }
 
-                    HoverHandler {
-                        id: textFieldHover
+                RowLayout {
+                    id: floatingControls
+                    anchors.bottom: wallpaperGrid.bottom
+                    anchors.left: wallpaperGrid.left
+                    anchors.right: wallpaperGrid.right
+                    spacing: 12
+                    z: 2
+
+                    InputField {
+                        id: textField
+                        Layout.fillWidth: true
+                        placeholder: Settings.wallpapersFolder
+                        edit: true
+                        implicitHeight: 40
+
+                        HoverHandler {
+                            id: textFieldHover
+                        }
+
+                        Keys.onPressed: event => {
+                            if (event.key === Qt.Key_Escape) {
+                                textField.clearFocus();
+                                event.accepted = true;
+                            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                                Settings.saveWallpapersFolderPath(textField.text);
+                                textField.clearFocus();
+                            }
+                        }
                     }
 
-                    Keys.onPressed: event => {
-                        if (event.key === Qt.Key_Escape) {
-                            textField.clearFocus();
-                            event.accepted = true;
-                        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    Button {
+                        icon: "save"
+                        text: "Save"
+                        implicitHeight: 40
+                        bgColor: Theme.primary
+                        textColor: Theme.primaryFg
+                        onClicked: {
                             Settings.saveWallpapersFolderPath(textField.text);
                             textField.clearFocus();
                         }
                     }
-                }
 
-                Button {
-                    icon: "save"
-                    text: "Save"
-                    implicitHeight: 40
-                    bgColor: Theme.primary
-                    textColor: Theme.primaryFg
-                    onClicked: {
-                        Settings.saveWallpapersFolderPath(textField.text);
-                        textField.clearFocus();
-                    }
-                }
-
-                Button {
-                    icon: "refresh"
-                    text: "Regenerate"
-                    implicitHeight: 40
-                    bgColor: Theme.primary
-                    textColor: Theme.primaryFg
-                    onClicked: {
-                        Settings.updateMatugenColors();
+                    Button {
+                        icon: "refresh"
+                        text: "Regenerate"
+                        implicitHeight: 40
+                        bgColor: Theme.primary
+                        textColor: Theme.primaryFg
+                        onClicked: {
+                            Settings.updateMatugenColors();
+                        }
                     }
                 }
             }
