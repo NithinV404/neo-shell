@@ -1087,14 +1087,14 @@ Singleton {
 
     function getOutputIcon() {
         if (muted) {
-            return "volume_mute";
+            return "volume_off";
         }
 
         const clampedVolume = Math.max(0, Math.min(volume, root.maxVolume));
 
         // Show volume-x icon when volume is effectively 0% (within rounding threshold)
         if (clampedVolume < root.epsilon) {
-            return "volume_off";
+            return "volume_mute";
         }
         if (clampedVolume <= 0.5) {
             return "volume_down";

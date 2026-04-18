@@ -9,20 +9,52 @@ import Quickshell.Wayland
 Scope {
     id: root
 
+    enum OSDType {
+        InputVolume,
+        OutputVolume,
+        Brightness
+    }
+
+    property int type: OSD.OSDType.OutputVolume
+    property var monitor: null
+    property real currentBrightness: 0
+    property real maxValue: type === OSD.OSDType.OutputVolume && Settings.audio.volumeOverdrive ? 1.5 : 1.0
+
     Connections {
         target: AudioService
 
         function onVolumeChanged() {
             // ONLY show if we aren't dragging the panel slider
             if (!AudioService.consumeOutputOSDSuppression()) {
-                root.open();
+                root.open(OSD.OSDType.OutputVolume);
             }
         }
 
         function onMutedChanged() {
             if (!AudioService.consumeOutputOSDSuppression()) {
-                root.open();
+                root.open(OSD.OSDType.OutputVolume);
             }
+        }
+
+        function onInputVolumeChanged() {
+            if (!AudioService.consumeInputOSDSuppression()) {
+                root.open(OSD.OSDType.InputVolume);
+            }
+        }
+
+        function onInputMutedChanged() {
+            if (!AudioService.consumeInputOSDSuppression()) {
+                root.open(OSD.OSDType.InputVolume);
+            }
+        }
+    }
+
+    Connections {
+        target: BrightnessService
+        function onMonitorBrightnessChanged(monitor, newBrightness) {
+            root.monitor = monitor;
+            root.currentBrightness = newBrightness;
+            root.open(OSD.OSDType.Brightness);
         }
     }
 
@@ -36,7 +68,9 @@ Scope {
         onTriggered: root.close()
     }
 
-    function open() {
+    function open(type) {
+        root.type = type;
+
         if (!osdLoader.active) {
             animating = true;
             shouldShowOsd = false;
@@ -55,12 +89,51 @@ Scope {
         root.shouldShowOsd = false;
     }
 
+    function getIcon() {
+        switch (root.type) {
+        case OSD.OSDType.OutputVolume:
+            return AudioService.getOutputIcon(AudioService.volume);
+        case OSD.OSDType.InputVolume:
+            return AudioService.getInputIcon(AudioService.inputVolume);
+        case OSD.OSDType.Brightness:
+            return BrightnessService.getBrightnessIcon(root.currentBrightness);
+        default:
+            return "help";
+        }
+    }
+
+    function getText() {
+        switch (root.type) {
+        case OSD.OSDType.OutputVolume:
+            return "Volume";
+        case OSD.OSDType.InputVolume:
+            return "Input";
+        case OSD.OSDType.Brightness:
+            return "Brightness";
+        default:
+            return "OSD";
+        }
+    }
+
+    function getValue() {
+        switch (root.type) {
+        case OSD.OSDType.OutputVolume:
+            return AudioService.volume;
+        case OSD.OSDType.InputVolume:
+            return AudioService.inputVolume;
+        case OSD.OSDType.Brightness:
+            return root.currentBrightness;
+        default:
+            return 0;
+        }
+    }
+
     LazyLoader {
         id: osdLoader
         active: root.keepAlive
 
         PanelWindow {
-            id: volumeOSDPanel
+            id: osdPanel
             anchors.bottom: true
             anchors.left: true
             anchors.right: true
@@ -75,8 +148,8 @@ Scope {
             Rectangle {
                 id: osdContent
                 anchors.horizontalCenter: parent.horizontalCenter
-                implicitHeight: volumeOSDLayout.height + 20
-                implicitWidth: volumeOSDLayout.width + 20
+                implicitHeight: osdLayout.height + 20
+                implicitWidth: osdLayout.width + 20
                 color: Theme.surface
                 radius: Settings.radius
                 layer.enabled: true
@@ -129,27 +202,20 @@ Scope {
                 ]
 
                 RowLayout {
-                    id: volumeOSDLayout
+                    id: osdLayout
                     anchors.centerIn: parent
                     spacing: 4
-                    property real volume: AudioService.volume
-
-                    Behavior on volume {
-                        NumberAnimation {
-                            duration: 100
-                            easing.type: Easing.OutCubic
-                        }
-                    }
 
                     StyledText {
+                        id: osdIcon
                         Layout.alignment: Qt.AlignVCenter
                         color: AudioService.muted ? Theme.surfaceVariantFg : Theme.primaryContainerFg
-                        name: AudioService.getOutputIcon()
+                        name: root.getIcon()
                         size: 28
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: AudioService.setOutputMuted(!AudioService.muted)
+                            // onClicked: AudioService.setOutputMuted(!AudioService.muted)
                         }
                     }
 
@@ -165,7 +231,8 @@ Scope {
                             Layout.alignment: Qt.AlignCenter
 
                             Text {
-                                text: "Volume"
+                                id: osdText
+                                text: root.getText()
                                 font.family: Settings.fontFamily
                                 font.pixelSize: 16
                                 color: Theme.surfaceFg
@@ -176,7 +243,8 @@ Scope {
                             }
 
                             Text {
-                                text: Math.floor(volumeOSDLayout.volume * 100)
+                                id: osdValue
+                                text: Math.round(root.getValue() * 100)
                                 font.family: Settings.fontFamily
                                 font.pixelSize: 16
                                 color: Theme.surfaceFg
@@ -186,8 +254,8 @@ Scope {
                         LineProgress {
                             Layout.fillWidth: true
                             implicitWidth: 120
-                            progress: volumeOSDLayout.volume
-                            maxProgress: Settings.audio.volumeOverdrive ? 1.5 : 1.0
+                            progress: root.getValue()
+                            maxProgress: root.maxValue
                         }
                     }
                 }

@@ -143,6 +143,7 @@ PanelWindow {
 
             ControlCenterPanel {
                 id: controlCenterPanel
+                screen: root.screen
             }
 
             Loader {

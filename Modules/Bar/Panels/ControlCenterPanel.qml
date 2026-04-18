@@ -7,6 +7,7 @@ import qs.Common
 import Quickshell.Services.Pipewire
 
 Item {
+    required property var screen
     implicitHeight: layout.implicitHeight
     implicitWidth: layout.implicitWidth
     ColumnLayout {

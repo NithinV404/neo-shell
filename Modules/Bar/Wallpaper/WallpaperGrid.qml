@@ -21,6 +21,21 @@ Item {
 
     implicitWidth: (gridCellWidth * noOfCols) - spacing
     implicitHeight: (gridCellHeight * noOfRows) - spacing
+
+    Behavior on implicitHeight {
+        NumberAnimation {
+            duration: 300
+            easing.type: Easing.OutCubic
+        }
+    }
+
+    Behavior on implicitWidth {
+        NumberAnimation {
+            duration: 300
+            easing.type: Easing.OutCubic
+        }
+    }
+
     property string folderPath: Utils.resolvePath(Settings.wallpapersFolder)
     property var imageFiles: []
 

@@ -51,7 +51,7 @@ ShellRoot {
         // color: "#1a1a2e"  // fallback color
     }
 
-    VolumeOSD {}
+    OSD {}
     PowerMenu {}
     Launcher {}
 
