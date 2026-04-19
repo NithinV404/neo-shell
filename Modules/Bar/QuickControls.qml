@@ -12,7 +12,7 @@ Rectangle {
 
     required property var screen
     property var activePanel: null
-    readonly property int iconSize: 16
+    readonly property int iconSize: height * 0.6
     implicitWidth: layout.implicitWidth + 18
     implicitHeight: 28
     color: quickControlsPanel.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer

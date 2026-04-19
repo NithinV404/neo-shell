@@ -107,6 +107,7 @@ Item {
         clip: true
         flickDeceleration: 900        // default 1500, lower = longer glide
         maximumFlickVelocity: 2000    // default ~2500, higher = faster fling
+        
 
         delegate: Rectangle {
             id: imageCell
@@ -116,10 +117,10 @@ Item {
             radius: Settings.radius
             clip: true
             readonly property bool isSelected: decodeURIComponent(Utils.strip(Settings.wallpaperImage)) === modelData
-
             required property string modelData
             required property int index
-
+            readonly property bool loading: img.status !== Image.Ready
+            
             CacheImage {
                 id: img
                 maxCacheSize: 256
@@ -130,6 +131,49 @@ Item {
                 opacity: 0
                 visible: true
             }
+
+            Rectangle {
+                id: loadingOverlay
+                anchors.fill: parent
+                radius: Settings.radius
+                color: Theme.secondaryContainer
+                opacity: imageCell.loading ? 1 : 0
+                z: 2  
+
+                Behavior on opacity {
+                    NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+                }
+
+                StyledText {
+                    id: refreshIcon
+                    name: "settings"
+                    color: Theme.secondaryContainerFg
+                    rotation: 0
+                    size: parent.height * 0.5
+                    anchors {
+                        top: parent.top
+                        bottom: parent.bottom
+                        left: parent.left
+                        right: parent.right
+                    }
+
+                    NumberAnimation on rotation {
+                        id: rotationAnim
+                        running: imageCell.loading
+                        from: 0
+                        to: 360
+                        duration: 1000
+                        loops: Animation.Infinite
+
+                        onRunningChanged: {
+                            if (!running) {
+                                refreshIcon.rotation = 0;
+                            }
+                        }
+                    }
+            }
+            }
+
 
             Rectangle {
                 id: mask

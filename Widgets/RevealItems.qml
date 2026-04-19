@@ -13,7 +13,7 @@ Rectangle {
     color: Theme.surface
     radius: Settings.radius
 
-    height: contentLayout.implicitHeight
+    implicitHeight: contentLayout.implicitHeight
 
     Behavior on color {
         ColorAnimation {
