@@ -2,6 +2,7 @@
 
 import Quickshell
 import QtQuick
+import QtQuick.Layouts
 import qs.Modules
 import qs.Modules.Bar
 import qs.Modules.Bar.Panels
@@ -56,15 +57,50 @@ PanelWindow {
         Row {
             anchors.centerIn: parent
             spacing: 4
-
             Workspaces {
                 id: workspaces
                 screenName: bar.modelData?.name ?? ""
             }
-            Clock {
-                id: clock
-                screen: bar.modelData
-                anchors.verticalCenter: parent.verticalCenter
+            Rectangle {
+                width: centerLayout.width
+                height: centerLayout.height
+                color: hoverHandler.hovered ? Theme.tertiaryContainer : Theme.surfaceContainer
+                radius: Settings.radius
+
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                Behavior on width {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutBack
+                    }
+                }
+
+                HoverHandler {
+                    id: hoverHandler
+                }
+                RowLayout {
+                    id: centerLayout
+                    Clock {
+                        id: clock
+                        screen: bar.modelData
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.leftMargin: 12
+                        Layout.rightMargin: 12
+                    }
+
+                    Battery {
+                        id: battery
+                        screen: bar.modelData
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.rightMargin: 4
+                    }
+                }
             }
         }
 
@@ -81,11 +117,6 @@ PanelWindow {
             }
             QuickControls {
                 id: quickControls
-                screen: bar.modelData
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Battery {
-                id: battery
                 screen: bar.modelData
                 anchors.verticalCenter: parent.verticalCenter
             }

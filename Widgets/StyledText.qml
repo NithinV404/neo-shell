@@ -50,10 +50,9 @@ Item {
         }
     }
 
-    FontLoader
-    {
+    FontLoader {
         id: symbolicFont
-        source: Qt.resolvedUrl("../Fonts/material-symbols-rounded-latin-400-normal.ttf")
+        source: Qt.resolvedUrl("../Fonts/MaterialSymbolsRounded[FILL,GRAD,opsz,wght].ttf")
     }
 
     Text {

@@ -24,12 +24,12 @@ Rectangle {
         return map;
     }
 
-    implicitWidth: workspaceRow.implicitWidth + 8
-    implicitHeight: 28
+    width: workspaceRow.implicitWidth + 8
+    height: 28
     color: Theme.surfaceContainer
     radius: Settings.radius
 
-    Behavior on implicitWidth {
+    Behavior on width {
         NumberAnimation {
             duration: 250
             easing.type: Easing.OutBack
@@ -181,7 +181,7 @@ Rectangle {
                     anchors.centerIn: parent
 
                     // Dim the dot if workspace has no apps and isn't focused
-                    color: (delegateItem.isFocused || delegateItem.hasApps) ? Theme.surfaceVariantFg : Qt.rgba(Theme.surfaceVariantFg.r, Theme.surfaceVariantFg.g, Theme.surfaceVariantFg.b, 0.4)
+                    color: (delegateItem.isFocused || delegateItem.hasApps) ? Theme.surfaceVariantFg : Theme.outline
 
                     Behavior on color {
                         ColorAnimation {

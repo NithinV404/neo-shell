@@ -1,56 +1,74 @@
 import QtQuick
+import QtQuick.Layouts
 import qs.Widgets
 import qs.Services
+import Qt5Compat.GraphicalEffects
 
-Rectangle {
+Item {
     id: root
     required property var screen
 
     // Size it properly for a panel icon
-    visible: BatteryService
-    implicitWidth: 30
-    implicitHeight: 28
-    color: Theme.surfaceContainer
-    radius: 100
+    visible: BatteryService.primaryDevice
+    width: 30
+    height: 18
 
-    WavyCircle {
-        id: batteryWave
+    Rectangle {
+        id: background
+        height: parent.height
+        width: parent.width
+        radius: width / 2
+        color: Theme.primaryContainer
+    }
+
+    Item {
+        id: clip
         anchors.fill: parent
-        lineWidth: 1.5
-        waveHeight: 1
-        frequency: 10
-        animate: false
-        degree: BatteryService.batteryPercentage * 3.6
-        color: BatteryService.batteryPercentage < 30 ? Theme.error : Theme.primary
+        visible: false
 
-        Connections {
-            target: BatteryService
-            function onBatteryPluggedInChanged() {
-                batteryWave.animate = true;
-                waveAnimateTimer.restart();  // Use start() instead of restart()
-            }
-
-            function onBatteryChargingChanged() {
-                batteryWave.animate = true;
-                waveAnimateTimer.restart();
-            }
+        Rectangle {
+            height: parent.height
+            width: parent.width * (BatteryService.batteryPercentage) / 100
+            color: Theme.primary
         }
+    }
 
-        Timer {
-            id: waveAnimateTimer
-            interval: 5000
-            running: false
-            onTriggered: {
-                batteryWave.animate = false;
+    Rectangle {
+        id: mask
+        color: Theme.primary
+        anchors.fill: parent
+        radius: width / 2
+        visible: false
+    }
+
+    OpacityMask {
+        anchors.fill: parent
+        source: clip
+        maskSource: mask
+    }
+
+    Item {
+        z: 2
+        width: parent.width
+        height: parent.height
+        RowLayout {
+            spacing: 0
+            x: (parent.width - width) / 2
+            y: (parent.height - height) / 2
+            StyledText {
+                text: BatteryService.batteryCharging ? "bolt" : BatteryService.batteryPluggedIn ? "power" : ""
+                size: root.height * 0.6
+                weight: 600
+                filled: true
+                color: BatteryService.batteryPercentage < 20 ? Theme.error : BatteryService.batteryPercentage > 25 ? Theme.primaryFg : Theme.primaryContainerFg
             }
-        }
 
-        // The Icon inside the WavyCircle
-        StyledText {
-            anchors.centerIn: parent
-            text: BatteryService.batteryIcon
-            size: 16
-            color: batteryWave.color // Matches the ring color
+            Text {
+                text: BatteryService.batteryPercentage
+                font.pixelSize: root.height * 0.6
+                font.weight: 600
+                color: BatteryService.batteryPercentage < 20 ? Theme.error : BatteryService.batteryPercentage > 85 ? Theme.primaryFg : Theme.primaryContainerFg
+            }
         }
     }
 }

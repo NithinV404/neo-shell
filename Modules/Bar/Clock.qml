@@ -13,7 +13,7 @@ Rectangle {
     property var activePanel: null
     implicitWidth: timeRow.implicitWidth + 30
     implicitHeight: 28
-    color: clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer
+    color: "transparent" //clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer
     radius: Settings.radius
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
@@ -66,10 +66,9 @@ Rectangle {
         Text {
             id: textTime
             text: Qt.formatDateTime(clock.date, "hh:mm ap")
-            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
-            font.pixelSize: 14
+            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
+            font.pixelSize: root.height * 0.5
             font.family: Settings.fontFamily
-            font.weight: 600
             Layout.alignment: Qt.AlignCenter
         }
 
@@ -85,9 +84,9 @@ Rectangle {
 
         // Date
         Text {
-            text: Qt.formatDateTime(clock.date, "ddd MM/d")
-            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
-            font.pixelSize: 12
+            text: Qt.formatDateTime(clock.date, "ddd MM/dd")
+            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
+            font.pixelSize: root.height * 0.45
             font.family: Settings.fontFamily
             Layout.alignment: Qt.AlignCenter
             Layout.topMargin: 1

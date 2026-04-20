@@ -91,17 +91,17 @@ Rectangle {
             size: root.iconSize
 
             // Use "on_primary_container" so it is visible against the background
-            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
+            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
         }
         StyledText {
             visible: BluetoothService.enabled
             name: BluetoothService.connectedDevices.length > 0 ? "bluetooth_connected" : "bluetooth"
-            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
+            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
             size: root.iconSize
         }
         StyledText {
             name: AudioService.getOutputIcon()
-            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
+            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
             size: root.iconSize
             MouseArea {
                 cursorShape: Qt.PointingHandCursor
@@ -111,7 +111,7 @@ Rectangle {
         }
         StyledText {
             name: AudioService.getInputIcon()
-            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.secondaryContainerFg
+            color: quickControlsPanel.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
             size: root.iconSize
             MouseArea {
                 cursorShape: Qt.PointingHandCursor
