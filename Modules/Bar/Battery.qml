@@ -57,7 +57,7 @@ Item {
             y: (parent.height - height) / 2
             StyledText {
                 text: BatteryService.batteryCharging ? "bolt" : BatteryService.batteryPluggedIn ? "power" : ""
-                size: root.height * 0.6
+                size: root.height * 0.55
                 weight: 600
                 filled: true
                 color: BatteryService.batteryPercentage < 20 ? Theme.error : BatteryService.batteryPercentage > 25 ? Theme.primaryFg : Theme.primaryContainerFg
