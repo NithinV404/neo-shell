@@ -8,7 +8,6 @@ Item {
     id: root
     implicitWidth: buttonContent.width + 24
     implicitHeight: 40
-    property point pos: root.mapFromGlobal(null, 0)
     property string text: "Button"
     property string icon: ""
     property bool primary: false
@@ -38,6 +37,7 @@ Item {
         id: button
         anchors.fill: parent
         radius: Settings.radius
+        clip: true
 
         color: {
             if (!root.enabled)
@@ -89,7 +89,7 @@ Item {
 
         onClicked: {
             if (root.enabled) {
-                Effects.animation.ripple(root, root.pos.x, root.pos.y);
+                Effects.animation.ripple(button, button.x, button.y);
                 root.clicked();
             }
         }
