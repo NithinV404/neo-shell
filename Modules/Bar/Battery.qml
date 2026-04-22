@@ -18,7 +18,9 @@ Item {
         height: parent.height
         width: parent.width
         radius: width / 2
-        color: Theme.primaryContainer
+        color: {
+            BatteryService.batteryPercentage < 21 ? Theme.errorContainer : Theme.primaryContainer;
+        }
     }
 
     Item {
@@ -29,7 +31,9 @@ Item {
         Rectangle {
             height: parent.height
             width: parent.width * (BatteryService.batteryPercentage) / 100
-            color: Theme.primary
+            color: {
+                BatteryService.batteryPercentage < 21 ? Theme.error : Theme.primary;
+            }
         }
     }
 
@@ -56,18 +60,30 @@ Item {
             x: (parent.width - width) / 2
             y: (parent.height - height) / 2
             StyledText {
+                id: icon
                 text: BatteryService.batteryCharging ? "bolt" : BatteryService.batteryPluggedIn ? "power" : ""
                 size: root.height * 0.55
                 weight: 600
                 filled: true
-                color: BatteryService.batteryPercentage < 20 ? Theme.error : BatteryService.batteryPercentage > 25 ? Theme.primaryFg : Theme.primaryContainerFg
+                color: BatteryService.batteryPercentage < 20 ? Theme.errorContainerFg : BatteryService.batteryPercentage > 25 ? Theme.primaryFg : Theme.primaryContainerFg
             }
 
             Text {
                 text: BatteryService.batteryPercentage
                 font.pixelSize: root.height * 0.6
                 font.weight: 600
-                color: BatteryService.batteryPercentage < 20 ? Theme.error : BatteryService.batteryPercentage > 85 ? Theme.primaryFg : Theme.primaryContainerFg
+                color: {
+                    if (BatteryService.batteryPercentage > 55 & icon.text != "") {
+                        return Theme.primaryFg;
+                    }
+                    if (BatteryService.batteryPercentage > 45 && icon.text == "") {
+                        return Theme.primaryFg;
+                    }
+                    if (BatteryService.batteryPercentage < 20) {
+                        return Theme.errorContainerFg;
+                    }
+                    return Theme.secondaryContainerFg;
+                }
             }
         }
     }
