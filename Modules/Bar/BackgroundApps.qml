@@ -10,8 +10,8 @@ import qs.Modules.Bar.BackgroundApps
 Rectangle {
     id: root
 
-    implicitHeight: parent.height * 0.75
-    implicitWidth: layout.implicitWidth + 4
+    height: parent.height * 0.75
+    width: layout.implicitWidth + 4
 
     color: "transparent" //  Theme.surfaceContainerHighest
     // border.width: 1
@@ -99,7 +99,7 @@ Rectangle {
 
     RowLayout {
         id: layout
-        spacing: -2
+        spacing: 0
         anchors.centerIn: parent
         Repeater {
             model: SystemTray.items
