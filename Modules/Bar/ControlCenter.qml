@@ -1,100 +1,75 @@
 import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
-import Quickshell
+import qs.Widgets
 import qs.Services
 import qs.Common
 import qs.Modules.Bar.Panels
-import Quickshell.Wayland
 
-PanelWindow {
+Popout {
     id: root
+    screen: screen
+    readonly property int animationDuration: 300
+    property alias enableShadow: panelRect.layer.enabled
 
-    // Use real for coords (they're numbers, not "var")
-    required property var screen
-    property real menuX: 0
-    property real menuY: 0
-    property alias posX: root.menuX
-    property alias posY: root.menuY
-    property bool isVisible: false
-    visible: false
-
-    signal menuClosed
-
-    function openAt(x, y) {
-        root.menuX = x;
-        root.menuY = y;
-        root.visible = true;
-        Utils.timer(30, () => {
-            root.isVisible = true;
-        }, root);
+    Component.onCompleted: {
+        openAnimationTimer.running = true;
     }
 
-    function close() {
-        root.isVisible = false;
-    }
-
-    color: "transparent"
-
-    exclusionMode: ExclusionMode.Ignore
-    WlrLayershell.layer: WlrLayer.Overlay
-
-    anchors {
-        left: true
-        right: true
-        top: true
-        bottom: true
-    }
-
-    // Click-outside-to-close
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.LeftButton
-        onClicked: mouse => {
-            const p = mapToItem(quickLayoutStack, mouse.x, mouse.y);
-            const inside = (p.x >= 0 && p.x <= quickLayoutStack.width && p.y >= 0 && p.y <= quickLayoutStack.height);
-            if (!inside) {
-                root.close();
-            }
+    onIsVisibleChanged: {
+        if (!root.isVisible) {
+            root.enableShadow = false;
+            closeAnimationTimer.running = true;
         }
     }
 
     Item {
         id: panelContainer
-        x: Utils.clampScreenX(root.menuX, width, 5, root.screen)
-        y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
+        x: Utils.clampScreenX(root.panelX, width, 5, root.screen)
+        y: Utils.clampScreenY(root.panelY, height, 0, root.screen)
         width: quickLayoutStack.itemWidth + 24
         height: root.isVisible ? quickLayoutStack.itemHeight + 24 : 0
         opacity: root.isVisible ? 1 : 0
 
+        Timer {
+            id: openAnimationTimer
+            interval: root.animationDuration
+            running: false
+            onTriggered: {
+                root.enableShadow = true;
+            }
+        }
+
+        Timer {
+            id: closeAnimationTimer
+            interval: root.animationDuration
+            running: false
+            onTriggered: {
+                if (!root.isVisible) {
+                    root.visible = false;
+                    root.menuClosed();
+                }
+            }
+        }
+
         Behavior on opacity {
             NumberAnimation {
-                duration: 300
+                duration: root.animationDuration
                 easing.type: Easing.OutCubic
             }
         }
 
         Behavior on width {
             NumberAnimation {
-                duration: 300
+                duration: root.animationDuration
                 easing.type: Easing.OutCubic
             }
         }
 
         Behavior on height {
-            SequentialAnimation {
-                NumberAnimation {
-                    duration: 300
-                    easing.type: Easing.OutBack
-                }
-                ScriptAction {
-                    script: {
-                        if (!root.isVisible) {
-                            root.visible = false;
-                            root.menuClosed();
-                        }
-                    }
-                }
+            NumberAnimation {
+                duration: root.animationDuration
+                easing.type: Easing.OutBack
             }
         }
 
@@ -110,7 +85,7 @@ PanelWindow {
             color: Theme.surface
             border.width: 1
             border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
-            layer.enabled: true
+            layer.enabled: false
             layer.effect: DropShadow {
                 horizontalOffset: 0
                 verticalOffset: 8

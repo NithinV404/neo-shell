@@ -19,22 +19,8 @@ Item {
     readonly property int gridCellWidth: cellWidth + spacing
     readonly property int gridCellHeight: cellHeight + spacing
 
-    width : (gridCellWidth * noOfCols) - spacing
-    height : (gridCellHeight * noOfRows) - spacing
-
-    Behavior on height {
-        NumberAnimation {
-            duration: 300
-            easing.type: Easing.OutCubic
-        }
-    }
-
-    Behavior on width {
-        NumberAnimation {
-            duration: 300
-            easing.type: Easing.OutCubic
-        }
-    }
+    width: (gridCellWidth * noOfCols) - spacing
+    height: (gridCellHeight * noOfRows) - spacing
 
     property string folderPath: Utils.resolvePath(Settings.wallpapersFolder)
     property var imageFiles: []
@@ -107,7 +93,7 @@ Item {
         clip: true
         flickDeceleration: 900        // default 1500, lower = longer glide
         maximumFlickVelocity: 2000    // default ~2500, higher = faster fling
-        
+
 
         delegate: Rectangle {
             id: imageCell
@@ -120,7 +106,7 @@ Item {
             required property string modelData
             required property int index
             readonly property bool loading: img.status !== Image.Ready
-            
+
             CacheImage {
                 id: img
                 maxCacheSize: 256
@@ -138,10 +124,13 @@ Item {
                 radius: Settings.radius
                 color: Theme.secondaryContainer
                 opacity: imageCell.loading ? 1 : 0
-                z: 2  
+                z: 2
 
                 Behavior on opacity {
-                    NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
                 }
 
                 StyledText {
@@ -171,9 +160,8 @@ Item {
                             }
                         }
                     }
+                }
             }
-            }
-
 
             Rectangle {
                 id: mask

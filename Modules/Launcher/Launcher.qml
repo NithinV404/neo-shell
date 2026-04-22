@@ -27,6 +27,38 @@ Scope {
         }
     }
 
+    Component.onCompleted: {
+        openAnimationTimer.running = true;
+    }
+
+    onIsVisibleChanged: {
+        if (!root.isVisible) {
+            root.enableShadow = false;
+            closeAnimationTimer.running = true;
+        }
+    }
+
+    Timer {
+        id: openAnimationTimer
+        interval: root.animationDuration
+        running: false
+        onTriggered: {
+            root.enableShadow = true;
+        }
+    }
+
+    Timer {
+        id: closeAnimationTimer
+        interval: root.animationDuration
+        onTriggered: {
+            if (!root.isVisible) {
+                root.visible = false;
+            }
+        }
+    }
+
+    property int animationDuration: 300
+    property bool enableShadow: false
     property bool visible: false
 
     // Track selected item
@@ -81,16 +113,10 @@ Scope {
         id: appLauncherLoader
         active: root.visible
 
-        PanelWindow {
+        Popout {
             id: launcherWindow
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-            WlrLayershell.layer: WlrLayer.Overlay
-            anchors.bottom: true
-            anchors.right: true
-            anchors.left: true
-            anchors.top: true
             visible: root.visible
-            color: "transparent"
+            focusable: true
 
             function moveSelectionUp() {
                 if (root.selectedIndex > 0) {
@@ -128,6 +154,7 @@ Scope {
 
             Rectangle {
                 id: launcherContainer
+                anchors.topMargin: 42
                 anchors.top: parent.top
                 anchors.left: parent.left
                 //anchors.topMargin: (parent.height - 600) / 2
@@ -139,7 +166,7 @@ Scope {
                 color: Theme.surface
                 border.width: 1
                 border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
-                layer.enabled: true
+                layer.enabled: root.enableShadow
                 layer.effect: DropShadow {
                     horizontalOffset: 0
                     verticalOffset: 8
@@ -161,13 +188,6 @@ Scope {
                         NumberAnimation {
                             duration: 300
                             easing.type: Easing.OutBack
-                        }
-                        ScriptAction {
-                            script: {
-                                if (!root.isVisible) {
-                                    root.visible = false;
-                                }
-                            }
                         }
                     }
                 }

@@ -1,72 +1,33 @@
-import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 import qs.Common
 import qs.Services
 import qs.Widgets
-import Quickshell.Wayland
 
-PanelWindow {
+Popout {
     id: root
-
-    required property var screen
-    property real menuX: 0
-    property real menuY: 0
-    property alias posX: root.menuX
-    property alias posY: root.menuY
-    property bool isVisible: false
-
-    visible: false
-
     focusable: textFieldHover.hovered || textField.focused
-    WlrLayershell.layer: WlrLayer.Overlay
-    exclusionMode: ExclusionMode.Ignore
+    readonly property int animationDuration: 300
+    property alias enableShadow: shadowRect.layer.enabled
 
-    signal menuClosed
-
-    function openAt(x, y) {
-        root.menuX = x - panelContainer.width / 2;
-        root.menuY = y;
-        root.visible = true;
-        Utils.timer(10, () => {
-            root.isVisible = true;
-        }, root);
+    Component.onCompleted: {
+        openAnimationTimer.running = true;
     }
 
-    function close() {
-        root.isVisible = false;
-    }
-
-    color: "transparent"
-
-    anchors {
-        left: true
-        right: true
-        top: true
-        bottom: true
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.LeftButton
-        propagateComposedEvents: true
-        onClicked: mouse => {
-            const panelContainerArea = mapToItem(panelContainer, mouse.x, mouse.y);
-            const insidePanelContainerArea = (panelContainerArea.x >= 0 && panelContainerArea.x <= panelContainer.width && panelContainerArea.y >= 0 && panelContainerArea.y <= panelContainer.height);
-            if (!insidePanelContainerArea) {
-                root.close();
-            }
+    onIsVisibleChanged: {
+        if (!isVisible) {
+            root.enableShadow = false;
+            closeAnimationTimer.running = true;
         }
     }
 
     Item {
         id: panelContainer
-        x: Utils.clampScreenX(root.menuX, width, 2, root.screen)
-        y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
+        x: Utils.clampScreenX(root.panelX - (width / 2), width, 0, root.screen)
+        y: Utils.clampScreenY(root.panelY, height, 0, root.screen)
         width: contentRect.width
         height: contentRect.height
-        transformOrigin: Item.Top
 
         MouseArea {
             id: mouseArea
@@ -89,7 +50,7 @@ PanelWindow {
             radius: 26
             color: Theme.surface
             opacity: contentRect.opacity
-            layer.enabled: true
+            layer.enabled: false
             layer.effect: DropShadow {
                 horizontalOffset: 0
                 verticalOffset: 8
@@ -102,33 +63,42 @@ PanelWindow {
 
         Item {
             id: contentRect
-            clip: false
+            clip: true
             width: wallpaperGrid.width + 40
             height: root.isVisible ? wallpaperGrid.height + 40 : 0
             opacity: root.isVisible ? 1 : 0
 
+            Timer {
+                id: openAnimationTimer
+                interval: root.animationDuration
+                running: false
+                onTriggered: {
+                    root.enableShadow = true;
+                }
+            }
+
+            Timer {
+                id: closeAnimationTimer
+                interval: root.animationDuration
+                onTriggered: {
+                    if (!root.isVisible) {
+                        root.visible = false;
+                        root.menuClosed();
+                    }
+                }
+            }
+
             Behavior on opacity {
                 NumberAnimation {
-                    duration: 300
+                    duration: root.animationDuration
                     easing.type: Easing.OutCubic
                 }
             }
 
             Behavior on height {
-                SequentialAnimation {
-                    NumberAnimation {
-                        duration: 300
-                        easing.type: Easing.OutBack
-                    }
-
-                    ScriptAction {
-                        script: {
-                            if (!root.isVisible) {
-                                root.visible = false;
-                                root.menuClosed();
-                            }
-                        }
-                    }
+                NumberAnimation {
+                    duration: root.animationDuration
+                    easing.type: Easing.OutBack
                 }
             }
             WallpaperGrid {
