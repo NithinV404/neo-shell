@@ -87,6 +87,13 @@ Rectangle {
         // Assuming MaterialShape expects an animation for shape transitions,
         // we use a Behavior or assign a standard NumberAnimation property.
 
+        Behavior on implicitSize {
+            NumberAnimation {
+                duration: 250
+                easing.type: Easing.OutCubic
+            }
+        }
+
         Behavior on shape {
             NumberAnimation {
                 duration: 250
