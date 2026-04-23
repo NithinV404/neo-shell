@@ -112,7 +112,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onPressed: {
-                        root.iconPress;
+                        root.iconPress();
                     }
                 }
             }

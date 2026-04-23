@@ -195,9 +195,6 @@ Item {
                     minValue: 0
                     maxValue: Settings.audio.volumeOverdrive ? 150 : 100
                     icon: AudioService.getOutputIcon(AudioService.source)  // Icon is separate
-                    onIconPress: {
-                        AudioService.setOutputMuted(!AudioService.muted);
-                    }
                     showValue: true
 
                     onMoved: newValue => {
