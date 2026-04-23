@@ -103,6 +103,7 @@ Item {
                     }
 
                     active: NetworkService.wifiEnabled || NetworkService.ethernetConnected
+                    onClicked: NetworkService.setWifiEnabled(!NetworkService.wifiEnabled)
                     onMenuClicked: quickLayoutStack.currentIndex = 1
                 }
 
