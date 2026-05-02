@@ -11,14 +11,14 @@ Item {
     property string text: "Button"
     property string icon: ""
     property bool primary: false
-    property bool enabled: true
+    enabled: true
     property color bgColor: Theme.primary
     property color textColor: Theme.primaryFg
 
     property color normalColor: bgColor
     property color hoverColor: Qt.lighter(bgColor, 0.9)
     property color pressedColor: Qt.darker(bgColor, 1.0)
-    property color disabledColor: Qt.darker(bgColor, 1.8)
+    property color disabledColor: Qt.darker(bgColor, 1.8);
 
     signal clicked
 
