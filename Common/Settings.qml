@@ -27,7 +27,7 @@ Singleton {
     readonly property string _configDir: Utils.strip(_configUrl)
 
     property QtObject brightness: QtObject {
-        property bool enableDdcSupport: false
+        property bool enableDdcSupport: true
         property var backlightDeviceMappings: []
         property real enforceMinimum: 0.01
     }
@@ -42,6 +42,10 @@ Singleton {
         loadSettings();
         detectDefault();
         setIconTheme();
+    }
+
+    onBrightnessChanged: {
+        saveSettings()
     }
 
     onDarkModeChanged: {
@@ -70,6 +74,11 @@ Singleton {
             "fontFamily": fontFamily,
             "iconTheme": iconTheme,
             "wallpaperFolderImages": wallpaperFolderImages,
+            "brightness": {
+                "enableDdcSupport": brightness.enableDdcSupport, 
+                "backlightDeviceMappings": brightness.backlightDeviceMappings, 
+                "enforceMinimum": brightness.enforceMinimum
+            },
             "audio": {
                 "volumeStep": audio.volumeStep,
                 "volumeOverdrive": audio.volumeOverdrive,
@@ -92,6 +101,9 @@ Singleton {
                 darkMode = settings.darkMode !== undefined ? settings.darkMode : "light";
                 fontFamily = settings.fontFamily !== undefined ? settings.fontFamily : "Adwaita Sans";
                 iconTheme = settings.iconTheme !== undefined ? settings.iconTheme : "System Default";
+                brightness.enableDdcSupport = settings.brightness.enableDdcSupport !== undefined ? settings.brightness.enableDdcSupport : true
+                brightness.backlightDeviceMappings = settings.brightness.backlightDeviceMappings !== undefined ? settings.brightness.backlightDeviceMappings : []
+                brightness.enforceMinimum = settings.brightness.enforceMinimum !== undefined ? settings.brightness.enforceMinimum : 1.0   
                 audio.volumeOverdrive = settings.audio.volumeOverdrive !== undefined ? settings.audio.volumeOverdrive : false;
                 audio.volumeStep = settings.audio.volumeStep !== undefined ? settings.audio.volumeStep : 1;
                 audio.volumeFeedback = settings.audio.volumeFeedback !== undefined ? settings.audio.volumeFeedback : false;
