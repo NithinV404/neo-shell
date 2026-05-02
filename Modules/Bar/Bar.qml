@@ -32,7 +32,7 @@ PanelWindow {
     color: "transparent"
 
     implicitHeight: 40
-    WlrLayershell.namespace: "neoshell:bar"
+    // WlrLayershell.namespace: "neoshell:bar"
     WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.exclusionMode: ExclusionMode.Auto
 
