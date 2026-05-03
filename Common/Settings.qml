@@ -53,7 +53,12 @@ Singleton {
         updateAppsColorScheme();
     }
     onIconThemeChanged: {
+        if(iconTheme == "System Default")
+        {
+            return 
+        }
         setIconTheme();
+            
     }
     onWallpaperFolderImagesChanged: saveSettings()
     onDefaultIconThemeChanged: {
