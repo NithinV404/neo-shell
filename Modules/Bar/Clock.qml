@@ -38,7 +38,7 @@ Rectangle {
             id: textTime
             text: Qt.formatDateTime(clock.date, "hh:mm ap")
             color: root.hovered ? Theme.tertiaryContainerFg : Theme.surfaceFg
-            font.pixelSize: root.height * 0.5
+            font.pixelSize: root.height * 0.45
             font.family: Settings.fontFamily
             Layout.alignment: Qt.AlignCenter
         }
@@ -57,7 +57,7 @@ Rectangle {
         Text {
             text: Qt.formatDateTime(clock.date, "ddd MM/dd")
             color: root.hovered ? Theme.tertiaryContainerFg : Theme.surfaceFg
-            font.pixelSize: root.height * 0.45
+            font.pixelSize: root.height * 0.42
             font.family: Settings.fontFamily
             Layout.alignment: Qt.AlignCenter
             Layout.topMargin: 1
