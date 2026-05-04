@@ -10,7 +10,7 @@ import qs.Modules.Bar.BackgroundApps
 Rectangle {
     id: root
 
-    height: parent.height * 0.75
+    height: 28
     width: layout.implicitWidth + 4
 
     color: "transparent" //  Theme.surfaceContainerHighest

@@ -128,9 +128,25 @@ PanelWindow {
             spacing: 4
             height: parent.height
 
-            BackgroundApps {
-                id: backgroundApps
+            Rectangle
+            {
                 anchors.verticalCenter: parent.verticalCenter
+                width: backgroundApps.width
+                height: backgroundApps.height
+                color: Theme.surfaceContainer
+                radius: Settings.radius
+                BackgroundApps {
+                    id: backgroundApps
+                }
+
+                Behavior on width
+                {
+                    NumberAnimation
+                    {
+                        duration: 300 
+                        easing.type: Easing.OutCubic
+                    }
+                }
             }
             QuickControls {
                 id: quickControls
