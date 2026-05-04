@@ -131,7 +131,7 @@ PanelWindow {
             Rectangle
             {
                 anchors.verticalCenter: parent.verticalCenter
-                width: backgroundApps.width
+                width: backgroundApps.visible ? backgroundApps.width : 0
                 height: backgroundApps.height
                 color: Theme.surfaceContainer
                 radius: Settings.radius

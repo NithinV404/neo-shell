@@ -111,7 +111,7 @@ Rectangle {
 
                 AppIcon {
                     anchors.centerIn: parent
-                    size: 20
+                    size: root.height * 0.6
                     icon: {
                         console.log(trayItem.modelData.icon);
                         return trayItem.modelData.icon;

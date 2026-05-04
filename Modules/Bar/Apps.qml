@@ -104,7 +104,7 @@ Rectangle {
                         id: icon
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: parent.top
-                        size: 16
+                        size: root.height * 0.6
                         icon: appDelegate.appId
 
                         Behavior on opacity {
