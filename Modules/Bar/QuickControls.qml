@@ -1,3 +1,4 @@
+import Quickshell
 import QtQuick.Layouts
 import QtQuick
 import qs.Services
@@ -5,13 +6,11 @@ import qs.Widgets
 import qs.Common
 import qs.Modules
 import qs.Modules.Bar
-import qs.Modules.Bar.Panels
 
 Rectangle {
     id: root
 
     required property var screen
-    property var activePanel: null
     readonly property int iconSize: height * 0.6
     implicitWidth: layout.implicitWidth + 18
     implicitHeight: 28
@@ -38,35 +37,7 @@ Rectangle {
         }
     }
 
-    function openPanel() {
-        if (root.activePanel === null) {
-            panel.active = true;
-            activePanel = panel.item;
-        } else {
-            closePanel();
-        }
-    }
-
-    function closePanel() {
-        if (root.activePanel !== null) {
-            root.activePanel.close();
-        }
-        return;
-    }
-
-    MouseArea {
-        id: quickControlsPanel
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        onClicked: mouse => {
-            if (mouse.button === Qt.LeftButton && root.activePanel == null) {
-                root.openPanel();
-            } else {
-                root.closePanel();
-            }
-        }
-    }
+ 
 
     RowLayout {
         id: layout
@@ -120,19 +91,5 @@ Rectangle {
             }
         }
     }
-    Loader {
-        id: panel
-        active: false
-        sourceComponent: ControlCenter {
-            screen: root.screen
-            onMenuClosed: {
-                panel.active = false;
-                root.activePanel = null;
-            }
-        }
-        onLoaded: {
-            var getLocalPos = root.mapToItem(null, 0, 0);
-            item.openAt(getLocalPos.x + (root.width / 2), getLocalPos.y + root.height + 8);
-        }
-    }
+    
 }

@@ -4,25 +4,11 @@ import Qt5Compat.GraphicalEffects
 import qs.Common
 import qs.Services
 import qs.Widgets
-
+ 
 Popout {
     id: root
-    focusable: textFieldHover.hovered || textField.focused
-    readonly property int animationDuration: 300
-    property alias enableShadow: shadowRect.layer.enabled
-
-    Component.onCompleted: {
-        openAnimationTimer.running = true;
-    }
-
-    onIsVisibleChanged: {
-        if (!isVisible) {
-            root.enableShadow = false;
-            closeAnimationTimer.running = true;
-        }
-    }
-
-    Item {
+   
+    content: Item {
         id: panelContainer
         x: Utils.clampScreenX(root.panelX - (width / 2), width, 0, root.screen)
         y: Utils.clampScreenY(root.panelY, height, 0, root.screen)
@@ -59,6 +45,7 @@ Popout {
                 color: Qt.rgba(0, 0, 0, 0.35)
                 transparentBorder: true
             }
+            
         }
 
         Item {
@@ -67,26 +54,6 @@ Popout {
             width: wallpaperGrid.width + 40
             height: root.isVisible ? wallpaperGrid.height + 40 : 0
             opacity: root.isVisible ? 1 : 0
-
-            Timer {
-                id: openAnimationTimer
-                interval: root.animationDuration
-                running: false
-                onTriggered: {
-                    root.enableShadow = true;
-                }
-            }
-
-            Timer {
-                id: closeAnimationTimer
-                interval: root.animationDuration
-                onTriggered: {
-                    if (!root.isVisible) {
-                        root.visible = false;
-                        root.menuClosed();
-                    }
-                }
-            }
 
             Behavior on opacity {
                 NumberAnimation {

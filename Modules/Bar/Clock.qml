@@ -2,9 +2,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Common
-
 import qs.Services
-import qs.Modules.Bar.Wallpaper
 import Quickshell
 
 Rectangle {
@@ -30,31 +28,12 @@ Rectangle {
         precision: SystemClock.Seconds
     }
 
-    function openPanel() {
-        if (root.activePanel === null) {
-            panel.active = true;
-            activePanel = panel.item;
-        } else {
-            closePanel();
-        }
-    }
-
-    function closePanel() {
-        if (root.activePanel !== null) {
-            root.activePanel.close();
-        }
-        return;
-    }
-
     MouseArea {
         id: clockMouse
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-
-        onClicked: {
-            root.openPanel();
-        }
+        propagateComposedEvents: true 
     }
 
     RowLayout {
@@ -92,23 +71,5 @@ Rectangle {
             Layout.topMargin: 1
         }
     }
-    LazyLoader {
-        id: panel
-        active: false
-        WallpaperPanel {
-            screen: root.screen
-            onMenuClosed: {
-                panel.active = false;
-                root.activePanel = null;
-            }
-        }
-        onActiveChanged: {
-            if (active && panel.item) {
-                var pos = root.mapToGlobal(0, 0);
-                console.info(pos);
-                root.activePanel = panel.item;
-                panel.item.openAt(pos.x + (root.width / 2), pos.y + root.height + 8);
-            }
-        }
-    }
+   
 }

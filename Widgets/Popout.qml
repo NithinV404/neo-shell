@@ -5,12 +5,13 @@ import qs.Common
 
 PanelWindow {
     id: root
-
-    // Use real for coords (they're numbers, not "var")
+    required property var screen
     property alias content: contentWindow.sourceComponent
+    property int animationDuration: 300 
     property int panelX: 0
     property int panelY: 0
     property bool isVisible: false
+    property bool shadowEnabled: false 
     visible: false
 
     signal menuClosed
@@ -26,11 +27,16 @@ PanelWindow {
 
     function close() {
         root.isVisible = false;
+        Utils.timer(animationDuration, () => {
+            root.visible = false;
+            root.menuClosed();
+        }, root);
+
     }
 
     color: "transparent"
 
-    exclusionMode: ExclusionMode.Ignore
+    exclusionMode: ExclusionMode.Ignore 
     WlrLayershell.layer: WlrLayer.Overlay
 
     anchors {
@@ -40,13 +46,30 @@ PanelWindow {
         bottom: true
     }
 
-    // Click-outside-to-close
+    onIsVisibleChanged: 
+    {
+        if(isVisible)
+        {
+            Utils.timer(root.animationDuration, ()=> {
+                root.shadowEnabled =  true 
+            }, root )
+        }
+        else 
+        {
+            root.shadowEnabled = false
+        }
+    }
+
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton
         onClicked: mouse => {
+            if (!root.contentItem) {
+                root.close();
+                return;
+            }
             const p = mapToItem(contentWindow, mouse.x, mouse.y);
-            const inside = (p.x >= 0 && p.x <= contentWindow.width && p.y >= 0 && p.y <= contentWindow.height);
+            const inside = (p.x >= 0 && p.x <= contentWindow.item.width && p.y >= 0 && p.y <= contentWindow.item.height);
             if (!inside) {
                 root.close();
             }

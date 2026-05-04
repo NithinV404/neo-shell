@@ -12,6 +12,7 @@ Singleton {
 
     property bool _loading: true
     property bool darkMode: true
+    property bool shadowEnabled: true 
     property string fontFamily: "Adwaita Sans"
     property string iconTheme: "System Default"
     property string defaultIconTheme: ""

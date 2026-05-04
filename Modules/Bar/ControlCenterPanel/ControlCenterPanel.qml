@@ -4,53 +4,18 @@ import Qt5Compat.GraphicalEffects
 import qs.Widgets
 import qs.Services
 import qs.Common
-import qs.Modules.Bar.Panels
+import qs.Modules.Bar.ControlCenterPanel
 
 Popout {
     id: root
-    screen: screen
-    readonly property int animationDuration: 300
-    property alias enableShadow: panelRect.layer.enabled
 
-    Component.onCompleted: {
-        openAnimationTimer.running = true;
-    }
-
-    onIsVisibleChanged: {
-        if (!root.isVisible) {
-            root.enableShadow = false;
-            closeAnimationTimer.running = true;
-        }
-    }
-
-    Item {
+    content: Item {
         id: panelContainer
         x: Utils.clampScreenX(root.panelX, width, 5, root.screen)
         y: Utils.clampScreenY(root.panelY, height, 0, root.screen)
         width: quickLayoutStack.itemWidth + 24
         height: root.isVisible ? quickLayoutStack.itemHeight + 24 : 0
         opacity: root.isVisible ? 1 : 0
-
-        Timer {
-            id: openAnimationTimer
-            interval: root.animationDuration
-            running: false
-            onTriggered: {
-                root.enableShadow = true;
-            }
-        }
-
-        Timer {
-            id: closeAnimationTimer
-            interval: root.animationDuration
-            running: false
-            onTriggered: {
-                if (!root.isVisible) {
-                    root.visible = false;
-                    root.menuClosed();
-                }
-            }
-        }
 
         Behavior on opacity {
             NumberAnimation {
@@ -59,7 +24,7 @@ Popout {
             }
         }
 
-        Behavior on width {
+        Behavior on width {  
             NumberAnimation {
                 duration: root.animationDuration
                 easing.type: Easing.OutCubic
@@ -85,7 +50,7 @@ Popout {
             color: Theme.surface
             border.width: 1
             border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
-            layer.enabled: false
+            layer.enabled: root.shadowEnabled
             layer.effect: DropShadow {
                 horizontalOffset: 0
                 verticalOffset: 8
@@ -113,23 +78,22 @@ Popout {
             anchors.margins: 12
             x: 12
             y: 12
-            visible: root.visible
 
-            ControlCenterPanel {
+            ControlCenter {
                 id: controlPanel
                 screen: root.screen
             }
 
             Loader {
                 id: wifiPanelPanel
-                sourceComponent: NetworkPanel {
+                sourceComponent: Network {
                     onGoBack: quickLayoutStack.currentIndex = 0
                 }
             }
 
             Loader {
                 id: bluetoothPanel
-                sourceComponent: BluetoothPanel {
+                sourceComponent: Bluetooth {
                     bluetooth: BluetoothService
                     onGoBack: quickLayoutStack.currentIndex = 0
                 }
@@ -137,7 +101,7 @@ Popout {
 
             Loader {
                 id: audioPanel
-                sourceComponent: AudioPanel {
+                sourceComponent: Audio {
                     onGoBack: quickLayoutStack.currentIndex = 0
                 }
             }

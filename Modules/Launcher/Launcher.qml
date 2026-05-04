@@ -116,6 +116,7 @@ Scope {
         Popout {
             id: launcherWindow
             visible: root.visible
+            screen: root.screen
             focusable: true
 
             function moveSelectionUp() {

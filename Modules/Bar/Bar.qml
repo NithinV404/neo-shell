@@ -5,7 +5,8 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Modules
 import qs.Modules.Bar
-import qs.Modules.Bar.Panels
+import qs.Modules.Bar.ControlCenterPanel
+import qs.Modules.Bar.WallpaperPanel
 import qs.Services
 import qs.Common
 import Quickshell.Wayland
@@ -63,9 +64,10 @@ PanelWindow {
                 screenName: bar.modelData?.name ?? ""
             }
             Rectangle {
+                id: centerRect
                 width: centerLayout.width
                 height: centerLayout.height
-                color: hoverHandler.hovered ? Theme.tertiaryContainer : Theme.surfaceContainer
+                color: centerRectMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer
                 radius: Settings.radius
 
                 Behavior on color {
@@ -81,10 +83,8 @@ PanelWindow {
                         easing.type: Easing.OutBack
                     }
                 }
+                 
 
-                HoverHandler {
-                    id: hoverHandler
-                }
                 RowLayout {
                     id: centerLayout
                     Clock {
@@ -101,8 +101,25 @@ PanelWindow {
                         Layout.alignment: Qt.AlignVCenter
                         Layout.rightMargin: 4
                     }
-                }
             }
+            MouseArea
+                    {
+                        id: centerRectMouse
+                        anchors.fill: parent 
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: mouse=> {
+                            if (mouse.button === Qt.LeftButton && !wallpaperPanel.active) {
+                            var pos = centerRect.mapToGlobal(0, 0);
+                            wallpaperPanel.active = true 
+                            wallpaperPanel.item.openAt(pos.x + (centerRect.width / 2), pos.y + centerRect.height + 8);
+                        }
+                        else 
+                        {
+                            wallpaperPanel.item.close()
+                        }
+                        }
+                    }
+                }
         }
 
         Row {
@@ -120,6 +137,50 @@ PanelWindow {
                 id: quickControls
                 screen: bar.modelData
                 anchors.verticalCenter: parent.verticalCenter
+
+            MouseArea {
+                id: quickControlsPanel
+                anchors.fill: quickControls
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: mouse => {
+                    if (mouse.button === Qt.LeftButton) {
+                        console.info("Clicked")
+                        if (!controlCenterPanel.active) {
+                            var pos = quickControls.mapToGlobal(0, 0);
+                            controlCenterPanel.active = true;
+                            controlCenterPanel.item.openAt(
+                                pos.x + quickControls.width / 2,
+                                pos.y + quickControls.height + 8
+                            );
+                        } else {
+                            controlCenterPanel.item.close();
+                        }
+                    }
+                }
+            }
+            }
+        }
+    }
+
+    LazyLoader {
+        id: controlCenterPanel
+        active: false
+        ControlCenterPanel {
+            screen: bar.modelData
+            onMenuClosed: {
+                controlCenterPanel.active = false;
+            }
+        }
+    }
+
+     LazyLoader {
+        id: wallpaperPanel
+        active: false
+        WallpaperPanel {
+            screen: bar.modelData
+            onMenuClosed: {
+                wallpaperPanel.active = false;
             }
         }
     }
