@@ -83,13 +83,13 @@ PanelWindow {
                         easing.type: Easing.OutBack
                     }
                 }
-                 
 
                 RowLayout {
                     id: centerLayout
                     Clock {
                         id: clock
                         screen: bar.modelData
+                        hovered: centerRectMouse.containsMouse
                         Layout.alignment: Qt.AlignVCenter
                         Layout.leftMargin: 12
                         Layout.rightMargin: 12
@@ -98,28 +98,27 @@ PanelWindow {
                     Battery {
                         id: battery
                         screen: bar.modelData
+                        hovered: centerRectMouse.containsMouse
                         Layout.alignment: Qt.AlignVCenter
                         Layout.rightMargin: 4
                     }
-            }
-            MouseArea
-                    {
-                        id: centerRectMouse
-                        anchors.fill: parent 
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: mouse=> {
-                            if (mouse.button === Qt.LeftButton && !wallpaperPanel.active) {
+                }
+                MouseArea {
+                    id: centerRectMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: mouse => {
+                        if (mouse.button === Qt.LeftButton && !wallpaperPanel.active) {
                             var pos = centerRect.mapToGlobal(0, 0);
-                            wallpaperPanel.active = true 
+                            wallpaperPanel.active = true;
                             wallpaperPanel.item.openAt(pos.x + (centerRect.width / 2), pos.y + centerRect.height + 8);
-                        }
-                        else 
-                        {
-                            wallpaperPanel.item.close()
-                        }
+                        } else {
+                            wallpaperPanel.item.close();
                         }
                     }
                 }
+            }
         }
 
         Row {
@@ -138,27 +137,24 @@ PanelWindow {
                 screen: bar.modelData
                 anchors.verticalCenter: parent.verticalCenter
 
-            MouseArea {
-                id: quickControlsPanel
-                anchors.fill: quickControls
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: mouse => {
-                    if (mouse.button === Qt.LeftButton) {
-                        console.info("Clicked")
-                        if (!controlCenterPanel.active) {
-                            var pos = quickControls.mapToGlobal(0, 0);
-                            controlCenterPanel.active = true;
-                            controlCenterPanel.item.openAt(
-                                pos.x + quickControls.width / 2,
-                                pos.y + quickControls.height + 8
-                            );
-                        } else {
-                            controlCenterPanel.item.close();
+                MouseArea {
+                    id: quickControlsPanel
+                    anchors.fill: quickControls
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: mouse => {
+                        if (mouse.button === Qt.LeftButton) {
+                            console.info("Clicked");
+                            if (!controlCenterPanel.active) {
+                                var pos = quickControls.mapToGlobal(0, 0);
+                                controlCenterPanel.active = true;
+                                controlCenterPanel.item.openAt(pos.x + quickControls.width / 2, pos.y + quickControls.height + 8);
+                            } else {
+                                controlCenterPanel.item.close();
+                            }
                         }
                     }
                 }
-            }
             }
         }
     }
@@ -174,7 +170,7 @@ PanelWindow {
         }
     }
 
-     LazyLoader {
+    LazyLoader {
         id: wallpaperPanel
         active: false
         WallpaperPanel {

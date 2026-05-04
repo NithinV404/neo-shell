@@ -9,12 +9,11 @@ Rectangle {
     id: root
     required property var screen
     property var activePanel: null
+    property bool hovered: false
     implicitWidth: timeRow.implicitWidth + 30
     implicitHeight: 28
-    color: "transparent" //clockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer
+    color: "transparent"
     radius: Settings.radius
-    // border.width: 1
-    // border.color: Qt.darker(Theme.outline)
 
     Behavior on color {
         ColorAnimation {
@@ -28,14 +27,7 @@ Rectangle {
         precision: SystemClock.Seconds
     }
 
-    MouseArea {
-        id: clockMouse
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        propagateComposedEvents: true 
-    }
-
+    
     RowLayout {
         id: timeRow
         anchors.centerIn: parent
@@ -45,7 +37,7 @@ Rectangle {
         Text {
             id: textTime
             text: Qt.formatDateTime(clock.date, "hh:mm ap")
-            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
+            color: root.hovered ? Theme.tertiaryContainerFg : Theme.surfaceFg
             font.pixelSize: root.height * 0.5
             font.family: Settings.fontFamily
             Layout.alignment: Qt.AlignCenter
@@ -56,7 +48,7 @@ Rectangle {
             implicitWidth: 4
             implicitHeight: 4
             radius: Settings.radius
-            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.outline
+            color: root.hovered  ? Theme.tertiaryContainerFg : Theme.outline
             opacity: 0.5
             Layout.alignment: Qt.AlignVCenter
         }
@@ -64,7 +56,7 @@ Rectangle {
         // Date
         Text {
             text: Qt.formatDateTime(clock.date, "ddd MM/dd")
-            color: clockMouse.containsMouse ? Theme.tertiaryContainerFg : Theme.surfaceFg
+            color: root.hovered ? Theme.tertiaryContainerFg : Theme.surfaceFg
             font.pixelSize: root.height * 0.45
             font.family: Settings.fontFamily
             Layout.alignment: Qt.AlignCenter

@@ -7,6 +7,7 @@ import Qt5Compat.GraphicalEffects
 Item {
     id: root
     required property var screen
+    property bool hovered: false
 
     // Size it properly for a panel icon
     visible: BatteryService.primaryDevice
