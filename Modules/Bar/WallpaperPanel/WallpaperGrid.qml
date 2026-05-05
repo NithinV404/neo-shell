@@ -84,8 +84,8 @@ Item {
 
     GridView {
         id: gridView
-        width: root.gridCellWidth * root.noOfCols
-        height: root.gridCellHeight * root.noOfRows
+        width: root.gridCellWidth * root.noOfCols 
+        height: root.gridCellHeight * root.noOfRows - 40
         cellWidth: root.gridCellWidth
         cellHeight: root.gridCellHeight
         model: root.imageFiles
