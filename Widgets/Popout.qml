@@ -36,7 +36,8 @@ PanelWindow {
 
     color: "transparent"
 
-    exclusionMode: ExclusionMode.Ignore 
+    exclusionMode: ExclusionMode.Ignore
+    WlrLayershell.namespace: "neoshell:blur" 
     WlrLayershell.layer: WlrLayer.Overlay
 
     anchors {

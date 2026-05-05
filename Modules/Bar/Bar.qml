@@ -37,6 +37,22 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.exclusionMode: ExclusionMode.Auto
 
+    function openPanel(panel, parent, width = panel.width, height = panel.height) {
+        if (panel.active)
+            panel.item.close();
+
+        panel.active = true;
+        var pos = parent.mapToGlobal(0, 0);
+        panel.item.openAt(pos.x + width, pos.y + height);
+    }
+
+    function closePanel(panel) {
+        if (panel.active)
+            panel.close();
+
+        return;
+    }
+
     Rectangle {
         anchors.fill: parent
         color: Theme.surface
@@ -109,12 +125,8 @@ PanelWindow {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: mouse => {
-                        if (mouse.button === Qt.LeftButton && !wallpaperPanel.active) {
-                            var pos = centerRect.mapToGlobal(0, 0);
-                            wallpaperPanel.active = true;
-                            wallpaperPanel.item.openAt(pos.x + (centerRect.width / 2), pos.y + centerRect.height + 8);
-                        } else {
-                            wallpaperPanel.item.close();
+                        if (mouse.button === Qt.LeftButton) {
+                            bar.openPanel(wallpaperPanel, centerRect, (centerRect.width / 2), centerRect.height + 8);
                         }
                     }
                 }
@@ -128,8 +140,7 @@ PanelWindow {
             spacing: 4
             height: parent.height
 
-            Rectangle
-            {
+            Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 width: backgroundApps.visible ? backgroundApps.width : 0
                 height: backgroundApps.height
@@ -139,11 +150,9 @@ PanelWindow {
                     id: backgroundApps
                 }
 
-                Behavior on width
-                {
-                    NumberAnimation
-                    {
-                        duration: 300 
+                Behavior on width {
+                    NumberAnimation {
+                        duration: 300
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -160,14 +169,7 @@ PanelWindow {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: mouse => {
                         if (mouse.button === Qt.LeftButton) {
-                            console.info("Clicked");
-                            if (!controlCenterPanel.active) {
-                                var pos = quickControls.mapToGlobal(0, 0);
-                                controlCenterPanel.active = true;
-                                controlCenterPanel.item.openAt(pos.x + quickControls.width / 2, pos.y + quickControls.height + 8);
-                            } else {
-                                controlCenterPanel.item.close();
-                            }
+                            bar.openPanel(controlCenterPanel, quickControls, quickControls.width / 2, quickControls.height + 8);
                         }
                     }
                 }

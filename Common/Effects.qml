@@ -25,4 +25,44 @@ QtObject {
             }`, parent);
         }
     }
+    property QtObject blur: QtObject {
+        function createBlurRegion(targetWindow) {
+            if (!targetWindow)
+                return null;
+
+            try {
+                const region = Qt.createQmlObject(`
+                import Quickshell
+                Region {}
+            `, targetWindow, "BlurRegion");
+                targetWindow.BackgroundEffect.blurRegion = region;
+                return region;
+            } catch (e) {
+                console.warn("Failed to create blur region:", e);
+                return null;
+            }
+        }
+
+        function reapplyBlurRegion()
+        {
+             if (!region || !available)
+                return;
+            try {
+                targetWindow.BackgroundEffect.blurRegion = region;
+                region.changed();
+            } catch (e) {}
+        }
+
+        function destroyBlurRegion(targetWindow, region)
+        {
+            if(!region)
+                return 
+            try 
+            {
+                targetWindow.BackgroundEffect.blurRegion = null 
+            }
+            catch(e){}
+            region.destroy();
+        }
+    }
 }
