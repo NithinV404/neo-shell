@@ -4,10 +4,10 @@ import Qt5Compat.GraphicalEffects
 import qs.Common
 import qs.Services
 import qs.Widgets
- 
+
 Popout {
     id: root
-   
+
     content: Item {
         id: panelContainer
         x: Utils.clampScreenX(root.panelX - (width / 2), width, 0, root.screen)
@@ -45,7 +45,6 @@ Popout {
                 color: Qt.rgba(0, 0, 0, 0.35)
                 transparentBorder: true
             }
-            
         }
 
         Item {
@@ -58,14 +57,14 @@ Popout {
             Behavior on opacity {
                 NumberAnimation {
                     duration: root.animationDuration
-                    easing.type: Easing.OutCubic
+                    easing.type: Easing.OutQuad
                 }
             }
 
             Behavior on height {
                 NumberAnimation {
                     duration: root.animationDuration
-                    easing.type: Easing.OutBack
+                    easing.type: Easing.OutQuad
                 }
             }
             WallpaperGrid {

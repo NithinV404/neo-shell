@@ -10,8 +10,9 @@ Item {
     property color bgColor: Theme.surface
     property color progressColor: Theme.primary
     property color inactiveColor: Theme.surfaceContainerHighest
-    implicitHeight: 4
-    implicitWidth: 100
+    height: 4
+    width: 100
+    clip: true
 
     readonly property real _normalized: Math.max(0, Math.min(1, progress / maxProgress))
 
@@ -19,12 +20,14 @@ Item {
         anchors.fill: parent
         spacing: 5
         Rectangle {
-            implicitHeight: parent.height
-            implicitWidth: Math.max(parent.height, root.width * root._normalized)
+            id: leftLine
+            Layout.alignment: Qt.AlignLeft
+            height: parent.height
+            width: Math.max(parent.height, root.width * root._normalized)
             color: root.progressColor
             radius: height / 2
 
-            Behavior on implicitWidth {
+            Behavior on width {
                 NumberAnimation {
                     easing.type: Easing.OutCubic
                     duration: 200
@@ -32,22 +35,18 @@ Item {
             }
         }
         Rectangle {
-            Layout.fillWidth: true
+            id: rightLine
+            Layout.alignment: Qt.AlignLeft
+            x: leftLine.width + 5
+            width: root.width - leftLine.width - 5
             radius: Settings.radius
-            implicitHeight: parent.height
+            height: parent.height
             color: root.inactiveColor
-
-            Behavior on implicitWidth {
-                NumberAnimation {
-                    easing.type: Easing.OutCubic
-                    duration: 200
-                }
-            }
         }
     }
     Rectangle {
-        implicitHeight: root.height
-        implicitWidth: root.height
+        height: root.height
+        width: root.height
         color: root.progressColor
         z: 1
         radius: height / 2

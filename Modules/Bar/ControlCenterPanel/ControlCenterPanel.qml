@@ -13,28 +13,21 @@ Popout {
         id: panelContainer
         x: Utils.clampScreenX(root.panelX, width, 4, root.screen)
         y: Utils.clampScreenY(root.panelY, height, 0, root.screen)
-        width: quickLayoutStack.itemWidth + 24
         height: root.isVisible ? quickLayoutStack.itemHeight + 24 : 0
+        width: quickLayoutStack.itemWidth + 24
         opacity: root.isVisible ? 1 : 0
 
         Behavior on opacity {
             NumberAnimation {
                 duration: root.animationDuration
-                easing.type: Easing.OutCubic
-            }
-        }
-
-        Behavior on width {
-            NumberAnimation {
-                duration: root.animationDuration
-                easing.type: Easing.OutCubic
+                easing.type: Easing.OutQuad
             }
         }
 
         Behavior on height {
             NumberAnimation {
                 duration: root.animationDuration
-                easing.type: Easing.OutBack
+                easing.type: Easing.OutQuad
             }
         }
 
@@ -63,12 +56,8 @@ Popout {
 
         StackLayout {
             id: quickLayoutStack
-            readonly property var currentItem: children[currentIndex] && children[currentIndex].item
-            readonly property int itemHeight: (currentItem && currentItem.implicitHeight) ?? controlPanel.implicitHeight
-            readonly property int itemWidth: (currentItem && currentItem.implicitWidth) ?? controlPanel.implicitWidth
-
-            height: itemHeight
-            width: itemWidth
+            property real itemWidth: children[currentIndex].implicitWidth
+            property real itemHeight: children[currentIndex].implicitHeight
             currentIndex: 0
             clip: true
             anchors.top: parent.top
@@ -84,26 +73,17 @@ Popout {
                 screen: root.screen
             }
 
-            Loader {
-                id: wifiPanelPanel
-                sourceComponent: Network {
-                    onGoBack: quickLayoutStack.currentIndex = 0
-                }
+            Network {
+                onGoBack: quickLayoutStack.currentIndex = 0
             }
 
-            Loader {
-                id: bluetoothPanel
-                sourceComponent: Bluetooth {
-                    bluetooth: BluetoothService
-                    onGoBack: quickLayoutStack.currentIndex = 0
-                }
+            Bluetooth {
+                bluetooth: BluetoothService
+                onGoBack: quickLayoutStack.currentIndex = 0
             }
 
-            Loader {
-                id: audioPanel
-                sourceComponent: Audio {
-                    onGoBack: quickLayoutStack.currentIndex = 0
-                }
+            Audio {
+                onGoBack: quickLayoutStack.currentIndex = 0
             }
         }
     }

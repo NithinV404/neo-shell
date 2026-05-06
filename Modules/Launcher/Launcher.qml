@@ -189,7 +189,7 @@ Scope {
                     SequentialAnimation {
                         NumberAnimation {
                             duration: 300
-                            easing.type: Easing.OutBack
+                            easing.type: Easing.OutQuad
                         }
                     }
                 }
