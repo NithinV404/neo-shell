@@ -11,7 +11,7 @@ Popout {
 
     content: Item {
         id: panelContainer
-        x: Utils.clampScreenX(root.panelX, width, 5, root.screen)
+        x: Utils.clampScreenX(root.panelX, width, 4, root.screen)
         y: Utils.clampScreenY(root.panelY, height, 0, root.screen)
         width: quickLayoutStack.itemWidth + 24
         height: root.isVisible ? quickLayoutStack.itemHeight + 24 : 0
@@ -24,7 +24,7 @@ Popout {
             }
         }
 
-        Behavior on width {  
+        Behavior on width {
             NumberAnimation {
                 duration: root.animationDuration
                 easing.type: Easing.OutCubic

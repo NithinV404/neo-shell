@@ -156,6 +156,7 @@ Scope {
             Rectangle {
                 id: launcherContainer
                 anchors.topMargin: 42
+                anchors.leftMargin: 4
                 anchors.top: parent.top
                 anchors.left: parent.left
                 //anchors.topMargin: (parent.height - 600) / 2
