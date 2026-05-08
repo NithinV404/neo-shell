@@ -5,7 +5,7 @@ import Quickshell.Services.SystemTray
 import qs.Services
 import qs.Widgets
 import qs.Common
-import qs.Modules.Bar.BackgroundApps
+import qs.Modules.Bar.SystemTrayPanel
 
 Rectangle {
     id: root
@@ -148,7 +148,7 @@ Rectangle {
                                     menuHandler: modelData.menu,
                                     menuX: localPos.x,
                                     menuY: localPos.y + root.height + 4,
-                                    title: modelData.title,
+                                    title: modelData.id,
                                     titleIcon: modelData.icon
                                 });
                                 root.activeMenuInstance = newmenu;
@@ -161,7 +161,7 @@ Rectangle {
     }
     Component {
         id: customMenu
-        BackgroundAppsOptions {
+        SystemTrayPanel {
             Component.onDestruction: {
                 if (root.activeMenuInstance === this) {
                     root.activeMenuInstance = null;
