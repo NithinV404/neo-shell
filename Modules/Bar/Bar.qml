@@ -3,10 +3,13 @@
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
-import qs.Modules
+import qs.Modals
 import qs.Modules.Bar
+
+import qs.Modules.Launcher
 import qs.Modules.Bar.ControlCenterPanel
 import qs.Modules.Bar.WallpaperPanel
+import qs.Services.UI
 import qs.Services
 import qs.Common
 import Quickshell.Wayland
@@ -146,7 +149,7 @@ PanelWindow {
                 height: backgroundApps.height
                 color: Theme.surfaceContainer
                 radius: Settings.radius
-                BackgroundApps {
+                SystemTray {
                     id: backgroundApps
                 }
 
@@ -198,4 +201,42 @@ PanelWindow {
             }
         }
     }
+
+    OSD {}
+    PowerMenu {}
+
+    // App Launcher
+    Scope {
+        id: launcherScope
+        Connections {
+            target: LauncherService
+
+            function onToggle() {
+                launcherPanel.active = true;
+                launcherPanel.item?.toggle();
+            }
+
+            function onOpen() {
+                launcherPanel.active = true;
+                launcherPanel.item?.open();
+            }
+
+            function onClose() {
+                launcherPanel.active = true;
+                launcherPanel.item?.close();
+            }
+        }
+    }
+    LazyLoader {
+        id: launcherPanel
+        Launcher {
+            screen: bar.modelData
+            onMenuClosed: {
+                launcherPanel.active = false;
+            }
+        }
+    }
+
+    // Polkit
+    Polkit {}
 }
