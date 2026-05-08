@@ -54,6 +54,7 @@ ShellRoot {
     OSD {}
     PowerMenu {}
     Launcher {}
+    Polkit {}
 
     // Bar on each screen
     Variants {
