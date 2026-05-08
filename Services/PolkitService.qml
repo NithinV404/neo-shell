@@ -24,10 +24,10 @@ import qs.Services
 
             agent = Qt.createQmlObject(qmlString, root, "PolkitService.Agent");
             polkitAvailable = true;
-            log.info("Initialized successfully");
+            console.info("Initialized successfully");
         } catch (e) {
             polkitAvailable = false;
-            log.warn("Polkit not available - authentication prompts disabled. This requires a newer version of Quickshell.");
+            console.warn("Polkit not available - authentication prompts disabled. This requires a newer version of Quickshell.");
         }
     }
 

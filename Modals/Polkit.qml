@@ -84,8 +84,8 @@ PanelWindow {
 
     Rectangle {
         id: modalContainer
-        implicitWidth: 420
-        implicitHeight: contentColumn.implicitHeight + 48
+        width: 420
+        height: contentColumn.implicitHeight + 48
         color: Theme.surface
         anchors.centerIn: parent
         radius: Settings.radius
@@ -192,7 +192,7 @@ PanelWindow {
                     placeholder: root.flow?.inputPrompt ?? "Enter password"
                     // polkit tells us whether to hide the input
                     password: !(root.flow?.responseVisible ?? false)
-                    onAccepted: submitResponse()
+                    onAccepted: root.submitResponse()
                 }
             }
 
@@ -219,7 +219,7 @@ PanelWindow {
                     primary: true
                     enabled: passwordInput.text.length > 0
                     visible: root.flow?.isResponseRequired ?? false
-                    onClicked: submitResponse()
+                    onClicked: root.submitResponse()
                 }
             }
         }
