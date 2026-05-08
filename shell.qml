@@ -51,11 +51,6 @@ ShellRoot {
         // color: "#1a1a2e"  // fallback color
     }
 
-    OSD {}
-    PowerMenu {}
-    Launcher {}
-    Polkit {}
-
     // Bar on each screen
     Variants {
         model: Quickshell.screens

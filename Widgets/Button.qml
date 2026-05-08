@@ -18,7 +18,7 @@ Item {
     property color normalColor: bgColor
     property color hoverColor: Qt.lighter(bgColor, 0.9)
     property color pressedColor: Qt.darker(bgColor, 1.0)
-    property color disabledColor: Qt.darker(bgColor, 1.8);
+    property color disabledColor: Qt.darker(bgColor, 1.8)
 
     signal clicked
 
@@ -72,7 +72,7 @@ Item {
 
             Text {
                 text: root.text
-                font.pixelSize: root.height * 0.30
+                font.pixelSize: root.height * 0.35
                 font.family: Settings.fontFamily
                 font.weight: Font.Medium
                 color: !root.enabled ? Qt.darker(root.textColor, 1.4) : root.textColor
