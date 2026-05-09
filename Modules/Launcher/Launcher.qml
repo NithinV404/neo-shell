@@ -129,10 +129,8 @@ Popout {
 
     Rectangle {
         id: launcherContainer
-        anchors.topMargin: 42
-        anchors.leftMargin: 4
-        anchors.top: parent.top
-        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
         //anchors.topMargin: (parent.height - 600) / 2
         //anchors.horizontalCenter: parent.horizontalCenter
         width: 450
