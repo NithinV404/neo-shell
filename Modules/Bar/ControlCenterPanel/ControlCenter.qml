@@ -81,14 +81,14 @@ Item {
                                 return "signal_wifi_bad";
                             }
                             if (NetworkService.wifiEnabled && NetworkService.wifiConnected) {
-                                return NetworkService.getSignalInfo(NetworkService.activeWifiDetails.signal, NetworkService.connected).icon;
+                                return NetworkService.getSignalInfo(NetworkService.activeWifiDetails.signal, NetworkService.activeWifiDetails.connected).icon;
                             }
 
                             return "signal_disconnected";
                         }
                     }
                     title: {
-                        var name = NetworkService.ethernetConnected && "Ethernet" || NetworkService.wifiConnected && "Wifi" || "Ethernet";
+                        var name = String(NetworkService.ethernetConnected && "Ethernet" || NetworkService.wifiConnected && "Wifi" || "Ethernet");
                         return name.charAt(0).toUpperCase() + name.slice(1);
                     }
                     status: {
@@ -104,7 +104,7 @@ Item {
 
                     active: NetworkService.wifiEnabled || NetworkService.ethernetConnected
                     onClicked: NetworkService.setWifiEnabled(!NetworkService.wifiEnabled)
-                    onMenuClicked: quickLayoutStack.currentIndex = 1
+                    onMenuClicked: quickLayoutStack.switchTo(1)
                 }
 
                 QuickToggle {
@@ -140,7 +140,7 @@ Item {
                     }
 
                     active: BluetoothService.enabled
-                    onMenuClicked: quickLayoutStack.currentIndex = 2
+                    onMenuClicked: quickLayoutStack.switchTo(2)
                     onClicked: {
                         BluetoothService.toggleBluetooth();
                     }
@@ -159,10 +159,10 @@ Item {
                     title: "Audio"
                     status: AudioService.source.nickname || AudioService.source.description || "Unknown Device"
                     onClicked: {
-                        quickLayoutStack.currentIndex = 3;
+                        quickLayoutStack.switchTo(3);
                     }
                     onMenuClicked: {
-                        quickLayoutStack.currentIndex = 3;
+                        quickLayoutStack.switchTo(3);
                     }
                 }
                 QuickToggle {

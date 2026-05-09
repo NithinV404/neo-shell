@@ -58,6 +58,7 @@ Popout {
             id: quickLayoutStack
             property real itemWidth: children[currentIndex].implicitWidth
             property real itemHeight: children[currentIndex].implicitHeight
+            property int previousIndex: 0
             currentIndex: 0
             clip: true
             anchors.top: parent.top
@@ -68,22 +69,49 @@ Popout {
             x: 12
             y: 12
 
+            function switchTo(i) {
+                previousIndex = currentIndex;
+                swapAnimation.start();
+                Utils.timer(120, () => {
+                    currentIndex = i;
+                }, quickLayoutStack);
+            }
+
+            SequentialAnimation {
+                id: swapAnimation
+                NumberAnimation {
+                    target: quickLayoutStack
+                    property: "opacity"
+                    to: 0
+                    duration: 120
+                    easing.type: Easing.OutQuad
+                }
+
+                NumberAnimation {
+                    target: quickLayoutStack
+                    property: "opacity"
+                    to: 1
+                    duration: 150
+                    easing.type: Easing.InQuad
+                }
+            }
+
             ControlCenter {
                 id: controlPanel
                 screen: root.screen
             }
 
             Network {
-                onGoBack: quickLayoutStack.currentIndex = 0
+                onGoBack: quickLayoutStack.switchTo(0)
             }
 
             Bluetooth {
                 bluetooth: BluetoothService
-                onGoBack: quickLayoutStack.currentIndex = 0
+                onGoBack: quickLayoutStack.switchTo(0)
             }
 
             Audio {
-                onGoBack: quickLayoutStack.currentIndex = 0
+                onGoBack: quickLayoutStack.switchTo(0)
             }
         }
     }
