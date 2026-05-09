@@ -31,6 +31,13 @@ Popout {
             }
         }
 
+        Behavior on width {
+            NumberAnimation {
+                duration: root.animationDuration
+                easing.type: Easing.OutQuad
+            }
+        }
+
         Rectangle {
             id: panelRect
             anchors {

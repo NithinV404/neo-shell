@@ -315,14 +315,37 @@ Item {
 
             Flow {
                 id: togglesGrid
-                anchors.centerIn: parent
-                width: 350
-                spacing: 12
+                width: 330
+                spacing: 10
+                x: 10
+                y: 10
 
                 move: Transition {
                     NumberAnimation {
+                        properties: "x,y"
                         duration: 300
                         easing.type: Easing.OutCubic
+                    }
+                }
+
+                onPositioningComplete: {
+                    for (var i = 0; i < toggleRepeater.count; i++) {
+                        var item = toggleRepeater.itemAt(i);
+                        if (!item)
+                            continue;
+
+                        if (item.isDragging) {
+                            // Flow just moved the item's slot — compensate the translate
+                            // so the visual position doesn't jump
+                            var dx = item.lastSlotX - item.x;
+                            var dy = item.lastSlotY - item.y;
+                            item.dragOffsetX += dx;
+                            item.dragOffsetY += dy;
+                        }
+
+                        // Always update the stored slot position
+                        item.lastSlotX = item.x;
+                        item.lastSlotY = item.y;
                     }
                 }
 
@@ -338,81 +361,84 @@ Item {
                         required property string icon
                         required property bool compact
                         required property bool hasMenu
-                        property real translateX: 0
-                        property real translateY: 0
+
+                        width: innerToggle.implicitWidth
+                        height: innerToggle.implicitHeight
+
+                        property real lastSlotX: 0
+                        property real lastSlotY: 0
+
                         property real dragOffsetX: 0
                         property real dragOffsetY: 0
-
-                        z: toggleDrag.active ? 999 : 0
+                        property bool isDragging: false
 
                         transform: Translate {
-                            x: toggleWrapper.translateX
-                            y: toggleWrapper.translateY
+                            x: toggleWrapper.dragOffsetX
+                            y: toggleWrapper.dragOffsetY
+                        }
 
-                            Behavior on x {
-                                NumberAnimation {
-                                    duration: 300
-                                    easing.type: Easing.OutCubic
-                                }
+                        // Only animate snap-back, not during drag
+                        Behavior on dragOffsetX {
+                            enabled: !toggleWrapper.isDragging
+                            NumberAnimation {
+                                duration: 280
+                                easing.type: Easing.OutCubic
                             }
-                            Behavior on y {
-                                NumberAnimation {
-                                    duration: 300
-                                    easing.type: Easing.OutCubic
-                                }
+                        }
+                        Behavior on dragOffsetY {
+                            enabled: !toggleWrapper.isDragging
+                            NumberAnimation {
+                                duration: 280
+                                easing.type: Easing.OutCubic
                             }
                         }
 
                         DragHandler {
                             id: toggleDrag
                             enabled: togglePanel.editMode
-                            snapMode: DragHandler.SnapAlways
                             target: null
 
                             onActiveChanged: {
                                 if (active) {
-                                    // capture where inside the item the press happened
-                                    var scene = centroid.scenePosition;
-                                    var local = togglesGrid.mapFromGlobal(scene.x, scene.y);
-                                    var itemPos = toggleWrapper.mapToItem(togglesGrid, 0, 0);
-                                    toggleWrapper.dragOffsetX = local.x - itemPos.x;
-                                    toggleWrapper.dragOffsetY = local.y - itemPos.y;
+                                    toggleWrapper.isDragging = true;
+                                    toggleWrapper.z = 1;
+                                    // Capture slot position at drag start
+                                    toggleWrapper.lastSlotX = toggleWrapper.x;
+                                    toggleWrapper.lastSlotY = toggleWrapper.y;
                                 } else {
-                                    // snap back to natural slot
-                                    toggleWrapper.translateX = 0;
-                                    toggleWrapper.translateY = 0;
+                                    toggleWrapper.isDragging = false;
+                                    toggleWrapper.z = 0;
+                                    // Snap back — Flow owns x/y, Translate resets to 0
+                                    toggleWrapper.dragOffsetX = 0;
+                                    toggleWrapper.dragOffsetY = 0;
                                 }
                             }
 
-                            onCentroidChanged: {
+                            onTranslationChanged: {
                                 if (!active)
                                     return;
+                                toggleWrapper.dragOffsetX = translation.x;
+                                toggleWrapper.dragOffsetY = translation.y;
 
+                                // Hit-test for reorder
                                 var scene = centroid.scenePosition;
                                 var local = togglesGrid.mapFromGlobal(scene.x, scene.y);
-                                var itemPos = toggleWrapper.mapToItem(togglesGrid, 0, 0);
-
-                                toggleWrapper.translateX = local.x - toggleWrapper.dragOffsetX - itemPos.x;
-                                toggleWrapper.translateY = local.y - toggleWrapper.dragOffsetY - itemPos.y;
 
                                 for (var i = 0; i < toggleRepeater.count; i++) {
                                     var item = toggleRepeater.itemAt(i);
                                     if (!item)
                                         continue;
-                                    var mapped = item.mapToItem(togglesGrid, 0, 0);
-                                    var hit = local.x >= mapped.x && local.x <= mapped.x + item.width && local.y >= mapped.y && local.y <= mapped.y + item.height;
+                                    var hit = local.x >= item.x && local.x <= item.x + item.width && local.y >= item.y && local.y <= item.y + item.height;
 
-                                    // only move if we're over a different slot
                                     if (hit && i !== toggleWrapper.index) {
-                                        quickTogglesModel.move(toggleWrapper.index, i, 1);
+                                        Utils.timer(200, () => {
+                                            quickTogglesModel.move(toggleWrapper.index, i, 1);
+                                        }, root);
                                         break;
                                     }
                                 }
                             }
                         }
-
-                        width: innerToggle.implicitWidth
-                        height: innerToggle.implicitHeight
 
                         QuickToggle {
                             id: innerToggle
