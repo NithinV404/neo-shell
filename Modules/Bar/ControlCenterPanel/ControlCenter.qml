@@ -169,11 +169,11 @@ Item {
                 case "bluetooth":
                     return quickLayoutStack.switchTo(2);
                 case "darkmode":
-                    return;
+                    return Settings.setDarkMode(!Settings.darkMode);
                 case "audio":
                     return quickLayoutStack.switchTo(3);
                 case "powerprofile":
-                    return;
+                    return PowerProfileService.cycleProfile();
                 default:
                 }
             }
@@ -189,6 +189,7 @@ Item {
                 case "audio":
                     return;
                 case "powerprofile":
+                    return PowerProfileService.cycleProfile();
                 default:
                 }
             }
