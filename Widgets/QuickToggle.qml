@@ -6,6 +6,7 @@ import qs.Common
 Item {
     id: root
     clip: true
+    property bool editMode: false
 
     enum WidgetSize {
         Compact,
@@ -91,6 +92,7 @@ Item {
     MouseArea {
         id: toggleMenuMouse
         anchors.fill: parent
+        enabled: !root.editMode
         propagateComposedEvents: true
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
@@ -146,6 +148,7 @@ Item {
             MouseArea {
                 id: toggleButtonMouse
                 anchors.fill: parent
+                enabled: !root.editMode
                 onClicked: {
                     root.clicked();
                 }

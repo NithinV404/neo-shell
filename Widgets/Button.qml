@@ -49,8 +49,8 @@ Item {
             return root.normalColor;
         }
 
-        border.color: root.primary ? "transparent" : Qt.darker(root.bgColor, 1.4)
-        border.width: root.primary ? 0 : 1
+        // border.color: root.primary ? "transparent" : Qt.darker(root.bgColor, 1.4)
+        // border.width: root.primary ? 0 : 1
 
         Behavior on color {
             ColorAnimation {

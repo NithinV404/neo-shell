@@ -86,7 +86,7 @@ Popout {
                     Layout.fillWidth: true
                     placeholder: Settings.wallpapersFolder
                     edit: true
-                    implicitHeight: 40
+                    height: 42
 
                     HoverHandler {
                         id: textFieldHover
@@ -106,7 +106,7 @@ Popout {
                 Button {
                     icon: "save"
                     text: "Save"
-                    implicitHeight: 40
+                    height: 20
                     bgColor: Theme.primary
                     textColor: Theme.primaryFg
                     onClicked: {
@@ -118,7 +118,7 @@ Popout {
                 Button {
                     icon: "refresh"
                     text: "Regenerate"
-                    implicitHeight: 40
+                    height: 20
                     bgColor: Theme.primary
                     textColor: Theme.primaryFg
                     onClicked: {

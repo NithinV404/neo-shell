@@ -10,8 +10,8 @@ Rectangle {
     required property var screen
     property var activePanel: null
     property bool hovered: false
-    implicitWidth: timeRow.implicitWidth + 30
-    implicitHeight: 28
+    width: timeRow.implicitWidth + 30
+    height: 28
     color: "transparent"
     radius: Settings.radius
 
@@ -27,7 +27,6 @@ Rectangle {
         precision: SystemClock.Seconds
     }
 
-    
     RowLayout {
         id: timeRow
         anchors.centerIn: parent
@@ -39,16 +38,17 @@ Rectangle {
             text: Qt.formatDateTime(clock.date, "hh:mm ap")
             color: root.hovered ? Theme.tertiaryContainerFg : Theme.surfaceFg
             font.pixelSize: root.height * 0.45
+            font.weight: 500
             font.family: Settings.fontFamily
             Layout.alignment: Qt.AlignCenter
         }
 
         // Separator
         Rectangle {
-            implicitWidth: 4
-            implicitHeight: 4
+            width: 4
+            height: 4
             radius: Settings.radius
-            color: root.hovered  ? Theme.tertiaryContainerFg : Theme.outline
+            color: root.hovered ? Theme.tertiaryContainerFg : Theme.outline
             opacity: 0.5
             Layout.alignment: Qt.AlignVCenter
         }
@@ -57,11 +57,10 @@ Rectangle {
         Text {
             text: Qt.formatDateTime(clock.date, "ddd MM/dd")
             color: root.hovered ? Theme.tertiaryContainerFg : Theme.surfaceFg
-            font.pixelSize: root.height * 0.42
+            font.pixelSize: root.height * 0.45
+            font.weight: 500
             font.family: Settings.fontFamily
             Layout.alignment: Qt.AlignCenter
-            Layout.topMargin: 1
         }
     }
-   
 }

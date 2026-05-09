@@ -12,7 +12,7 @@ Singleton {
 
     property bool _loading: true
     property bool darkMode: true
-    property bool shadowEnabled: true 
+    property bool shadowEnabled: true
     property string fontFamily: "Adwaita Sans"
     property string iconTheme: "System Default"
     property string defaultIconTheme: ""
@@ -23,6 +23,7 @@ Singleton {
     property string wallpapersFolder: "~/Pictures/Wallpapers"
     property var wallpaperFolderImages: []
     property int radius: 24
+    property list<string> controlCenterToggleOrder: ["network", "bluetooth", "darkmode", "audio", "powerprofile"]
     readonly property string _homeUrl: StandardPaths.writableLocation(StandardPaths.HomeLocation)
     readonly property string _configUrl: StandardPaths.writableLocation(StandardPaths.ConfigLocation)
     readonly property string _configDir: Utils.strip(_configUrl)
@@ -45,8 +46,12 @@ Singleton {
         setIconTheme();
     }
 
+    onControlCenterToggleOrderChanged: {
+        saveSettings();
+    }
+
     onBrightnessChanged: {
-        saveSettings()
+        saveSettings();
     }
 
     onDarkModeChanged: {
@@ -54,12 +59,10 @@ Singleton {
         updateAppsColorScheme();
     }
     onIconThemeChanged: {
-        if(iconTheme == "System Default")
-        {
-            return 
+        if (iconTheme == "System Default") {
+            return;
         }
         setIconTheme();
-            
     }
     onWallpaperFolderImagesChanged: saveSettings()
     onDefaultIconThemeChanged: {
@@ -80,9 +83,10 @@ Singleton {
             "fontFamily": fontFamily,
             "iconTheme": iconTheme,
             "wallpaperFolderImages": wallpaperFolderImages,
+            "controlCenterToggleOrder": controlCenterToggleOrder,
             "brightness": {
-                "enableDdcSupport": brightness.enableDdcSupport, 
-                "backlightDeviceMappings": brightness.backlightDeviceMappings, 
+                "enableDdcSupport": brightness.enableDdcSupport,
+                "backlightDeviceMappings": brightness.backlightDeviceMappings,
                 "enforceMinimum": brightness.enforceMinimum
             },
             "audio": {
@@ -107,9 +111,10 @@ Singleton {
                 darkMode = settings.darkMode !== undefined ? settings.darkMode : "light";
                 fontFamily = settings.fontFamily !== undefined ? settings.fontFamily : "Adwaita Sans";
                 iconTheme = settings.iconTheme !== undefined ? settings.iconTheme : "System Default";
-                brightness.enableDdcSupport = settings.brightness.enableDdcSupport !== undefined ? settings.brightness.enableDdcSupport : true
-                brightness.backlightDeviceMappings = settings.brightness.backlightDeviceMappings !== undefined ? settings.brightness.backlightDeviceMappings : []
-                brightness.enforceMinimum = settings.brightness.enforceMinimum !== undefined ? settings.brightness.enforceMinimum : 1.0   
+                controlCenterToggleOrder = settings.controlCenterToggleOrder !== undefined ? settings.controlCenterToggleOrder : [];
+                brightness.enableDdcSupport = settings.brightness.enableDdcSupport !== undefined ? settings.brightness.enableDdcSupport : true;
+                brightness.backlightDeviceMappings = settings.brightness.backlightDeviceMappings !== undefined ? settings.brightness.backlightDeviceMappings : [];
+                brightness.enforceMinimum = settings.brightness.enforceMinimum !== undefined ? settings.brightness.enforceMinimum : 1.0;
                 audio.volumeOverdrive = settings.audio.volumeOverdrive !== undefined ? settings.audio.volumeOverdrive : false;
                 audio.volumeStep = settings.audio.volumeStep !== undefined ? settings.audio.volumeStep : 1;
                 audio.volumeFeedback = settings.audio.volumeFeedback !== undefined ? settings.audio.volumeFeedback : false;
@@ -131,6 +136,10 @@ Singleton {
     function saveWallpapersFolderPath(path) {
         wallpapersFolder = path;
         saveSettings();
+    }
+
+    function setToggleOrder(order) {
+        controlCenterToggleOrder = order;
     }
 
     function loadSettings() {

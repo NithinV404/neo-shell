@@ -84,8 +84,8 @@ Item {
 
     GridView {
         id: gridView
-        width: root.gridCellWidth * root.noOfCols 
-        height: root.gridCellHeight * root.noOfRows - 40
+        width: root.gridCellWidth * root.noOfCols
+        height: root.gridCellHeight * root.noOfRows
         cellWidth: root.gridCellWidth
         cellHeight: root.gridCellHeight
         model: root.imageFiles
@@ -93,7 +93,6 @@ Item {
         clip: true
         flickDeceleration: 900        // default 1500, lower = longer glide
         maximumFlickVelocity: 2000    // default ~2500, higher = faster fling
-
 
         delegate: Rectangle {
             id: imageCell

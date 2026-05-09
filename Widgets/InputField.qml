@@ -32,8 +32,8 @@ Item {
 
     Component.onDestruction: clearFocus()
 
-    implicitWidth: 300
-    implicitHeight: 60
+    width: 300
+    height: 50
 
     DropShadow {
         anchors.fill: backgroundRect
@@ -49,8 +49,6 @@ Item {
     Rectangle {
         id: backgroundRect
         anchors.fill: parent
-        height: 80
-
         radius: Settings.radius
         color: Theme.secondaryContainer
         border.color: inputField.activeFocus ? Theme.tertiary : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
@@ -58,7 +56,7 @@ Item {
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 16
-            anchors.rightMargin: 12
+            anchors.rightMargin: 16
             spacing: 8
 
             TextInput {
