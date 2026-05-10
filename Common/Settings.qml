@@ -17,14 +17,51 @@ Singleton {
     property string iconTheme: "System Default"
     property string defaultIconTheme: ""
     property bool hasTriedDefaultSettings: false
-    property var availableIconThemes: []
+    property list<string> availableIconThemes: []
     property int duration: 300
     property string wallpaperImage: ""
     property string wallpapersFolder: "~/Pictures/Wallpapers"
-    property var wallpaperFolderImages: []
+    property list<string> wallpaperFolderImages: []
     property int radius: 24
-    property list<string> controlCenterToggleOrder: ["network", "bluetooth", "darkmode", "audio", "powerprofile"]
-    readonly property string _homeUrl: StandardPaths.writableLocation(StandardPaths.HomeLocation)
+    property bool enableGtkColors: true
+    property bool enableQtColors: true
+    property var controlCenterToggleOrder: [
+        {
+            "toggleId": "network",
+            "title": "Network",
+            "icon": "signal_disconnected",
+            "compact": false,
+            "hasMenu": true
+        },
+        {
+            "toggleId": "bluetooth",
+            "title": "Bluetooth",
+            "icon": "bluetooth",
+            "compact": false,
+            "hasMenu": true
+        },
+        {
+            "toggleId": "darkmode",
+            "title": "Dark mode",
+            "icon": "dark_mode",
+            "compact": true,
+            "hasMenu": false
+        },
+        {
+            "toggleId": "audio",
+            "title": "Audio",
+            "icon": "devices_off",
+            "compact": false,
+            "hasMenu": true
+        },
+        {
+            "toggleId": "powerprofile",
+            "title": "Power Profile",
+            "icon": "bolt",
+            "compact": true,
+            "hasMenu": false
+        }
+    ]
     readonly property string _configUrl: StandardPaths.writableLocation(StandardPaths.ConfigLocation)
     readonly property string _configDir: Utils.strip(_configUrl)
 
@@ -107,11 +144,11 @@ Singleton {
             _loading = true;
 
             if (content && content.trim()) {
-                var settings = JSON.parse(content);
+                let settings = JSON.parse(content);
                 darkMode = settings.darkMode !== undefined ? settings.darkMode : "light";
                 fontFamily = settings.fontFamily !== undefined ? settings.fontFamily : "Adwaita Sans";
                 iconTheme = settings.iconTheme !== undefined ? settings.iconTheme : "System Default";
-                controlCenterToggleOrder = settings.controlCenterToggleOrder !== undefined ? settings.controlCenterToggleOrder : [];
+                controlCenterToggleOrder = settings.controlCenterToggleOrder !== undefined ? settings.controlCenterToggleOrder : controlCenterToggleOrder;
                 brightness.enableDdcSupport = settings.brightness.enableDdcSupport !== undefined ? settings.brightness.enableDdcSupport : true;
                 brightness.backlightDeviceMappings = settings.brightness.backlightDeviceMappings !== undefined ? settings.brightness.backlightDeviceMappings : [];
                 brightness.enforceMinimum = settings.brightness.enforceMinimum !== undefined ? settings.brightness.enforceMinimum : 1.0;
