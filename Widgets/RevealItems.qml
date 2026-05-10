@@ -76,15 +76,7 @@ Rectangle {
             Layout.fillWidth: true
             clip: true
             visible: root.expanded
-            opacity: root.expanded ? 1 : 0
             Layout.preferredHeight: root.expanded && item ? item.implicitHeight : 0
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: 200
-                    easing.type: Easing.OutCubic
-                }
-            }
         }
     }
 }
