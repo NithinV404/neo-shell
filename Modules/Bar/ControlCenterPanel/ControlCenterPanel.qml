@@ -40,6 +40,7 @@ Popout {
 
         Rectangle {
             id: panelRect
+
             anchors {
                 top: parent.top
                 bottom: parent.bottom

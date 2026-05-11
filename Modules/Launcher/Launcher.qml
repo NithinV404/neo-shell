@@ -109,8 +109,8 @@ Popout {
 
     Item {
         id: keybinds
-        Keys.onUpPressed: launcherWindow.moveSelectionUp()
-        Keys.onDownPressed: launcherWindow.moveSelectionDown()
+        Keys.onUpPressed: root.moveSelectionUp()
+        Keys.onDownPressed: root.moveSelectionDown()
         Keys.onReturnPressed: root.launchSelected()
         Keys.onEnterPressed: root.launchSelected()
         Keys.onEscapePressed: root.close()

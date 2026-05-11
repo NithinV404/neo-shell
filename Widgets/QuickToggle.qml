@@ -31,6 +31,7 @@ Item {
     implicitHeight: baseHeight
     implicitWidth: baseWidth
 
+    signal size
     signal clicked
     signal menuClicked
 
@@ -90,6 +91,60 @@ Item {
             ColorAnimation {
                 duration: 200
                 easing.type: Easing.OutCubic
+            }
+        }
+
+        Behavior on width {
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.OutQuad
+            }
+        }
+    }
+
+    Rectangle {
+        id: editOverlay
+        anchors.fill: quickToggle
+        visible: root.editMode
+        color: "transparent"
+        radius: root.radius
+        border.width: 2
+        border.color: Theme.primary
+
+        Rectangle {
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            color: Theme.primary
+            width: 20
+            height: 20
+            radius: 4
+
+            StyledText {
+                anchors.centerIn: parent
+                text: "edit"
+                color: Theme.primaryFg
+                size: 11
+            }
+            DragHandler {
+                id: modeDrag
+                target: null
+
+                onActiveChanged: {
+                    if (!active) {
+                        root.baseWidth = root.isCompact ? 60 : 160;
+                        root.baseHeight = 50;
+                        root.size();
+                    }
+                }
+
+                onCentroidChanged: {
+                    var dx = centroid.scenePosition.x - centroid.scenePressPosition.x;
+                    if (dx < -20) {
+                        root.widgetSize = QuickToggle.WidgetSize.Compact;
+                    } else if (dx > 20) {
+                        root.widgetSize = QuickToggle.WidgetSize.Normal;
+                    }
+                }
             }
         }
     }

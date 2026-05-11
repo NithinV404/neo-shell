@@ -78,6 +78,7 @@ PanelWindow {
         Row {
             anchors.centerIn: parent
             spacing: 4
+            z: 2
             Workspaces {
                 id: workspaces
                 screenName: bar.modelData?.name ?? ""

@@ -58,11 +58,9 @@ Item {
     Text {
         id: icon
         anchors.centerIn: parent
-
         font.family: symbolicFont.name
         font.pixelSize: 24
         font.weight: 100
-
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         renderType: Text.NativeRendering

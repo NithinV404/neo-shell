@@ -11,8 +11,8 @@ Item {
     property string name: ""
     property int size: 56
 
-    implicitWidth: size
-    implicitHeight: size
+    width: size
+    height: size
 
     // Look up the desktop entry to get the correct icon
     readonly property var desktopEntry: {

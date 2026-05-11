@@ -35,7 +35,7 @@ Rectangle {
         // Time
         Text {
             id: textTime
-            text: Qt.formatDateTime(clock.date, "hh:mm ap")
+            text: Qt.formatDateTime(clock.date, "hh:mm AP")
             color: root.hovered ? Theme.tertiaryContainerFg : Theme.surfaceFg
             font.pixelSize: root.height * 0.45
             font.weight: 500

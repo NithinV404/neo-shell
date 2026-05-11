@@ -5,13 +5,12 @@ import qs.Common
 
 PanelWindow {
     id: root
-    required property var screen
     property alias content: contentWindow.sourceComponent
-    property int animationDuration: 300 
+    property int animationDuration: 300
     property int panelX: 0
     property int panelY: 0
     property bool isVisible: false
-    property bool shadowEnabled: false 
+    property bool shadowEnabled: false
     visible: false
 
     signal menuClosed
@@ -31,13 +30,12 @@ PanelWindow {
             root.visible = false;
             root.menuClosed();
         }, root);
-
     }
 
     color: "transparent"
 
     exclusionMode: ExclusionMode.Ignore
-    WlrLayershell.namespace: "neoshell:blur" 
+    WlrLayershell.namespace: "neoshell:blur"
     WlrLayershell.layer: WlrLayer.Overlay
 
     anchors {
@@ -47,17 +45,13 @@ PanelWindow {
         bottom: true
     }
 
-    onIsVisibleChanged: 
-    {
-        if(isVisible)
-        {
-            Utils.timer(root.animationDuration, ()=> {
-                root.shadowEnabled =  true 
-            }, root )
-        }
-        else 
-        {
-            root.shadowEnabled = false
+    onIsVisibleChanged: {
+        if (isVisible) {
+            Utils.timer(root.animationDuration, () => {
+                root.shadowEnabled = true;
+            }, root);
+        } else {
+            root.shadowEnabled = false;
         }
     }
 

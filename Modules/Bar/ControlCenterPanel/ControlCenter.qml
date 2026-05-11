@@ -208,6 +208,7 @@ Item {
                     id: monitorStreamCol
                     Layout.fillWidth: true
                     width: parent.width
+
                     Repeater {
                         model: BrightnessService.monitors.filter(m => m !== revealBrightness.currentScreen)
                         delegate: RowLayout {
