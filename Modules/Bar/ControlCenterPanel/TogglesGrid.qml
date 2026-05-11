@@ -19,7 +19,8 @@ Item {
 
     Rectangle {
         id: togglePanel
-        border.width: root.editMode ? 1 : 0
+        border.width: root.editMode ? 2 : 0
+        anchors.fill: parent
         border.color: Theme.primary
         radius: Settings.radius
         color: Theme.surfaceContainer
