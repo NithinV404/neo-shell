@@ -148,58 +148,28 @@ Scope {
             Rectangle {
                 id: osdContent
                 anchors.horizontalCenter: parent.horizontalCenter
-                implicitHeight: osdLayout.height + 20
-                implicitWidth: osdLayout.width + 20
+                height: osdLayout.height + 20
+                width: osdLayout.width + 20
+                border.width: 1
+                border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
                 color: Theme.surface
+                scale: root.shouldShowOsd ? 1 : 0.8
+                opacity: root.shouldShowOsd ? 1 : 0
                 radius: Settings.radius
-                layer.enabled: true
 
-                // Use panel's isOpen for state
-                state: root.shouldShowOsd ? "opened" : "closed"
-
-                states: [
-                    State {
-                        name: "closed"
-                        PropertyChanges {
-                            target: osdContent
-                            opacity: 0
-                            scale: 0.8
-                        }
-                    },
-                    State {
-                        name: "opened"
-                        PropertyChanges {
-                            target: osdContent
-                            opacity: 1
-                            scale: 1
-                        }
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
                     }
-                ]
+                }
 
-                transitions: [
-                    Transition {
-                        id: openAnim
-                        from: "closed"
-                        to: "opened"
-                        NumberAnimation {
-                            properties: "y,opacity,scale"
-                            duration: 200
-                            easing.type: Easing.OutCubic
-                        }
-                        onRunningChanged: root.animating = openAnim.running || closeAnim.running
-                    },
-                    Transition {
-                        id: closeAnim
-                        from: "opened"
-                        to: "closed"
-                        NumberAnimation {
-                            properties: "y,opacity,scale"
-                            duration: 200
-                            easing.type: Easing.InCubic
-                        }
-                        onRunningChanged: root.animating = openAnim.running || closeAnim.running
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
                     }
-                ]
+                }
 
                 RowLayout {
                     id: osdLayout

@@ -3,9 +3,13 @@ environment {
     QT_WAYLAND_DISABLE_WINDOWDECORATION "1"
 }
 
-spawn-at-startup "qs" "-p" "/home/nithin/.config/quickshell/Modules/Greetd/Greetd.qml"
+spawn-at-startup "qs" "-p" "/home/nithin/.config/quickshell/greeter.qml"
 
 binds { }
+
+hotkey-overlay {
+     skip-at-startup
+}
 
 cursor {
     hide-after-inactive-ms 5000

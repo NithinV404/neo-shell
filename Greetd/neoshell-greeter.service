@@ -6,7 +6,7 @@ Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
-ExecStart=greetd --config ~/.config/quickshell/Greetd/neoshell-greeter.toml
+ExecStart=greetd --config /etc/greetd/neoshell-greeter.toml
 IgnoreSIGPIPE=no
 SendSIGHUP=yes
 TimeoutStopSec=30s
@@ -17,4 +17,5 @@ StartLimitBurst=5
 StartLimitInterval=30
 
 [Install]
+WantedBy=multi-user.target
 Alias=display-manager.service
