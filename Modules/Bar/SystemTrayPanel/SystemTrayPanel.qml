@@ -118,7 +118,7 @@ PanelWindow {
 
     Item {
         id: menuContainer
-        x: Utils.clampScreenX(root.menuX, width, 20, root.screen)
+        x: Utils.clampScreenX(root.menuX, width, 0, root.screen)
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
         width: 224
         height: backgroundRect.height + 24
@@ -147,7 +147,7 @@ PanelWindow {
             color: Theme.surface
             radius: Settings.radius
             border.width: 1
-            border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
+            border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
             clip: true
 
             MouseArea {

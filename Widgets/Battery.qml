@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import qs.Common
 import qs.Widgets
 import qs.Services
 import Qt5Compat.GraphicalEffects
@@ -35,6 +36,7 @@ Item {
             color: {
                 BatteryService.batteryPercentage < 21 ? Theme.error : Theme.primary;
             }
+            radius: Settings.radius
         }
     }
 

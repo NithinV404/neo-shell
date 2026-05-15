@@ -6,12 +6,11 @@ import qs.Common
 
 Item {
     id: root
-    implicitWidth: buttonContent.width + 24
-    implicitHeight: 40
+    width: buttonContent.width + 24
+    height: 40
     property string text: "Button"
     property string icon: ""
     property bool primary: false
-    enabled: true
     property color bgColor: Theme.primary
     property color textColor: Theme.primaryFg
 
@@ -21,6 +20,7 @@ Item {
     property color disabledColor: Qt.darker(bgColor, 1.8)
 
     signal clicked
+    enabled: true
 
     DropShadow {
         anchors.fill: button

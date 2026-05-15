@@ -36,7 +36,9 @@ Popout {
             radius: 26
             color: Theme.surface
             opacity: contentRect.opacity
-            layer.enabled: false
+            border.width: 1
+            border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
+            layer.enabled: root.shadowEnabled
             layer.effect: DropShadow {
                 horizontalOffset: 0
                 verticalOffset: 8

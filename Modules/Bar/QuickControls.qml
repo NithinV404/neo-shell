@@ -12,8 +12,8 @@ Rectangle {
 
     required property var screen
     readonly property int iconSize: height * 0.6
-    implicitWidth: layout.implicitWidth + 18
-    implicitHeight: 28
+    width: layout.implicitWidth + 18
+    height: 28
     color: quickControlsPanel.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
@@ -36,8 +36,6 @@ Rectangle {
             duration: 220
         }
     }
-
- 
 
     RowLayout {
         id: layout
@@ -91,5 +89,4 @@ Rectangle {
             }
         }
     }
-    
 }

@@ -5,7 +5,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Modals
 import qs.Modules.Bar
-
+import qs.Widgets
 import qs.Modules.Launcher
 import qs.Modules.Bar.ControlCenterPanel
 import qs.Modules.Bar.WallpaperPanel

@@ -43,8 +43,8 @@ Rectangle {
         x: root.activeItem ? (workspaceRow.x + root.activeItem.x + (root.activeItem.width - width) / 2) : 0
         y: (root.height - height) / 2  // Center vertically in root
 
-        width: root.height * 0.6 
-        height: root.height * 0.6 
+        width: root.height * 0.65
+        height: root.height * 0.65
         radius: Settings.radius
         color: Theme.primary
 
@@ -80,7 +80,7 @@ Rectangle {
     RowLayout {
         id: workspaceRow
         anchors.centerIn: parent
-        spacing: 0
+        spacing: -1
 
         Repeater {
             model: root.currentWsList
@@ -103,8 +103,8 @@ Rectangle {
                 Component.onCompleted: if (isFocused)
                     root.activeItem = delegateItem
 
-                implicitWidth: root.height * 0.6 
-                implicitHeight: root.height * 0.6 
+                width: root.height * 0.7
+                height: root.height * 0.7
 
                 Layout.leftMargin: isFocused ? 2 : 0
                 Layout.rightMargin: isFocused ? 2 : 0

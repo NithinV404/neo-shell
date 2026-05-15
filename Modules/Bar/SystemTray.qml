@@ -147,7 +147,7 @@ Rectangle {
                                 var newmenu = customMenu.createObject(null, {
                                     menuHandler: modelData.menu,
                                     menuX: localPos.x,
-                                    menuY: localPos.y + root.height + 4,
+                                    menuY: localPos.y + root.height + 6,
                                     title: modelData.id,
                                     titleIcon: modelData.icon
                                 });

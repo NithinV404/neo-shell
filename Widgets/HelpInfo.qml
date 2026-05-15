@@ -9,8 +9,8 @@ Rectangle {
     property string icon: "help"
     property string description: ""
     property string title: "Title"
-    implicitHeight: content.height
-    implicitWidth: content.width
+    height: content.height
+    width: content.width
     color: "transparent"
     ColumnLayout {
         id: content

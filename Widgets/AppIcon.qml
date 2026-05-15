@@ -14,8 +14,7 @@ Item {
     width: size
     height: size
 
-    // Look up the desktop entry to get the correct icon
-    readonly property var desktopEntry: {
+    readonly property var _desktopEntry: {
         const appId = root.icon ?? "";
 
         if (appId.startsWith("/")) {
@@ -27,10 +26,8 @@ Item {
 
         const lastPart = appId.toLowerCase().split(".").slice(-1)[0];
 
-        // Base variations for exact matching
         const exactLookups = [appId, appId.toLowerCase(), lastPart, lastPart.replace(/_/g, "-"), lastPart.replace(/-/g, "_")];
 
-        // Try exact matches first
         for (const id of exactLookups) {
             const entry = DesktopEntries.byId(id);
             if (entry)
@@ -45,8 +42,7 @@ Item {
         return null;
     }
 
-    // Use icon from desktop entry, otherwise try app_id directly
-    property string iconName: desktopEntry?.icon ?? root.icon ?? ""
+    property string iconName: _desktopEntry?.icon ?? root.icon ?? ""
     property bool hasIcon: iconName && iconName !== null
     property bool iconLoaded: hasIcon && iconImage.status === Image.Ready
 
