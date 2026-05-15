@@ -241,12 +241,13 @@ PanelWindow {
                 }
 
                 Rectangle {
+                    Layout.bottomMargin: 2
                     Layout.fillWidth: true
-                    implicitHeight: 38
+                    Layout.leftMargin: 2
+                    Layout.rightMargin: 2
+                    height: 38
                     color: Theme.surfaceContainer
-                    radius: Settings.radius
-                    border.width: 1
-                    border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.5)
+                    radius: Settings.radius - 2
 
                     RowLayout {
                         anchors.fill: parent
