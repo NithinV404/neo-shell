@@ -1,6 +1,0 @@
-[terminal]
-vt = 1
-
-[default_session]
-command = "niri -c /etc/niri/niri-greeter.kdl"
-user = "greeter"
