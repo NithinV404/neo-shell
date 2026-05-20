@@ -11,6 +11,9 @@ PanelWindow {
     property int panelY: 0
     property bool isVisible: false
     property bool shadowEnabled: false
+
+    focusable: false
+
     visible: false
 
     signal menuClosed

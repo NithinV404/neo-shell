@@ -29,15 +29,12 @@ Popout {
             }
         }
 
-        Rectangle {
-            id: shadowRect
-            width: contentRect.width
-            height: contentRect.height
-            radius: 26
-            color: Theme.surface
-            opacity: contentRect.opacity
-            border.width: 1
-            border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
+        Item {
+            id: contentRect
+            clip: true
+            width: wallpaperGrid.width + 40
+            height: root.isVisible ? wallpaperGrid.height + 40 : 0
+            opacity: root.isVisible ? 1 : 0
             layer.enabled: root.shadowEnabled
             layer.effect: DropShadow {
                 horizontalOffset: 0
@@ -47,14 +44,15 @@ Popout {
                 color: Qt.rgba(0, 0, 0, 0.35)
                 transparentBorder: true
             }
-        }
 
-        Item {
-            id: contentRect
-            clip: true
-            width: wallpaperGrid.width + 40
-            height: root.isVisible ? wallpaperGrid.height + 40 : 0
-            opacity: root.isVisible ? 1 : 0
+            Rectangle {
+                anchors.fill: parent
+                radius: 26
+                color: Theme.surface
+                opacity: contentRect.opacity
+                border.width: 1
+                border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
+            }
 
             Behavior on opacity {
                 NumberAnimation {
@@ -90,8 +88,16 @@ Popout {
                     edit: true
                     height: 42
 
-                    HoverHandler {
-                        id: textFieldHover
+                    MouseArea {
+                        id: textFieldMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onEntered: {
+                            root.focusable = true;
+                        }
+                        onClicked: {
+                            textField.setFocus();
+                        }
                     }
 
                     Keys.onPressed: event => {
@@ -108,7 +114,6 @@ Popout {
                 Button {
                     icon: "save"
                     text: "Save"
-                    height: 20
                     bgColor: Theme.primary
                     textColor: Theme.primaryFg
                     onClicked: {
@@ -120,7 +125,7 @@ Popout {
                 Button {
                     icon: "refresh"
                     text: "Regenerate"
-                    height: 20
+
                     bgColor: Theme.primary
                     textColor: Theme.primaryFg
                     onClicked: {

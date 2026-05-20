@@ -23,7 +23,7 @@ Item {
     }
 
     function setFocus() {
-        inputField.focus = true;
+        inputField.forceActiveFocus();
     }
 
     function clearFocus() {
@@ -75,7 +75,6 @@ Item {
                 selectedTextColor: Theme.tertiaryFg
                 onAccepted: root.accepted()
                 text: root.edit ? root.placeholder : ""
-                activeFocusOnPress: true
                 onEditingFinished: root.editingFinished
 
                 Text {
