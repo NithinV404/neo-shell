@@ -1,5 +1,4 @@
 import QtQuick
-import Qt5Compat.GraphicalEffects
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell.Wayland
@@ -123,17 +122,6 @@ PanelWindow {
         width: 224
         height: backgroundRect.height + 24
         transformOrigin: Item.Top
-
-        DropShadow {
-            anchors.fill: backgroundRect
-            source: backgroundRect
-            horizontalOffset: 0
-            verticalOffset: 8
-            radius: 18
-            samples: 49
-            color: Qt.rgba(0, 0, 0, 0.35)
-            transparentBorder: true
-        }
 
         Rectangle {
             id: backgroundRect

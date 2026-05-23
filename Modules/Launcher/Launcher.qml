@@ -1,7 +1,6 @@
 import qs.Services
 import qs.Common
 import qs.Widgets
-import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -140,15 +139,6 @@ Popout {
         color: Theme.surface
         border.width: 1
         border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
-        layer.enabled: root.enableShadow
-        layer.effect: DropShadow {
-            horizontalOffset: 0
-            verticalOffset: 8
-            radius: 18
-            samples: 49
-            color: Qt.rgba(0, 0, 0, 0.35)
-            transparentBorder: true
-        }
 
         Behavior on opacity {
             NumberAnimation {

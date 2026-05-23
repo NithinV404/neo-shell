@@ -91,8 +91,20 @@ Item {
         model: root.imageFiles
         cacheBuffer: 300
         clip: true
-        flickDeceleration: 900        // default 1500, lower = longer glide
-        maximumFlickVelocity: 2000    // default ~2500, higher = faster fling
+        flickDeceleration: 900
+        maximumFlickVelocity: 2000
+        boundsBehavior: Flickable.OvershootBounds
+        bottomMargin: 54
+
+        rebound: Transition {
+            NumberAnimation {
+                properties: "y"
+                duration: 500
+                easing.type: Easing.OutElastic
+                easing.amplitude: 0.5
+                easing.period: 0.3
+            }
+        }
 
         delegate: Rectangle {
             id: imageCell

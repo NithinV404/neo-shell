@@ -41,8 +41,10 @@ PanelWindow {
     WlrLayershell.exclusionMode: ExclusionMode.Auto
 
     function openPanel(panel, parent, width = panel.width, height = panel.height) {
-        if (panel.active)
+        if (panel.active) {
             panel.item.close();
+            return;
+        }
 
         panel.active = true;
         var pos = parent.mapToGlobal(0, 0);
@@ -50,8 +52,10 @@ PanelWindow {
     }
 
     function closePanel(panel) {
-        if (panel.active)
+        if (panel.active) {
             panel.close();
+            return;
+        }
 
         return;
     }
@@ -203,7 +207,26 @@ PanelWindow {
         }
     }
 
-    OSD {}
+    Connections {
+        target: OSDService
+
+        function onOpen(osdType) {
+            osdLoader.active = true;
+            osdLoader.item.open(osdType);
+        }
+    }
+
+    LazyLoader {
+        id: osdLoader
+        OSD {
+            id: osdPanel
+            screen: bar.modelData
+            onMenuClosed: {
+                osdLoader.active = false;
+            }
+        }
+    }
+
     PowerMenu {}
 
     // App Launcher
