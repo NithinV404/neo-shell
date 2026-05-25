@@ -10,79 +10,47 @@ import qs.Widgets
 PanelWindow {
     id: root
 
+    property bool isVisible: false
     property alias title: title.text
     property alias titleIcon: title_icon.icon
     property var menuHandler: null
-    property int menuX: 0
-    property int menuY: 0
+    property real menuX: 0
+    property real menuY: 0
 
-    Component.onCompleted: {
-        open();
-        const opener = menuItemsRetriver(menuHandler);
-        opener.onChildrenChanged.connect(() => {
-            itemsRepeater.model = opener.children;
-        });
+    signal menuClosed
+
+    onMenuHandlerChanged: {
+        if (menuHandler) {
+            const opener = menuItemsRetriver(menuHandler.menu);
+            opener.onChildrenChanged.connect(() => {
+                itemsRepeater.model = opener.children;
+            });
+        }
     }
 
-    function open() {
-        menuContainer.opacity = 0;
-        menuContainer.scale = 0.9;
-        visible = true;
-        enterAnim.start();
+    function open(x, y, menu) {
+        root.menuX = x;
+        root.menuY = y;
+        root.menuHandler = menu;
+        root.visible = true;
+        root.isVisible = true;
     }
 
     function close() {
-        if (exitAnim.running)
+        if (animationTimer.running)
             return;
-        exitAnim.start();
+        root.isVisible = false;
+        animationTimer.start();
     }
 
-    // --- Animations ---
-
-    ParallelAnimation {
-        id: enterAnim
-        NumberAnimation {
-            target: menuContainer
-            property: "opacity"
-            from: 0
-            to: 1
-            duration: 200
-            easing.type: Easing.OutQuad
-        }
-        NumberAnimation {
-            target: menuContainer
-            property: "scale"
-            from: 0.9
-            to: 1
-            duration: 200
-            easing.type: Easing.OutBack
+    Timer {
+        id: animationTimer
+        interval: 300
+        onTriggered: {
+            root.visible = false;
+            root.menuClosed();
         }
     }
-
-    ParallelAnimation {
-        id: exitAnim
-        NumberAnimation {
-            target: menuContainer
-            property: "opacity"
-            from: 1
-            to: 0
-            duration: 150
-            easing.type: Easing.InQuad
-        }
-        NumberAnimation {
-            target: menuContainer
-            property: "scale"
-            from: 1
-            to: 0.95
-            duration: 150
-        }
-        onFinished: {
-            root.menuHandler = null;
-            root.destroy();
-        }
-    }
-
-    // --- Window setup ---
 
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
@@ -91,10 +59,6 @@ PanelWindow {
         const qsMenuOpenerQml = Qt.createQmlObject(`import Quickshell; QsMenuOpener{}`, root);
         qsMenuOpenerQml.menu = menu;
         return qsMenuOpenerQml;
-    }
-
-    QsMenuOpener {
-        id: menuOpener
     }
 
     anchors {
@@ -107,21 +71,42 @@ PanelWindow {
     color: "transparent"
     visible: false
 
-    // Dismiss on outside click
     MouseArea {
         anchors.fill: parent
         onClicked: root.close()
     }
 
-    // --- Menu popup ---
-
     Item {
         id: menuContainer
         x: Utils.clampScreenX(root.menuX, width, 0, root.screen)
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
+        clip: true
         width: 224
-        height: backgroundRect.height + 24
+        height: root.isVisible ? backgroundRect.height + 24 : 0
+        scale: root.isVisible ? 1 : 0
+        opacity: root.isVisible ? 1 : 0
         transformOrigin: Item.Top
+
+        Behavior on scale {
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.OutBack
+            }
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        Behavior on height {
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.OutCubic
+            }
+        }
 
         Rectangle {
             id: backgroundRect
@@ -244,13 +229,14 @@ PanelWindow {
 
                         AppIcon {
                             id: title_icon
-                            icon: root.title
+                            icon: root.menuHandler?.icon ?? ""
                             size: 20
                             Layout.alignment: Qt.AlignVCenter
                         }
 
                         Text {
                             id: title
+                            text: root.menuHandler?.id ?? root.menuHandler?.title ?? root.menuHandler?.tooltipTitle ?? ""
                             font.family: Settings.fontFamily
                             color: Theme.surfaceFg
                             antialiasing: true
