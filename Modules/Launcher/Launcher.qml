@@ -61,7 +61,7 @@ Popout {
     // Reset selection when apps list changes
     Connections {
         target: AppService
-        function applicationsChanged() {
+        function onApplicationsChanged() {
             root.selectedIndex = 0;
         }
     }
@@ -246,7 +246,7 @@ Popout {
             // App list
             ListView {
                 id: appList
-                Layout.preferredHeight: Math.min(appList.contentHeight, 450)
+                implicitHeight: Math.min(appList.contentHeight, 450)
                 Layout.fillWidth: true
                 Layout.margins: 8
                 model: AppService.applications
