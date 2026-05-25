@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell.Services.SystemTray
+import Quickshell
 import qs.Services
 import qs.Widgets
 import qs.Common
@@ -18,11 +19,7 @@ Rectangle {
     // border.color: Qt.darker(Theme.outline)
 
     radius: Settings.radius
-
-    // 1. Keep visible until scale hits 0
     visible: scale > 0
-
-    // 2. Initialize at 0
     scale: 0
 
     readonly property bool hasContent: layout.implicitWidth > 0
@@ -113,7 +110,6 @@ Rectangle {
                     anchors.centerIn: parent
                     size: root.height * 0.6
                     icon: {
-                        console.log(trayItem.modelData.icon);
                         return trayItem.modelData.icon;
                     }
                     layer.enabled: true
@@ -131,27 +127,12 @@ Rectangle {
                     hoverEnabled: true
                     onClicked: mouse => {
                         if (mouse.button === Qt.LeftButton) {
-                            if (root.activeMenuInstance) {
-                                root.activeMenuInstance.close();
-                                root.activeMenuInstance = null;
-                            }
                             modelData.activate();
                         } else if (mouse.button === Qt.RightButton) {
-                            if (root.activeMenuInstance) {
-                                root.activeMenuInstance.close();
-                                root.activeMenuInstance = null;
-                                return;
-                            }
                             if (modelData.menu) {
                                 var localPos = trayItem.mapToItem(null, 0, 0);
-                                var newmenu = customMenu.createObject(null, {
-                                    menuHandler: modelData.menu,
-                                    menuX: localPos.x,
-                                    menuY: localPos.y + root.height + 6,
-                                    title: modelData.id,
-                                    titleIcon: modelData.icon
-                                });
-                                root.activeMenuInstance = newmenu;
+                                systemTrayPanel.active = true;
+                                systemTrayPanel.item.open(localPos.x, localPos.y + 34, trayItem.modelData);
                             }
                         }
                     }
@@ -159,13 +140,12 @@ Rectangle {
             }
         }
     }
-    Component {
-        id: customMenu
+    LazyLoader {
+        id: systemTrayPanel
+        active: false
         SystemTrayPanel {
-            Component.onDestruction: {
-                if (root.activeMenuInstance === this) {
-                    root.activeMenuInstance = null;
-                }
+            onMenuClosed: {
+                systemTrayPanel.active = false;
             }
         }
     }
