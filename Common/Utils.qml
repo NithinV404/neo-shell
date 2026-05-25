@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import QtCore
 import Quickshell
+import "../Helpers/QtObj2Js.js" as QtObj2Js
 
 QtObject {
 
@@ -151,5 +152,54 @@ QtObject {
             t.destroy();
         });
         return t;
+    }
+
+    function fromArray(arr, existingModel) {
+        const model = existingModel ?? Qt.createQmlObject('import QtQuick; ListModel {}', this);
+        model.clear();
+        for (const item of arr) {
+            const plain = QtObj2Js.qtObjectToPlainObject(item);
+            plain["_raw"] = item;
+            model.append(plain);
+        }
+        return model;
+    }
+
+    function diffModel(newList, model) {
+        const newNames = new Set(newList.map(a => a.name));
+
+        // Remove items no longer in list (backwards to keep indices stable)
+        for (let i = model.count - 1; i >= 0; i--) {
+            if (!newNames.has(model.get(i).name)) {
+                model.remove(i);
+            }
+        }
+
+        // Build set of what's still in model
+        const existing = new Set();
+        for (let i = 0; i < model.count; i++) {
+            existing.add(model.get(i).name);
+        }
+
+        // Append only new items
+        for (const item of newList) {
+            if (!existing.has(item.name)) {
+                model.append(item);
+            }
+        }
+
+        const sortedNames = [...newNames].sort((a, b) => a.localeCompare(b));
+
+        Qt.callLater(() => {
+            for (const [indexNew, name] of sortedNames.entries()) {
+                for (let indexOld = 0; indexOld < model.count; indexOld++) {
+                    if (model.get(indexOld).name === name) {
+                        if (indexOld !== indexNew)
+                            model.move(indexOld, indexNew, 1);
+                        break;
+                    }
+                }
+            }
+        });
     }
 }
