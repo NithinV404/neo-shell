@@ -9,7 +9,20 @@ import "../Helpers/fzf.js" as Fzf
 Singleton {
     id: root
 
-    property var applications: DesktopEntries.applications.values.filter(app => !app.noDisplay && !app.runInTerminal).sort((a, b) => a.name.localeCompare(b.name))
+    signal applicationsUpdated
+
+    property var applications: ListModel {
+        id: appModel
+    }
+
+    property var _appList: []
+    property var _fzfFinder: null
+
+    function getApplications() {
+        let apps = DesktopEntries.applications.values.filter(app => !app.noDisplay && !app.runInTerminal).sort((a, b) => a.name.localeCompare(b.name));
+        Utils.diffModel(apps, applications);
+        applicationsChanged();
+    }
 
     // Get icon path for an app
     function getIconPath(app) {
@@ -18,9 +31,17 @@ Singleton {
         return Quickshell.iconPath(app.icon, true);
     }
 
-    property var _fzfFinder: null
-    onApplicationsChanged: {
-        _fzfFinder = new Fzf.Finder(applications, {
+    function launchApp(item) {
+        let app = _appList.find(e => item.id === e.id);
+        if (app) {
+            app.execute();
+        }
+    }
+
+    Component.onCompleted: {
+        getApplications();
+        _appList = Array.from(DesktopEntries.applications.values.filter(app => !app.noDisplay && !app.runInTerminal).sort((a, b) => a.name.localeCompare(b.name)));
+        _fzfFinder = new Fzf.Finder(_appList, {
             // You can join multiple fields so Fzf searches name, comment AND keywords simultaneously!
             selector: a => `${a.name || ""} ${a.genericName || ""} ${a.comment || ""} ${(a.keywords || []).join(" ")}`,
             casing: "case-insensitive",
@@ -30,25 +51,29 @@ Singleton {
 
     function searchApplications(query) {
         if (!query || query.trim() === "")
-            return applications;
-        var result = Utils.heuristicSearch(applications, query);
+            return getApplications();
+        var result = Utils.heuristicSearch(_appList, query);
         if (result.length === 0) {
             try {
                 if (_fzfFinder) {
                     const fuzzyResults = _fzfFinder.find(query);
 
                     if (fuzzyResults.length > 0) {
-                        return fuzzyResults.map(r => r.item);
+                        result = fuzzyResults.map(r => r.item);
+                        Utils.diffModel(result, applications);
+                        applicationsUpdated();
+                        return;
                     }
                 }
             } catch (e) {
                 console.error("FZF Search Error: ", e);
             }
         } else {
-            return result;
+            applicationsUpdated();
+            return Utils.diffModel(result, applications);
         }
-
-        return [];
+        applicationsUpdated();
+        return applications.clear();
     }
 
     function getCategoriesForApp(app) {

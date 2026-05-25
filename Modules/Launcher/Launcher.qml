@@ -48,9 +48,6 @@ Popout {
     // Track selected item
     property int selectedIndex: 0
 
-    // All apps from service
-    property var apps: AppService.applications
-
     // Search Index
 
     // Search query
@@ -58,12 +55,15 @@ Popout {
 
     // Search
     onSearchQueryChanged: {
-        root.apps = searchQuery.trim().length > 0 ? AppService.searchApplications(searchQuery) : AppService.applications;
+        AppService.searchApplications(searchQuery);
     }
 
     // Reset selection when apps list changes
-    onAppsChanged: {
-        selectedIndex = 0;
+    Connections {
+        target: AppService
+        function applicationsChanged() {
+            root.selectedIndex = 0;
+        }
     }
 
     function open() {
@@ -82,14 +82,15 @@ Popout {
     }
 
     function launchApp(app) {
-        app.execute();
-        close();
+        AppService.launchApp(app);
+        root.close();
     }
 
     function launchSelected() {
-        if (root.apps.length > 0 && selectedIndex >= 0 && selectedIndex < root.apps.length) {
-            launchApp(root.apps[selectedIndex]);
+        if (AppService.applications.count > 0 && selectedIndex >= 0 && selectedIndex < AppService.applications.count) {
+            AppService.launchApp(AppService.applications.get(selectedIndex));
         }
+        root.close();
     }
 
     function moveSelectionUp() {
@@ -100,7 +101,7 @@ Popout {
     }
 
     function moveSelectionDown() {
-        if (root.selectedIndex < root.apps.length - 1) {
+        if (root.selectedIndex < AppService.applications.count - 1) {
             root.selectedIndex++;
             appList.positionViewAtIndex(root.selectedIndex, ListView.Contain);
         }
@@ -133,17 +134,17 @@ Popout {
         //anchors.topMargin: (parent.height - 600) / 2
         //anchors.horizontalCenter: parent.horizontalCenter
         width: 450
-        height: root.isVisible ? 600 : 0
-        opacity: root.isVisible ? 1 : 0
+        height: root.isVisible ? appColumn.implicitHeight : 0
+        scale: root.isVisible ? 1 : 0.8
         radius: Settings.radius
         color: Theme.surface
         border.width: 1
         border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
 
-        Behavior on opacity {
+        Behavior on scale {
             NumberAnimation {
                 duration: 300
-                easing.type: Easing.OutCubic
+                easing.type: Easing.OutQuad
             }
         }
 
@@ -157,7 +158,8 @@ Popout {
         }
 
         ColumnLayout {
-            anchors.fill: parent
+            id: appColumn
+            width: parent.width
             spacing: 0
 
             // Header
@@ -191,7 +193,7 @@ Popout {
                     }
 
                     Text {
-                        text: `${root.apps.length} apps`
+                        text: `${AppService.applications.count} apps`
                         font.pixelSize: 12
                         font.family: Settings.fontFamily
                         color: Theme.surfaceVariantFg
@@ -244,15 +246,63 @@ Popout {
             // App list
             ListView {
                 id: appList
-                Layout.fillHeight: true
+                Layout.preferredHeight: Math.min(appList.contentHeight, 450)
                 Layout.fillWidth: true
                 Layout.margins: 8
-
-                model: root.apps
+                model: AppService.applications
                 clip: true
                 spacing: 4
-                boundsBehavior: Flickable.StopAtBounds
-                currentIndex: root.selectedIndex  // Sync with selection
+                flickDeceleration: 900
+                maximumFlickVelocity: 2000
+                boundsBehavior: Flickable.OvershootBounds
+                currentIndex: root.selectedIndex
+
+                add: Transition {
+                    NumberAnimation {
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        duration: 350
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                remove: Transition {
+                    NumberAnimation {
+                        property: "opacity"
+                        from: 1
+                        to: 0
+                        duration: 300
+                        easing.type: Easing.InCubic
+                    }
+                }
+
+                move: Transition {
+                    NumberAnimation {
+                        property: "y"
+                        duration: 350
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                displaced: Transition {
+                    NumberAnimation {
+                        property: "y"
+                        duration: 250
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                populate: Transition {
+
+                    NumberAnimation {
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        duration: 400
+                        easing.type: Easing.OutCubic
+                    }
+                }
 
                 delegate: Rectangle {
                     id: appDelegate
@@ -317,16 +367,6 @@ Popout {
                         onClicked: root.launchApp(appDelegate.modelData)
                         onEntered: root.selectedIndex = appDelegate.index  // Update selection on hover
                     }
-                }
-
-                // Empty state
-                Text {
-                    anchors.centerIn: parent
-                    visible: root.apps.length === 0
-                    text: root.searchQuery ? "No matching applications" : "No applications found"
-                    font.pixelSize: 14
-                    font.family: Settings.fontFamily
-                    color: Theme.surfaceVariantFg
                 }
             }
         }
