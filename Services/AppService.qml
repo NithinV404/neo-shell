@@ -11,17 +11,17 @@ Singleton {
 
     signal applicationsUpdated
 
-    property var applications: ListModel {
+    readonly property ListModel applications: ListModel {
         id: appModel
     }
 
     property var _appList: []
     property var _fzfFinder: null
 
-    function getApplications() {
+    function _getApplications() {
         let apps = DesktopEntries.applications.values.filter(app => !app.noDisplay && !app.runInTerminal).sort((a, b) => a.name.localeCompare(b.name));
-        Utils.diffModel(apps, applications);
-        applicationsChanged();
+        Utils.diffListModel(apps, applications);
+        applicationsUpdated();
     }
 
     // Get icon path for an app
@@ -38,8 +38,7 @@ Singleton {
         }
     }
 
-    Component.onCompleted: {
-        getApplications();
+    function _fuzzyLoader() {
         _appList = Array.from(DesktopEntries.applications.values.filter(app => !app.noDisplay && !app.runInTerminal).sort((a, b) => a.name.localeCompare(b.name)));
         _fzfFinder = new Fzf.Finder(_appList, {
             // You can join multiple fields so Fzf searches name, comment AND keywords simultaneously!
@@ -49,9 +48,26 @@ Singleton {
         });
     }
 
+    Connections {
+        target: DesktopEntries
+        function onApplicationsChanged() {
+            Qt.callLater(() => {
+                _getApplications();
+                _fuzzyLoader();
+            });
+        }
+    }
+
+    Component.onCompleted: {
+        Qt.callLater(() => {
+            _getApplications();
+            _fuzzyLoader();
+        });
+    }
+
     function searchApplications(query) {
         if (!query || query.trim() === "")
-            return getApplications();
+            return Qt.callLater(() => _getApplications());
         var result = Utils.heuristicSearch(_appList, query);
         if (result.length === 0) {
             try {
@@ -60,7 +76,7 @@ Singleton {
 
                     if (fuzzyResults.length > 0) {
                         result = fuzzyResults.map(r => r.item);
-                        Utils.diffModel(result, applications);
+                        Utils.diffListModel(result, applications);
                         applicationsUpdated();
                         return;
                     }
@@ -70,7 +86,7 @@ Singleton {
             }
         } else {
             applicationsUpdated();
-            return Utils.diffModel(result, applications);
+            return Utils.diffListModel(result, applications);
         }
         applicationsUpdated();
         return applications.clear();
