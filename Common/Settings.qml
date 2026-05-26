@@ -23,6 +23,7 @@ Singleton {
     property string wallpapersFolder: "~/Pictures/Wallpapers"
     property list<string> wallpaperFolderImages: []
     property int radius: 24
+    property string launcherViewMode: "list"
     property bool enableGtkColors: true
     property bool enableQtColors: true
     property var controlCenterToggleOrder: [
@@ -134,7 +135,8 @@ Singleton {
             "wallpapersFolder": wallpapersFolder,
             "wallpaperImage": wallpaperImage,
             "defaultIconTheme": defaultIconTheme,
-            "radius": radius
+            "radius": radius,
+            "launcherViewMode": launcherViewMode
         }, null, 2));
     }
 
@@ -160,6 +162,7 @@ Singleton {
                 wallpaperImage = settings.wallpaperImage !== undefined ? settings.wallpaperImage : "";
                 defaultIconTheme = settings.defaultIconTheme !== undefined ? settings.defaultIconTheme : "";
                 radius = settings.radius !== undefined ? settings.radius : 24;
+                launcherViewMode = settings.launcherViewMode !== undefined ? settings.launcherViewMode : "list";
                 loadAvailableIcons();
                 detectDefault();
             }
@@ -314,5 +317,10 @@ Singleton {
                 root.availableIconThemes = detectedThemes;
             }
         }
+    }
+
+    function setLauncherView(view) {
+        launcherViewMode = view;
+        saveSettings();
     }
 }

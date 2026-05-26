@@ -13,6 +13,8 @@ Popout {
     screen: root.screen
     focusable: true
 
+    property ListModel apps: AppService.applications
+
     Component.onCompleted: {
         openAnimationTimer.running = true;
     }
@@ -48,7 +50,13 @@ Popout {
     // Track selected item
     property int selectedIndex: 0
 
-    // Search Index
+    // View mode: "list" or "grid"
+    property string viewMode: Settings.launcherViewMode
+
+    // Grid columns
+    readonly property int gridColumns: 4
+    readonly property int gridCellSize: 96
+    readonly property int gridCellPadding: 8
 
     // Search query
     property string searchQuery: ""
@@ -61,14 +69,14 @@ Popout {
     // Reset selection when apps list changes
     Connections {
         target: AppService
-        function onApplicationsChanged() {
+        function onApplicationsUpdated() {
             root.selectedIndex = 0;
         }
     }
 
     function open() {
         searchQuery = "";
-        selectedIndex = 0;  // Reset selection
+        selectedIndex = 0;
         root.visible = true;
         Utils.timer(30, () => root.isVisible = true, root);
     }
@@ -87,23 +95,51 @@ Popout {
     }
 
     function launchSelected() {
-        if (AppService.applications.count > 0 && selectedIndex >= 0 && selectedIndex < AppService.applications.count) {
-            AppService.launchApp(AppService.applications.get(selectedIndex));
+        if (root.apps.count > 0 && selectedIndex >= 0 && selectedIndex < root.apps.count) {
+            AppService.launchApp(root.apps.get(selectedIndex));
         }
         root.close();
     }
 
     function moveSelectionUp() {
-        if (root.selectedIndex > 0) {
-            root.selectedIndex--;
-            appList.positionViewAtIndex(root.selectedIndex, ListView.Contain);
+        if (viewMode === "list") {
+            if (root.selectedIndex > 0) {
+                root.selectedIndex--;
+                appList.positionViewAtIndex(root.selectedIndex, ListView.Contain);
+            }
+        } else {
+            if (root.selectedIndex >= root.gridColumns) {
+                root.selectedIndex -= root.gridColumns;
+                appGrid.positionViewAtIndex(root.selectedIndex, GridView.Contain);
+            }
         }
     }
 
     function moveSelectionDown() {
-        if (root.selectedIndex < AppService.applications.count - 1) {
+        if (viewMode === "list") {
+            if (root.selectedIndex < root.apps.count - 1) {
+                root.selectedIndex++;
+                appList.positionViewAtIndex(root.selectedIndex, ListView.Contain);
+            }
+        } else {
+            if (root.selectedIndex + root.gridColumns < root.apps.count) {
+                root.selectedIndex += root.gridColumns;
+                appGrid.positionViewAtIndex(root.selectedIndex, GridView.Contain);
+            }
+        }
+    }
+
+    function moveSelectionLeft() {
+        if (viewMode === "grid" && root.selectedIndex > 0) {
+            root.selectedIndex--;
+            appGrid.positionViewAtIndex(root.selectedIndex, GridView.Contain);
+        }
+    }
+
+    function moveSelectionRight() {
+        if (viewMode === "grid" && root.selectedIndex < root.apps.count - 1) {
             root.selectedIndex++;
-            appList.positionViewAtIndex(root.selectedIndex, ListView.Contain);
+            appGrid.positionViewAtIndex(root.selectedIndex, GridView.Contain);
         }
     }
 
@@ -111,6 +147,8 @@ Popout {
         id: keybinds
         Keys.onUpPressed: root.moveSelectionUp()
         Keys.onDownPressed: root.moveSelectionDown()
+        Keys.onLeftPressed: root.moveSelectionLeft()
+        Keys.onRightPressed: root.moveSelectionRight()
         Keys.onReturnPressed: root.launchSelected()
         Keys.onEnterPressed: root.launchSelected()
         Keys.onEscapePressed: root.close()
@@ -131,9 +169,7 @@ Popout {
         id: launcherContainer
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        //anchors.topMargin: (parent.height - 600) / 2
-        //anchors.horizontalCenter: parent.horizontalCenter
-        width: 450
+        width: appColumn.implicitWidth
         height: root.isVisible ? appColumn.implicitHeight : 0
         scale: root.isVisible ? 1 : 0.8
         radius: Settings.radius
@@ -149,6 +185,15 @@ Popout {
         }
 
         Behavior on height {
+            SequentialAnimation {
+                NumberAnimation {
+                    duration: 300
+                    easing.type: Easing.OutQuad
+                }
+            }
+        }
+
+        Behavior on width {
             SequentialAnimation {
                 NumberAnimation {
                     duration: 300
@@ -193,10 +238,84 @@ Popout {
                     }
 
                     Text {
-                        text: `${AppService.applications.count} apps`
+                        text: `${root.apps.count} apps`
                         font.pixelSize: 12
                         font.family: Settings.fontFamily
                         color: Theme.surfaceVariantFg
+                    }
+
+                    // View mode toggle
+                    Rectangle {
+                        width: 64
+                        height: 28
+                        radius: 8
+                        color: Theme.surfaceContainer
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: 3
+                            spacing: 2
+
+                            // List button
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                radius: 6
+                                color: root.viewMode === "list" ? Theme.surfaceContainerHighest : "transparent"
+
+                                Behavior on color {
+                                    ColorAnimation {
+                                        duration: 150
+                                    }
+                                }
+
+                                StyledText {
+                                    anchors.centerIn: parent
+                                    name: "list"
+                                    size: 14
+                                    color: root.viewMode === "list" ? Theme.primary : Theme.surfaceVariantFg
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        Settings.setLauncherView("list");
+                                        root.selectedIndex = 0;
+                                    }
+                                }
+                            }
+
+                            // Grid button
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                radius: 6
+                                color: root.viewMode === "grid" ? Theme.surfaceContainerHighest : "transparent"
+
+                                Behavior on color {
+                                    ColorAnimation {
+                                        duration: 150
+                                    }
+                                }
+
+                                StyledText {
+                                    anchors.centerIn: parent
+                                    name: "grid_view"
+                                    size: 14
+                                    color: root.viewMode === "grid" ? Theme.primary : Theme.surfaceVariantFg
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        Settings.setLauncherView("grid");
+                                        root.selectedIndex = 0;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -219,7 +338,7 @@ Popout {
 
                     onTextChanged: {
                         root.searchQuery = text;
-                        root.selectedIndex = 0;  // Reset to first on search
+                        root.selectedIndex = 0;
                     }
 
                     Keys.forwardTo: [keybinds]
@@ -243,13 +362,15 @@ Popout {
                 color: Theme.outlineVariant
             }
 
-            // App list
+            // ── LIST VIEW ──────────────────────────────────────────────
             ListView {
                 id: appList
-                implicitHeight: Math.min(appList.contentHeight, 450)
+                visible: root.viewMode === "list"
+                implicitHeight: root.viewMode === "list" ? Math.min(appList.contentHeight, 450) : 0
+                implicitWidth: 450
                 Layout.fillWidth: true
                 Layout.margins: 8
-                model: AppService.applications
+                model: root.apps
                 clip: true
                 spacing: 4
                 flickDeceleration: 900
@@ -266,7 +387,6 @@ Popout {
                         easing.type: Easing.OutCubic
                     }
                 }
-
                 remove: Transition {
                     NumberAnimation {
                         property: "opacity"
@@ -276,15 +396,13 @@ Popout {
                         easing.type: Easing.InCubic
                     }
                 }
-
                 move: Transition {
                     NumberAnimation {
                         property: "y"
-                        duration: 350
+                        duration: 250
                         easing.type: Easing.OutCubic
                     }
                 }
-
                 displaced: Transition {
                     NumberAnimation {
                         property: "y"
@@ -292,9 +410,7 @@ Popout {
                         easing.type: Easing.OutCubic
                     }
                 }
-
                 populate: Transition {
-
                     NumberAnimation {
                         property: "opacity"
                         from: 0
@@ -305,19 +421,53 @@ Popout {
                 }
 
                 delegate: Rectangle {
-                    id: appDelegate
+                    id: listDelegate
                     required property var modelData
                     required property int index
+                    property bool isSelected: index === root.selectedIndex
+                    property bool isHovered: listDelegateMouse.containsMouse
+                    property bool isFirst: index === 0
+                    property bool isLast: index === root.apps.count - 1
 
                     width: appList.width
                     height: 56
-                    radius: 12
+                    topLeftRadius: isSelected || isFirst ? Settings.radius : 8
+                    topRightRadius: isSelected || isFirst ? Settings.radius : 8
+                    bottomLeftRadius: isSelected || isLast ? Settings.radius : 8
+                    bottomRightRadius: isSelected || isLast ? Settings.radius : 8
 
-                    // Highlight if selected OR hovered
-                    readonly property bool isSelected: index === root.selectedIndex
-                    readonly property bool isHovered: delegateMouse.containsMouse
+                    Behavior on topLeftRadius {
+                        NumberAnimation {
+                            duration: 300
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on topRightRadius {
+                        NumberAnimation {
+                            duration: 300
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on bottomLeftRadius {
+                        NumberAnimation {
+                            duration: 300
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on bottomRightRadius {
+                        NumberAnimation {
+                            duration: 300
+                            easing.type: Easing.OutCubic
+                        }
+                    }
 
-                    color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Theme.surface
+                    color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Theme.surfaceContainer
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+                    }
 
                     RowLayout {
                         anchors.fill: parent
@@ -326,8 +476,8 @@ Popout {
                         spacing: 12
 
                         AppIcon {
-                            icon: appDelegate.modelData.icon
-                            name: appDelegate.modelData.name
+                            icon: listDelegate.modelData.icon
+                            name: listDelegate.modelData.name
                             size: 40
                             Layout.preferredWidth: 40
                             Layout.preferredHeight: 40
@@ -338,18 +488,18 @@ Popout {
                             spacing: 2
 
                             Text {
-                                text: appDelegate.modelData.name ?? ""
+                                text: listDelegate.modelData.name ?? ""
                                 font.pixelSize: 14
                                 font.family: Settings.fontFamily
-                                font.weight: appDelegate.isSelected ? Font.Medium : Font.Normal
+                                font.weight: listDelegate.isSelected ? Font.Medium : Font.Normal
                                 color: Theme.surfaceFg
                                 elide: Text.ElideRight
                                 width: parent.width
                             }
 
                             Text {
-                                visible: appDelegate.modelData.comment
-                                text: appDelegate.modelData.comment ?? ""
+                                visible: listDelegate.modelData.comment
+                                text: listDelegate.modelData.comment ?? ""
                                 font.pixelSize: 11
                                 font.family: Settings.fontFamily
                                 color: Theme.surfaceVariantFg
@@ -360,12 +510,139 @@ Popout {
                     }
 
                     MouseArea {
-                        id: delegateMouse
+                        id: listDelegateMouse
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.launchApp(appDelegate.modelData)
-                        onEntered: root.selectedIndex = appDelegate.index  // Update selection on hover
+                        onClicked: root.launchApp(listDelegate.modelData)
+                        onEntered: root.selectedIndex = listDelegate.index
+                    }
+                }
+            }
+
+            // ── GRID VIEW ──────────────────────────────────────────────
+            GridView {
+                id: appGrid
+                visible: root.viewMode === "grid"
+                implicitWidth: 550
+                implicitHeight: root.viewMode === "grid" ? Math.min(appGrid.contentHeight, 450) : 0
+                Layout.fillWidth: true
+                Layout.margins: 8
+                model: root.apps
+                clip: true
+                cellWidth: (appGrid.width) / root.gridColumns
+                cellHeight: root.gridCellSize + root.gridCellPadding
+                flickDeceleration: 900
+                maximumFlickVelocity: 2000
+                boundsBehavior: Flickable.OvershootBounds
+                currentIndex: root.selectedIndex
+
+                add: Transition {
+                    NumberAnimation {
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        duration: 350
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                remove: Transition {
+                    NumberAnimation {
+                        property: "opacity"
+                        from: 1
+                        to: 0
+                        duration: 300
+                        easing.type: Easing.InCubic
+                    }
+                }
+                move: Transition {
+                    NumberAnimation {
+                        properties: "x,y"
+                        duration: 250
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                displaced: Transition {
+                    NumberAnimation {
+                        properties: "x,y"
+                        duration: 250
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                populate: Transition {
+                    NumberAnimation {
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        duration: 400
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                delegate: Item {
+                    id: gridDelegateWrapper
+                    required property var modelData
+                    required property int index
+                    width: appGrid.cellWidth
+                    height: appGrid.cellHeight
+
+                    Rectangle {
+                        id: gridDelegate
+                        property bool isSelected: gridDelegateWrapper.index === root.selectedIndex
+                        property bool isHovered: gridDelegateMouse.containsMouse
+
+                        anchors.fill: parent
+                        anchors.margins: root.gridCellPadding / 2
+                        radius: (isSelected || isHovered) ? Settings.radius : 8
+
+                        color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Theme.surfaceContainer
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                                easing.type: Easing.OutQuad
+                            }
+                        }
+
+                        Behavior on radius {
+                            NumberAnimation {
+                                duration: 250
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+
+                        Column {
+                            anchors.centerIn: parent
+                            spacing: 8
+
+                            AppIcon {
+                                icon: gridDelegateWrapper.modelData.icon
+                                name: gridDelegateWrapper.modelData.name
+                                size: 52
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+
+                            Text {
+                                text: gridDelegateWrapper.modelData.name ?? ""
+                                font.pixelSize: 12
+                                font.family: Settings.fontFamily
+                                font.weight: 500
+                                color: Theme.surfaceFg
+                                elide: Text.ElideRight
+                                horizontalAlignment: Text.AlignHCenter
+                                width: appGrid.cellWidth - root.gridCellPadding * 2 - 8
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+                        }
+
+                        MouseArea {
+                            id: gridDelegateMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.launchApp(gridDelegateWrapper.modelData)
+                            onEntered: root.selectedIndex = gridDelegateWrapper.index
+                        }
                     }
                 }
             }
