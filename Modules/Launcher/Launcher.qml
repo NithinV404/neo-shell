@@ -403,6 +403,7 @@ Popout {
                         property: "y"
                         duration: 250
                         easing.type: Easing.OutCubic
+                        alwaysRunToEnd: true
                     }
                 }
                 displaced: Transition {
@@ -410,6 +411,7 @@ Popout {
                         property: "y"
                         duration: 250
                         easing.type: Easing.OutCubic
+                        alwaysRunToEnd: true
                     }
                 }
                 populate: Transition {
@@ -439,6 +441,20 @@ Popout {
                     topRightRadius: isSelected || isFirst ? Settings.radius : 8
                     bottomLeftRadius: isSelected || isLast ? Settings.radius : 8
                     bottomRightRadius: isSelected || isLast ? Settings.radius : 8
+
+                    Component.onCompleted: {
+                        fadeInAnim.start();
+                    }
+
+                    NumberAnimation {
+                        id: fadeInAnim
+                        target: gridDelegateWrapper
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        duration: 350
+                        easing.type: Easing.OutCubic
+                    }
 
                     Behavior on topLeftRadius {
                         NumberAnimation {
@@ -575,14 +591,6 @@ Popout {
                         properties: "x,y"
                         duration: 250
                         easing.type: Easing.OutCubic
-                    }
-                    NumberAnimation {
-                        property: "opacity"
-                        from: 0
-                        to: 1
-                        duration: 250
-                        easing.type: Easing.OutCubic
-                        alwaysRunToEnd: true
                     }
                 }
                 populate: Transition {
