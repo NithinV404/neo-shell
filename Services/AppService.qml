@@ -20,7 +20,7 @@ Singleton {
 
     function _getApplications() {
         let apps = DesktopEntries.applications.values.filter(app => !app.noDisplay && !app.runInTerminal).sort((a, b) => a.name.localeCompare(b.name));
-        Qt.callLater(() => Utils.diffListModel(apps, applications));
+        Utils.diffListModel(apps, applications);
         applicationsUpdated();
         return;
     }
