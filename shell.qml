@@ -25,6 +25,9 @@ ShellRoot {
             this.WlrLayershell.layer = WlrLayer.Top;
         }
         IPCService.init();
+        Utils.init();
+        Theme.init();
+        AppService.init();
     }
 
     // Process {

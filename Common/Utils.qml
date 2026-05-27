@@ -4,11 +4,14 @@ import QtCore
 import Quickshell
 import "../Helpers/QtObj2Js.js" as QtObj2Js
 
-QtObject {
+Singleton {
 
     readonly property url config: `${StandardPaths.standardLocations(StandardPaths.GenericConfigLocation)[0]}`
     readonly property url cache: `${StandardPaths.standardLocations(StandardPaths.GenericCacheLocation)[0]}/neoshell`
     readonly property url imagecache: `${cache}/imagecache`
+
+    function init() {
+    }
 
     function clampScreenX(x, width, padding, screen) {
         var screenWidth = screen.width;
@@ -154,7 +157,7 @@ QtObject {
         return t;
     }
 
-    function fromArray(arr, existingModel) {
+    function arrayToListModel(arr, existingModel) {
         const model = existingModel ?? Qt.createQmlObject('import QtQuick; ListModel {}', this);
         model.clear();
         for (const item of arr) {
@@ -165,7 +168,7 @@ QtObject {
         return model;
     }
 
-    function diffModel(newList, model) {
+    function diffListModel(newList, model) {
         const newNames = new Set(newList.map(a => a.name));
 
         // Remove items no longer in list (backwards to keep indices stable)

@@ -58,6 +58,9 @@ Singleton {
 
     onDarkModeChanged: updateColorProperties()
 
+    function init() {
+    }
+
     function updateColorProperties() {
         var mode = darkMode ? "dark" : "light";
         var c = colors[mode] || {};
