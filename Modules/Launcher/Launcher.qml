@@ -528,8 +528,9 @@ Popout {
                 implicitHeight: root.viewMode === "grid" ? Math.min(appGrid.contentHeight, 450) : 0
                 Layout.fillWidth: true
                 Layout.margins: 8
-                model: root.apps
                 clip: true
+                model: root.apps
+                opacity: 1
                 cellWidth: (appGrid.width) / root.gridColumns
                 cellHeight: root.gridCellSize + root.gridCellPadding
                 flickDeceleration: 900
@@ -539,19 +540,15 @@ Popout {
 
                 add: Transition {
                     NumberAnimation {
-                        property: "opacity"
-                        from: 0
-                        to: 1
-                        duration: 350
+                        properties: "x,y"
+                        duration: 250
                         easing.type: Easing.OutCubic
                     }
                 }
                 remove: Transition {
                     NumberAnimation {
-                        property: "opacity"
-                        from: 1
-                        to: 0
-                        duration: 300
+                        properties: "x,y"
+                        duration: 200
                         easing.type: Easing.InCubic
                     }
                 }
@@ -561,6 +558,11 @@ Popout {
                         duration: 250
                         easing.type: Easing.OutCubic
                     }
+                    NumberAnimation {
+                        property: "opacity"
+                        to: 1
+                        duration: 1
+                    }
                 }
                 displaced: Transition {
                     NumberAnimation {
@@ -568,13 +570,16 @@ Popout {
                         duration: 250
                         easing.type: Easing.OutCubic
                     }
+                    NumberAnimation {
+                        property: "opacity"
+                        to: 1
+                        duration: 1
+                    }
                 }
                 populate: Transition {
                     NumberAnimation {
-                        property: "opacity"
-                        from: 0
-                        to: 1
-                        duration: 400
+                        properties: "x,y"
+                        duration: 300
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -585,6 +590,20 @@ Popout {
                     required property int index
                     width: appGrid.cellWidth
                     height: appGrid.cellHeight
+
+                    Component.onCompleted: {
+                        fadeInAnim.start();
+                    }
+
+                    NumberAnimation {
+                        id: fadeInAnim
+                        target: gridDelegateWrapper
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        duration: 350
+                        easing.type: Easing.OutCubic
+                    }
 
                     Rectangle {
                         id: gridDelegate
