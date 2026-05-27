@@ -20,8 +20,9 @@ Singleton {
 
     function _getApplications() {
         let apps = DesktopEntries.applications.values.filter(app => !app.noDisplay && !app.runInTerminal).sort((a, b) => a.name.localeCompare(b.name));
-        Utils.diffListModel(apps, applications);
+        Qt.callLater(() => Utils.diffListModel(apps, applications));
         applicationsUpdated();
+        return;
     }
 
     // Get icon path for an app
@@ -67,7 +68,7 @@ Singleton {
 
     function searchApplications(query) {
         if (!query || query.trim() === "")
-            return Qt.callLater(() => _getApplications());
+            return _getApplications();
         var result = Utils.heuristicSearch(_appList, query);
         if (result.length === 0) {
             try {
