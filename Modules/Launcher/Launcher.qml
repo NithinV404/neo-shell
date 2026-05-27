@@ -320,37 +320,6 @@ Popout {
                 }
             }
 
-            // Search field
-            Item {
-                id: searchContainer
-                Layout.fillWidth: true
-                Layout.preferredHeight: searchField.implicitHeight
-                Layout.leftMargin: 8
-                Layout.rightMargin: 8
-
-                InputField {
-                    id: searchField
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    implicitHeight: 48
-                    password: false
-                    text: root.searchQuery
-
-                    onTextChanged: {
-                        root.searchQuery = text;
-                        root.selectedIndex = 0;
-                    }
-
-                    Keys.forwardTo: [keybinds]
-                }
-
-                Timer {
-                    running: root.visible
-                    interval: 50
-                    onTriggered: searchField.setFocus()
-                }
-            }
-
             // Divider
             Rectangle {
                 id: divider
@@ -400,7 +369,7 @@ Popout {
                 }
                 move: Transition {
                     NumberAnimation {
-                        property: "y"
+                        property: "opacity"
                         duration: 250
                         easing.type: Easing.OutCubic
                         alwaysRunToEnd: true
@@ -408,7 +377,7 @@ Popout {
                 }
                 displaced: Transition {
                     NumberAnimation {
-                        property: "y"
+                        property: "opacity"
                         duration: 250
                         easing.type: Easing.OutCubic
                         alwaysRunToEnd: true
@@ -426,7 +395,7 @@ Popout {
                 }
 
                 delegate: Rectangle {
-                    id: listDelegate
+                    id: listDelegateWrapper
                     required property var modelData
                     required property int index
                     property bool isSelected: index === root.selectedIndex
@@ -443,12 +412,14 @@ Popout {
                     bottomRightRadius: isSelected || isLast ? Settings.radius : 8
 
                     Component.onCompleted: {
-                        fadeInAnim.start();
+                        if (opacity < 1)
+                            console.info(opacity);
+                        fadeInAnimList.start();
                     }
 
                     NumberAnimation {
-                        id: fadeInAnim
-                        target: gridDelegateWrapper
+                        id: fadeInAnimList
+                        target: listDelegateWrapper
                         property: "opacity"
                         from: 0
                         to: 1
@@ -496,8 +467,8 @@ Popout {
                         spacing: 12
 
                         AppIcon {
-                            icon: listDelegate.modelData.icon
-                            name: listDelegate.modelData.name
+                            icon: modelData.icon
+                            name: modelData.name
                             size: 40
                             Layout.preferredWidth: 40
                             Layout.preferredHeight: 40
@@ -508,18 +479,18 @@ Popout {
                             spacing: 2
 
                             Text {
-                                text: listDelegate.modelData.name ?? ""
+                                text: modelData.name ?? ""
                                 font.pixelSize: 14
                                 font.family: Settings.fontFamily
-                                font.weight: listDelegate.isSelected ? Font.Medium : Font.Normal
+                                font.weight: isSelected ? Font.Medium : Font.Normal
                                 color: Theme.surfaceFg
                                 elide: Text.ElideRight
                                 width: parent.width
                             }
 
                             Text {
-                                visible: listDelegate.modelData.comment
-                                text: listDelegate.modelData.comment ?? ""
+                                visible: modelData.comment
+                                text: modelData.comment ?? ""
                                 font.pixelSize: 11
                                 font.family: Settings.fontFamily
                                 color: Theme.surfaceVariantFg
@@ -534,8 +505,8 @@ Popout {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.launchApp(listDelegate.modelData)
-                        onEntered: root.selectedIndex = listDelegate.index
+                        onClicked: root.launchApp(modelData)
+                        onEntered: root.selectedIndex = index
                     }
                 }
             }
@@ -578,13 +549,6 @@ Popout {
                         duration: 250
                         easing.type: Easing.OutCubic
                     }
-                    NumberAnimation {
-                        from: 0
-                        to: 1
-                        duration: 250
-                        easing.type: Easing.OutCubic
-                        alwaysRunToEnd: true
-                    }
                 }
                 displaced: Transition {
                     NumberAnimation {
@@ -609,11 +573,11 @@ Popout {
                     height: appGrid.cellHeight
 
                     Component.onCompleted: {
-                        fadeInAnim.start();
+                        fadeInAnimGrid.start();
                     }
 
                     NumberAnimation {
-                        id: fadeInAnim
+                        id: fadeInAnimGrid
                         target: gridDelegateWrapper
                         property: "opacity"
                         from: 0
@@ -680,6 +644,37 @@ Popout {
                             onEntered: root.selectedIndex = gridDelegateWrapper.index
                         }
                     }
+                }
+            }
+            // Search field
+            Item {
+                id: searchContainer
+                Layout.fillWidth: true
+                Layout.preferredHeight: searchField.implicitHeight
+                Layout.leftMargin: 8
+                Layout.rightMargin: 8
+                Layout.bottomMargin: 8
+
+                InputField {
+                    id: searchField
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    implicitHeight: 48
+                    password: false
+                    text: root.searchQuery
+
+                    onTextChanged: {
+                        root.searchQuery = text;
+                        root.selectedIndex = 0;
+                    }
+
+                    Keys.forwardTo: [keybinds]
+                }
+
+                Timer {
+                    running: root.visible
+                    interval: 50
+                    onTriggered: searchField.setFocus()
                 }
             }
         }
