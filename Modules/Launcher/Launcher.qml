@@ -429,6 +429,7 @@ Popout {
                     property bool isFirst: index === 0
                     property bool isLast: index === root.apps.count - 1
 
+                    opacity: 1
                     width: appList.width
                     height: 56
                     topLeftRadius: isSelected || isFirst ? Settings.radius : 8
