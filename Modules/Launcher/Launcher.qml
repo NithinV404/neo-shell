@@ -385,6 +385,7 @@ Popout {
                         to: 1
                         duration: 350
                         easing.type: Easing.OutCubic
+                        alwaysRunToEnd: true
                     }
                 }
                 remove: Transition {
@@ -394,6 +395,7 @@ Popout {
                         to: 0
                         duration: 300
                         easing.type: Easing.InCubic
+                        alwaysRunToEnd: true
                     }
                 }
                 move: Transition {
@@ -417,6 +419,7 @@ Popout {
                         to: 1
                         duration: 400
                         easing.type: Easing.OutCubic
+                        alwaysRunToEnd: true
                     }
                 }
 
@@ -560,9 +563,11 @@ Popout {
                         easing.type: Easing.OutCubic
                     }
                     NumberAnimation {
-                        property: "opacity"
+                        from: 0
                         to: 1
-                        duration: 1
+                        duration: 250
+                        easing.type: Easing.OutCubic
+                        alwaysRunToEnd: true
                     }
                 }
                 displaced: Transition {
@@ -573,8 +578,11 @@ Popout {
                     }
                     NumberAnimation {
                         property: "opacity"
+                        from: 0
                         to: 1
-                        duration: 1
+                        duration: 250
+                        easing.type: Easing.OutCubic
+                        alwaysRunToEnd: true
                     }
                 }
                 populate: Transition {
