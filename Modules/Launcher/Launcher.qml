@@ -66,6 +66,13 @@ Popout {
         AppService.searchApplications(searchQuery);
     }
 
+    onVisibleChanged: {
+        if (root.visible) {
+            root.selectedIndex = 0;
+            root.searchQuery = "";
+        }
+    }
+
     // Reset selection when apps list changes
     Connections {
         target: AppService
@@ -152,30 +159,21 @@ Popout {
         Keys.onReturnPressed: root.launchSelected()
         Keys.onEnterPressed: root.launchSelected()
         Keys.onEscapePressed: root.close()
-        Keys.forwardTo: [searchContainer]
+        Keys.forwardTo: [root.contentWindow && root.contentWindow.item]
     }
 
-    MouseArea {
-        anchors.fill: parent
-        onClicked: mouse => {
-            const p = mapToItem(launcherContainer, mouse.x, mouse.y);
-            const inside = p.x >= 0 && p.x <= launcherContainer.width && p.y >= 0 && p.y <= launcherContainer.height;
-            if (!inside)
-                root.close();
-        }
-    }
-
-    Rectangle {
+    content: Rectangle {
         id: launcherContainer
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
+        x: Utils.clampScreenX(root.panelX - width / 2, width, 0, root.screen)
+        y: Utils.clampScreenY(root.panelY, height, 0, root.screen)
+        clip: true
         width: appColumn.implicitWidth
         height: root.isVisible ? appColumn.implicitHeight : 0
         scale: root.isVisible ? 1 : 0.8
         radius: Settings.radius
-        color: Theme.surface
+        color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
         border.width: 1
-        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
+        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 1)
 
         Behavior on scale {
             NumberAnimation {
@@ -251,6 +249,41 @@ Popout {
                         radius: 8
                         color: Theme.surfaceContainer
 
+                        Rectangle {
+                            id: overlay
+                            height: 28
+                            width: 32
+                            radius: 6
+                            z: 999
+                            color: Qt.alpha(Theme.surfaceContainerHighest, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                            x: root.viewMode === "grid" ? rightButton.x : leftButton.x
+                            y: leftButton.y
+
+                            Behavior on x {
+                                ParallelAnimation {
+                                    NumberAnimation {
+                                        property: "x"
+                                        duration: 300
+                                        easing.type: Easing.OutCubic
+                                    }
+                                    NumberAnimation {
+                                        property: "opacity"
+                                        from: 0
+                                        to: 1
+                                        easing.type: Easing.OutBack
+                                        duration: 300
+                                    }
+                                }
+                            }
+
+                            StyledText {
+                                anchors.centerIn: parent
+                                name: root.viewMode === "grid" ? "grid_view" : "list"
+                                size: 14
+                                color: Theme.primary
+                            }
+                        }
+
                         RowLayout {
                             anchors.fill: parent
                             anchors.margins: 3
@@ -258,10 +291,11 @@ Popout {
 
                             // List button
                             Rectangle {
+                                id: leftButton
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 radius: 6
-                                color: root.viewMode === "list" ? Theme.surfaceContainerHighest : "transparent"
+                                color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -270,10 +304,11 @@ Popout {
                                 }
 
                                 StyledText {
+                                    visible: root.viewMode == "grid"
                                     anchors.centerIn: parent
                                     name: "list"
                                     size: 14
-                                    color: root.viewMode === "list" ? Theme.primary : Theme.surfaceVariantFg
+                                    color: Theme.surfaceVariantFg
                                 }
 
                                 MouseArea {
@@ -288,10 +323,11 @@ Popout {
 
                             // Grid button
                             Rectangle {
+                                id: rightButton
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 radius: 6
-                                color: root.viewMode === "grid" ? Theme.surfaceContainerHighest : "transparent"
+                                color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -300,10 +336,11 @@ Popout {
                                 }
 
                                 StyledText {
+                                    visible: root.viewMode == "list"
                                     anchors.centerIn: parent
                                     name: "grid_view"
                                     size: 14
-                                    color: root.viewMode === "grid" ? Theme.primary : Theme.surfaceVariantFg
+                                    color: Theme.surfaceVariantFg
                                 }
 
                                 MouseArea {
@@ -377,7 +414,7 @@ Popout {
                 }
                 displaced: Transition {
                     NumberAnimation {
-                        property: "opacity"
+                        property: "opacity "
                         duration: 250
                         easing.type: Easing.OutCubic
                         alwaysRunToEnd: true
@@ -452,7 +489,7 @@ Popout {
                         }
                     }
 
-                    color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Theme.surfaceContainer
+                    color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
 
                     Behavior on color {
                         ColorAnimation {
@@ -595,7 +632,7 @@ Popout {
                         anchors.margins: root.gridCellPadding / 2
                         radius: (isSelected || isHovered) ? Settings.radius : 8
 
-                        color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Theme.surfaceContainer
+                        color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
 
                         Behavior on color {
                             ColorAnimation {

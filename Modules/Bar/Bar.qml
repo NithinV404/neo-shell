@@ -36,9 +36,14 @@ PanelWindow {
     color: "transparent"
 
     implicitHeight: 40
-    // WlrLayershell.namespace: "neoshell:bar"
+    WlrLayershell.namespace: "neoshell:panel"
     WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.exclusionMode: ExclusionMode.Auto
+
+    BackgroundEffect.blurRegion: Region {
+        item: barContainer
+        radius: Settings.radius
+    }
 
     function openPanel(panel, parent, width = panel.width, height = panel.height) {
         if (panel.active) {
@@ -61,8 +66,9 @@ PanelWindow {
     }
 
     Rectangle {
+        id: barContainer
         anchors.fill: parent
-        color: Theme.surface
+        color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
         radius: Settings.radius
         border.width: 1
         border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
@@ -91,7 +97,7 @@ PanelWindow {
                 id: centerRect
                 width: centerLayout.width
                 height: centerLayout.height
-                color: centerRectMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer
+                color: centerRectMouse.containsMouse ? Qt.alpha(Theme.tertiaryContainer, Settings.blurEnabled ? Settings.blurOpacity : 1) : Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
                 radius: Settings.radius
 
                 Behavior on color {
@@ -152,7 +158,7 @@ PanelWindow {
                 anchors.verticalCenter: parent.verticalCenter
                 width: backgroundApps.visible ? backgroundApps.width : 0
                 height: backgroundApps.height
-                color: Theme.surfaceContainer
+                color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
                 radius: Settings.radius
                 SystemTray {
                     id: backgroundApps
@@ -218,6 +224,7 @@ PanelWindow {
 
     LazyLoader {
         id: osdLoader
+        active: false
         OSD {
             id: osdPanel
             screen: bar.modelData
@@ -237,12 +244,12 @@ PanelWindow {
 
             function onToggle() {
                 launcherPanel.active = true;
-                launcherPanel.item?.toggle();
+                launcherPanel.item?.openAt(bar.modelData.width / 2, bar.modelData.height);
             }
 
             function onOpen() {
                 launcherPanel.active = true;
-                launcherPanel.item?.open();
+                launcherPanel.item?.openAt(bar.modelData.width / 2, bar.modelData.height);
             }
 
             function onClose() {

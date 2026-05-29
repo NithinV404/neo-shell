@@ -18,6 +18,9 @@ Singleton {
     property var _appList: []
     property var _fzfFinder: null
 
+    function init() {
+    }
+
     function _getApplications() {
         let apps = DesktopEntries.applications.values.filter(app => !app.noDisplay && !app.runInTerminal).sort((a, b) => a.name.localeCompare(b.name));
         Utils.diffListModel(apps, applications);

@@ -16,9 +16,29 @@ PanelWindow {
 
     visible: false
 
+    BackgroundEffect.blurRegion: Region {
+        id: blurRegion
+        item: null
+        radius: Settings.radius
+    }
+
+    Connections {
+        target: contentWindow
+        function onStatusChanged() {
+            if (contentWindow.status === Loader.Ready && contentWindow.item && Settings.blurEnabled) {
+                blurRegion.item = null;
+                blurRegion.item = contentWindow.item;
+            }
+        }
+    }
+
     signal menuClosed
 
     function openAt(x, y) {
+        if (root.visible) {
+            root.close();
+            return;
+        }
         root.panelX = x;
         root.panelY = y;
         root.visible = true;
@@ -39,7 +59,7 @@ PanelWindow {
 
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.namespace: "neoshell:panel"
-    WlrLayershell.layer: WlrLayer.Top
+    WlrLayershell.layer: WlrLayer.Overlay
 
     anchors {
         left: true

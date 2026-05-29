@@ -14,7 +14,7 @@ Rectangle {
     readonly property int iconSize: height * 0.6
     width: layout.implicitWidth + 18
     height: 28
-    color: quickControlsPanel.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer
+    color: quickControlsPanel.containsMouse ? Qt.alpha(Theme.tertiaryContainer, Settings.blurEnabled ? Settings.blurOpacity : 1) : Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
     // border.width: 1
     // border.color: Qt.darker(Theme.outline)
 

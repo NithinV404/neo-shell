@@ -21,10 +21,15 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
+    BackgroundEffect.blurRegion: Region {
+        item: Settings.blurEnabled ? modalContainer : null
+        radius: Settings.radius
+    }
+
     // ✅ Fixed: Use proper signal declarations (no 'on' prefix in declaration)
     signal connectRequested(string ssid, string password)
     signal cancelRequested(string ssid)
-    signal menuClosed()
+    signal menuClosed
 
     property string ssid
     property string title
@@ -80,9 +85,9 @@ PanelWindow {
 
     Rectangle {
         id: modalContainer
-        implicitWidth: 420
-        implicitHeight: contentColumn.implicitHeight + 48
-        color: Theme.surface
+        width: 420
+        height: contentColumn.implicitHeight + 48
+        color: Theme.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
         anchors.centerIn: parent
         radius: Settings.radius
         state: root.opened ? "open" : "closed"

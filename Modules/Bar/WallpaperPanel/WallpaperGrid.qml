@@ -76,12 +76,6 @@ Item {
         }
     }
 
-    Rectangle {
-        anchors.fill: parent
-        color: Theme.surface
-        radius: Settings.radius
-    }
-
     GridView {
         id: gridView
         width: root.gridCellWidth * root.noOfCols

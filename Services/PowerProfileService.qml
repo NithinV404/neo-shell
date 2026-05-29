@@ -46,12 +46,12 @@ Singleton {
         case PowerProfile.PowerSaver:
             return "energy_savings_leaf";
         default:
-            return "balanced";
+            return "balance";
         }
     }
 
     function init() {
-    // Logger.d("PowerProfileService", "Service started");
+        // Logger.d("PowerProfileService", "Service started");
     }
 
     function setProfile(p) {

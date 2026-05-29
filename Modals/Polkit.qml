@@ -21,6 +21,11 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
     visible: false
 
+    BackgroundEffect.blurRegion: Region {
+        item: Settings.blurEnabled ? modalContainer : null
+        radius: Settings.radius
+    }
+
     // Shorthand to the live flow object
     readonly property var flow: PolkitService.agent?.flow ?? null
     property bool opened: false
@@ -86,7 +91,7 @@ PanelWindow {
         id: modalContainer
         width: 420
         height: contentColumn.implicitHeight + 48
-        color: Theme.surface
+        color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
         anchors.centerIn: parent
         radius: Settings.radius
         state: root.opened ? "open" : "closed"

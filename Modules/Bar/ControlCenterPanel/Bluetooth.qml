@@ -68,7 +68,7 @@ Item {
             Layout.fillWidth: true
             implicitHeight: 42
             radius: 28
-            color: Theme.surfaceContainerHighest
+            color: Qt.alpha(Theme.surfaceContainerHighest, Settings.blurEnabled ? Settings.blurOpacity : 1)
 
             Text {
                 anchors.centerIn: parent
