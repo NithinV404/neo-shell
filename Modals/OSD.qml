@@ -103,8 +103,8 @@ PanelWindow {
     color: "transparent"
 
     BackgroundEffect.blurRegion: Region {
-        item: root.shouldShowOsd && Settings.blurEnabled ? osdWrapper : null
-        radius: osdWrapper.height / 2
+        item: root.shouldShowOsd && Settings.blurEnabled ? osdContent : null
+        radius: osdContent.height / 2
     }
 
     WlrLayershell.layer: WlrLayer.Overlay
