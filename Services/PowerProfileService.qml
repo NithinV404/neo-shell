@@ -34,7 +34,7 @@ Singleton {
 
     function getIcon(p) {
         if (!available)
-            return "balanced";
+            return "balance";
 
         const prof = (p !== undefined) ? p : profile;
 
