@@ -7,12 +7,13 @@ import qs.Modules.Bar.ControlCenterPanel
 
 Popout {
     id: root
-    hAlign: "center"
+    hAlign: "right"
 
     content: Item {
         id: panelContainer
         readonly property real targetWidth: quickLayoutStack.itemWidth + 24
         readonly property real targetHeight: quickLayoutStack.itemHeight + 24
+
         height: root.isVisible ? quickLayoutStack.itemHeight + 24 : 0
         width: quickLayoutStack.itemWidth + 24
 
