@@ -22,7 +22,10 @@ PanelWindow {
     visible: false
 
     BackgroundEffect.blurRegion: Region {
-        item: Settings.blurEnabled ? modalContainer : null
+        x: Settings.blurEnabled ? modalContainer.x : 0
+        y: Settings.blurEnabled ? modalContainer.y : 0
+        width: Settings.blurEnabled ? modalContainer.width : 0
+        height: Settings.blurEnabled ? modalContainer.height : 0
         radius: Settings.radius
     }
 

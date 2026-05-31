@@ -1,7 +1,6 @@
 pragma Singleton
 import QtQml
 import QtQuick
-
 import Quickshell
 import Quickshell.Services.UPower
 

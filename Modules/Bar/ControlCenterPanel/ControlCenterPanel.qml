@@ -7,11 +7,12 @@ import qs.Modules.Bar.ControlCenterPanel
 
 Popout {
     id: root
+    hAlign: "center"
 
     content: Item {
         id: panelContainer
-        x: Utils.clampScreenX(root.panelX, width, 4, root.screen)
-        y: Utils.clampScreenY(root.panelY, height, 0, root.screen)
+        readonly property real targetWidth: quickLayoutStack.itemWidth + 24
+        readonly property real targetHeight: quickLayoutStack.itemHeight + 24
         height: root.isVisible ? quickLayoutStack.itemHeight + 24 : 0
         width: quickLayoutStack.itemWidth + 24
 
@@ -31,13 +32,7 @@ Popout {
 
         Rectangle {
             id: panelRect
-
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-                left: parent.left
-                right: parent.right
-            }
+            anchors.fill: parent
             radius: Settings.radius
             color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
             border.width: 1
@@ -51,13 +46,8 @@ Popout {
             property int previousIndex: 0
             currentIndex: 0
             clip: true
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
+            anchors.fill: parent
             anchors.margins: 12
-            x: 12
-            y: 12
 
             function switchTo(i) {
                 previousIndex = currentIndex;
@@ -76,7 +66,6 @@ Popout {
                     duration: 120
                     easing.type: Easing.OutQuad
                 }
-
                 NumberAnimation {
                     target: quickLayoutStack
                     property: "opacity"

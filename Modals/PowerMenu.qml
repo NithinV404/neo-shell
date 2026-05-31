@@ -96,11 +96,9 @@ Scope {
             id: wLogoutMenu
 
             exclusionMode: ExclusionMode.Ignore
-            WlrLayershell.layer: WlrLayer.Overlay
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
             BackgroundEffect.blurRegion: Region {
-                item: Settings.blurEnabled ? logoutMenuContainer : null
+                item: logoutMenuContainer
                 radius: Settings.radius
             }
 
@@ -112,6 +110,10 @@ Scope {
             }
 
             Component.onCompleted: {
+                if (this.WlrLayershell != null) {
+                    this.WlrLayershell.layer = WlrLayer.Overlay;
+                    this.WlrLayershell.namespace = "neoshell:panel";
+                }
                 root.visible = true;
             }
 

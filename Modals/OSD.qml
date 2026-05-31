@@ -103,24 +103,28 @@ PanelWindow {
     color: "transparent"
 
     BackgroundEffect.blurRegion: Region {
-        item: root.shouldShowOsd && Settings.blurEnabled ? osdContent : null
-        radius: osdContent.height / 2
+        item: osdWrapper
+        radius: osdWrapper.height / 2
     }
 
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.namespace: "neoshell:osd"
+    Component.onCompleted: {
+        if (this.WlrLayershell != null) {
+            this.WlrLayershell.layer = WlrLayer.Overlay;
+            this.WlrLayershell.namespace = "neoshell:osd";
+        }
+    }
 
     Item {
         id: osdWrapper
         anchors.centerIn: parent
-        width: root.shouldShowOsd ? 100 : 0
-        height: root.shouldShowOsd ? 100 : 0
-        clip: true
+        width: 100
+        height: 100
 
         Rectangle {
             id: osdContent
-            opacity: root.shouldShowOsd ? 1 : 0
             anchors.fill: parent
+            scale: shouldShowOsd ? 1 : 0
+            opacity: root.shouldShowOsd ? 1 : 0
             color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
             radius: height / 2
 
@@ -161,17 +165,11 @@ PanelWindow {
                     duration: 300
                 }
             }
-        }
-        Behavior on width {
-            NumberAnimation {
-                easing.type: Easing.OutBack
-                duration: 300
-            }
-        }
-        Behavior on height {
-            NumberAnimation {
-                easing.type: Easing.OutBack
-                duration: 300
+            Behavior on scale {
+                NumberAnimation {
+                    easing.type: Easing.OutBack
+                    duration: 300
+                }
             }
         }
     }

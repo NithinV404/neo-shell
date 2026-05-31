@@ -9,8 +9,6 @@ import qs.Services.UI
 
 Popout {
     id: root
-    visible: root.visible
-    screen: root.screen
     focusable: true
 
     property ListModel apps: AppService.applications
@@ -38,12 +36,16 @@ Popout {
     Timer {
         id: closeAnimationTimer
         interval: root.animationDuration
+        repeat: false
         onTriggered: {
             if (!root.isVisible) {
                 root.visible = false;
             }
         }
     }
+
+    vAlign: "bottom"
+    hAlign: "center"
 
     property bool enableShadow: false
 
@@ -79,21 +81,6 @@ Popout {
         function onApplicationsUpdated() {
             root.selectedIndex = 0;
         }
-    }
-
-    function open() {
-        searchQuery = "";
-        selectedIndex = 0;
-        root.visible = true;
-        Utils.timer(30, () => root.isVisible = true, root);
-    }
-
-    function close() {
-        root.isVisible = false;
-    }
-
-    function toggle() {
-        root.visible ? root.close() : root.open();
     }
 
     function launchApp(app) {
@@ -164,11 +151,12 @@ Popout {
 
     content: Rectangle {
         id: launcherContainer
-        x: Utils.clampScreenX(root.panelX - width / 2, width, 0, root.screen)
-        y: Utils.clampScreenY(root.panelY, height, 0, root.screen)
+        property real targetHeight: appColumn.implicitHeight
+        property real targetWidth: appColumn.implicitWidth
         clip: true
+        anchors.bottom: parent.bottom
         width: appColumn.implicitWidth
-        height: root.isVisible ? appColumn.implicitHeight : 0
+        height: appColumn.implicitHeight
         scale: root.isVisible ? 1 : 0.8
         radius: Settings.radius
         color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
@@ -414,7 +402,7 @@ Popout {
                 }
                 displaced: Transition {
                     NumberAnimation {
-                        property: "opacity "
+                        property: "opacity"
                         duration: 250
                         easing.type: Easing.OutCubic
                         alwaysRunToEnd: true

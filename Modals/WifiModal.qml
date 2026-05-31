@@ -1,7 +1,7 @@
-import Quickshell
-import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
+import Quickshell.Wayland
 import qs.Services
 import qs.Widgets
 import qs.Common
@@ -18,29 +18,37 @@ PanelWindow {
 
     color: "transparent"
     focusable: true
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+    visible: false
+    exclusionMode: ExclusionMode.Ignore
+
+    Component.onCompleted: {
+        if (this.WlrLayershell != null) {
+            this.WlrLayershell.layer = WlrLayer.Overlay;
+            this.WlrLayershell.namespace = "neoshell:panel";
+        }
+    }
 
     BackgroundEffect.blurRegion: Region {
-        item: Settings.blurEnabled ? modalContainer : null
+        item: modalContainer
         radius: Settings.radius
     }
 
-    // ✅ Fixed: Use proper signal declarations (no 'on' prefix in declaration)
+    // Signals
     signal connectRequested(string ssid, string password)
     signal cancelRequested(string ssid)
     signal menuClosed
 
+    // Properties
     property string ssid
     property string title
     property bool opened: false
 
-    function open(title, networkSsid) {
+    function open(modalTitle, networkSsid) {
+        root.title = modalTitle || "Modal";
         root.ssid = networkSsid || "Unknown Network";
-        root.title = title || "Modal";
         passwordInput.clear();
+        root.visible = true;
         root.opened = true;
-        root.visible = true;  // ✅ Ensure visibility
         openTimer.start();
     }
 
@@ -57,16 +65,12 @@ PanelWindow {
 
     Timer {
         id: closeTimer
-        repeat: false
         interval: 220
         onTriggered: {
-            root.menuClosed();  // ✅ Emit signal properly
-            root.visible = false;  // ✅ Hide window after animation
+            root.menuClosed();
+            root.visible = false;
         }
     }
-
-    // ✅ Fixed: Check if visible before processing events
-    visible: false
 
     MouseArea {
         anchors.fill: parent
@@ -76,7 +80,6 @@ PanelWindow {
             const p = mapToItem(modalContainer, mouse.x, mouse.y);
             const inside = (p.x >= 0 && p.x <= modalContainer.width && p.y >= 0 && p.y <= modalContainer.height);
             if (!inside) {
-                // ✅ Fixed: Use proper signal emission syntax
                 root.cancelRequested(root.ssid);
                 root.close();
             }
@@ -86,60 +89,37 @@ PanelWindow {
     Rectangle {
         id: modalContainer
         width: 420
-        height: contentColumn.implicitHeight + 48
-        color: Theme.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
+        height: contentColumn.implicitHeight + 48 // 24 top margin + 24 bottom margin
+
         anchors.centerIn: parent
+        color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
         radius: Settings.radius
-        state: root.opened ? "open" : "closed"
 
-        states: [
-            State {
-                name: "closed"
-                PropertyChanges {
-                    target: modalContainer
-                    opacity: 0
-                    scale: 0.94
-                }
-            },
-            State {
-                name: "open"
-                PropertyChanges {
-                    target: modalContainer
-                    opacity: 1
-                    scale: 1
-                }
-            }
-        ]
+        // Clean animation using Behavior instead of States/Transitions
+        opacity: root.opened ? 1 : 0
+        scale: root.opened ? 1 : 0.94
 
-        transitions: [
-            Transition {
-                from: "closed"
-                to: "open"
-                ParallelAnimation {
-                    NumberAnimation {
-                        properties: "opacity,scale"
-                        duration: 220
-                        easing.type: Easing.OutCubic
-                    }
-                }
-            },
-            Transition {
-                from: "open"
-                to: "closed"
-                ParallelAnimation {
-                    NumberAnimation {
-                        properties: "opacity,scale"
-                        duration: 220
-                        easing.type: Easing.OutCubic
-                    }
-                }
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 220
+                easing.type: Easing.OutCubic
             }
-        ]
+        }
+        Behavior on scale {
+            NumberAnimation {
+                duration: 220
+                easing.type: Easing.OutCubic
+            }
+        }
 
         ColumnLayout {
             id: contentColumn
+
+            // Anchor to top and sides to allow implicitHeight to calculate properly
             anchors {
-                fill: parent
+                top: parent.top
+                left: parent.left
+                right: parent.right
                 margins: 24
             }
             spacing: 16
@@ -150,7 +130,6 @@ PanelWindow {
                 spacing: 4
 
                 Text {
-                    id: titleText  // ✅ Renamed to avoid conflict with property
                     text: root.title
                     font.family: Settings.fontFamily
                     font.pixelSize: 24
@@ -187,8 +166,8 @@ PanelWindow {
                     placeholder: "Enter network password"
                     password: true
                     onAccepted: {
-                        if (passwordInput.text.length >= 8) {
-                            root.connectRequested(root.ssid, passwordInput.text);
+                        if (text.length >= 8) {
+                            root.connectRequested(root.ssid, text);
                             root.close();
                         }
                     }

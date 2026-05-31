@@ -7,11 +7,12 @@ import qs.Widgets
 
 Popout {
     id: root
+    hAlign: "center"
 
     content: Item {
         id: panelContainer
-        x: Utils.clampScreenX(root.panelX - (width / 2), width, 0, root.screen)
-        y: Utils.clampScreenY(root.panelY, height, 0, root.screen)
+        property real targetWidth: contentRect.width
+        property real targetHeight: contentRect.height
         width: contentRect.width
         height: root.isVisible ? contentRect.height : 0
         clip: true

@@ -13,8 +13,8 @@ Singleton {
     property bool _loading: true
     property bool darkMode: true
     property bool shadowEnabled: true
-    property bool blurEnabled: true
-    property real blurOpacity: 0.8
+    property bool blurEnabled: false
+    property real blurOpacity: 0.6
     property string fontFamily: "Adwaita Sans"
     property string iconTheme: "System Default"
     property string defaultIconTheme: ""

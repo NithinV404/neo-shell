@@ -36,8 +36,14 @@ PanelWindow {
     color: "transparent"
 
     implicitHeight: 40
-    WlrLayershell.namespace: "neoshell:panel"
-    WlrLayershell.layer: WlrLayer.Top
+    Component.onCompleted: {
+        if (this.WlrLayershell != null) {
+            this.WlrLayershell.layer = WlrLayer.Top;
+            this.WlrLayershell.namespace = "neoshell:bar";
+            this.exclusionMode = ExclusionMode.Auto;
+        }
+    }
+
     WlrLayershell.exclusionMode: ExclusionMode.Auto
 
     BackgroundEffect.blurRegion: Region {
@@ -45,20 +51,22 @@ PanelWindow {
         radius: Settings.radius
     }
 
-    function openPanel(panel, parent, width = panel.width, height = panel.height) {
-        if (panel.active) {
+    function openPanel(panel, parent, alignment, verticalMargin) {
+        if (panel.active && panel.item && panel.item.visible) {
             panel.item.close();
             return;
         }
 
         panel.active = true;
         var pos = parent.mapToGlobal(0, 0);
-        panel.item.openAt(pos.x + width, pos.y + height);
+
+        panel.item.openAt(alignment === "center" ? pos.x + (parent.width / 2) : alignment === "right" ? pos.x + parent.width : pos.x // default (left)
+        , pos.y + parent.height + verticalMargin);
     }
 
     function closePanel(panel) {
         if (panel.active) {
-            panel.close();
+            panel.item.close();
             return;
         }
 
@@ -140,7 +148,7 @@ PanelWindow {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: mouse => {
                         if (mouse.button === Qt.LeftButton) {
-                            bar.openPanel(wallpaperPanel, centerRect, (centerRect.width / 2), centerRect.height + 8);
+                            bar.openPanel(wallpaperPanel, centerRect, "center", 8);
                         }
                     }
                 }
@@ -183,7 +191,7 @@ PanelWindow {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: mouse => {
                         if (mouse.button === Qt.LeftButton) {
-                            bar.openPanel(controlCenterPanel, quickControls, quickControls.width / 2, quickControls.height + 8);
+                            bar.openPanel(controlCenterPanel, quickControls, "left", 8);
                         }
                     }
                 }
@@ -244,12 +252,12 @@ PanelWindow {
 
             function onToggle() {
                 launcherPanel.active = true;
-                launcherPanel.item?.openAt(bar.modelData.width / 2, bar.modelData.height);
+                launcherPanel.item?.openAt((bar.modelData.width / 2) - (launcherPanel.item.panelWidth / 2), bar.modelData.height);
             }
 
             function onOpen() {
                 launcherPanel.active = true;
-                launcherPanel.item?.openAt(bar.modelData.width / 2, bar.modelData.height);
+                launcherPanel.item?.openAt(bar.modelData.width / 2, bar.modelData.height / 2);
             }
 
             function onClose() {
