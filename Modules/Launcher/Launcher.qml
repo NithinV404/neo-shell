@@ -484,7 +484,7 @@ Popout {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.launchApp(modelData)
+                        onClicked: launchApp(modelData)
                         onEntered: root.selectedIndex = index
                     }
                 }
