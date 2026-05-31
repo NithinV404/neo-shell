@@ -10,7 +10,7 @@ Rectangle {
     property alias sub: subComponent.sourceComponent
     property bool subItems: true
 
-    color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
+    color: Theme.surface
     radius: Settings.radius
 
     implicitHeight: contentLayout.implicitHeight

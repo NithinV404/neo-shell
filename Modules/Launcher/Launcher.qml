@@ -63,90 +63,8 @@ Popout {
     // Search query
     property string searchQuery: ""
 
-    // Search
     onSearchQueryChanged: {
         AppService.searchApplications(searchQuery);
-    }
-
-    onVisibleChanged: {
-        if (root.visible) {
-            root.selectedIndex = 0;
-            root.searchQuery = "";
-        }
-    }
-
-    // Reset selection when apps list changes
-    Connections {
-        target: AppService
-        function onApplicationsUpdated() {
-            root.selectedIndex = 0;
-        }
-    }
-
-    function launchApp(app) {
-        AppService.launchApp(app);
-        root.close();
-    }
-
-    function launchSelected() {
-        if (root.apps.count > 0 && selectedIndex >= 0 && selectedIndex < root.apps.count) {
-            AppService.launchApp(root.apps.get(selectedIndex));
-        }
-        root.close();
-    }
-
-    function moveSelectionUp() {
-        if (viewMode === "list") {
-            if (root.selectedIndex > 0) {
-                root.selectedIndex--;
-                appList.positionViewAtIndex(root.selectedIndex, ListView.Contain);
-            }
-        } else {
-            if (root.selectedIndex >= root.gridColumns) {
-                root.selectedIndex -= root.gridColumns;
-                appGrid.positionViewAtIndex(root.selectedIndex, GridView.Contain);
-            }
-        }
-    }
-
-    function moveSelectionDown() {
-        if (viewMode === "list") {
-            if (root.selectedIndex < root.apps.count - 1) {
-                root.selectedIndex++;
-                appList.positionViewAtIndex(root.selectedIndex, ListView.Contain);
-            }
-        } else {
-            if (root.selectedIndex + root.gridColumns < root.apps.count) {
-                root.selectedIndex += root.gridColumns;
-                appGrid.positionViewAtIndex(root.selectedIndex, GridView.Contain);
-            }
-        }
-    }
-
-    function moveSelectionLeft() {
-        if (viewMode === "grid" && root.selectedIndex > 0) {
-            root.selectedIndex--;
-            appGrid.positionViewAtIndex(root.selectedIndex, GridView.Contain);
-        }
-    }
-
-    function moveSelectionRight() {
-        if (viewMode === "grid" && root.selectedIndex < root.apps.count - 1) {
-            root.selectedIndex++;
-            appGrid.positionViewAtIndex(root.selectedIndex, GridView.Contain);
-        }
-    }
-
-    Item {
-        id: keybinds
-        Keys.onUpPressed: root.moveSelectionUp()
-        Keys.onDownPressed: root.moveSelectionDown()
-        Keys.onLeftPressed: root.moveSelectionLeft()
-        Keys.onRightPressed: root.moveSelectionRight()
-        Keys.onReturnPressed: root.launchSelected()
-        Keys.onEnterPressed: root.launchSelected()
-        Keys.onEscapePressed: root.close()
-        Keys.forwardTo: [root.contentWindow && root.contentWindow.item]
     }
 
     content: Rectangle {
@@ -155,13 +73,88 @@ Popout {
         property real targetWidth: appColumn.implicitWidth
         clip: true
         anchors.bottom: parent.bottom
+
         width: appColumn.implicitWidth
-        height: appColumn.implicitHeight
+        height: root.isVisible ? appColumn.implicitHeight : 0
         scale: root.isVisible ? 1 : 0.8
         radius: Settings.radius
-        color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
+        color: Theme.surface
         border.width: 1
-        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 1)
+        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
+
+        // Reset selection when apps list changes
+        Connections {
+            target: AppService
+            function onApplicationsUpdated() {
+                root.selectedIndex = 0;
+            }
+        }
+
+        function launchApp(app) {
+            AppService.launchApp(app);
+            root.close();
+        }
+
+        function launchSelected() {
+            if (root.apps.count > 0 && selectedIndex >= 0 && selectedIndex < root.apps.count) {
+                AppService.launchApp(root.apps.get(selectedIndex));
+            }
+            root.close();
+        }
+
+        function moveSelectionUp() {
+            if (viewMode === "list") {
+                if (root.selectedIndex > 0) {
+                    root.selectedIndex--;
+                    appList.positionViewAtIndex(root.selectedIndex, ListView.Contain);
+                }
+            } else {
+                if (root.selectedIndex >= root.gridColumns) {
+                    root.selectedIndex -= root.gridColumns;
+                    appGrid.positionViewAtIndex(root.selectedIndex, GridView.Contain);
+                }
+            }
+        }
+
+        function moveSelectionDown() {
+            if (viewMode === "list") {
+                if (root.selectedIndex < root.apps.count - 1) {
+                    root.selectedIndex++;
+                    appList.positionViewAtIndex(root.selectedIndex, ListView.Contain);
+                }
+            } else {
+                if (root.selectedIndex + root.gridColumns < root.apps.count) {
+                    root.selectedIndex += root.gridColumns;
+                    appGrid.positionViewAtIndex(root.selectedIndex, GridView.Contain);
+                }
+            }
+        }
+
+        function moveSelectionLeft() {
+            if (viewMode === "grid" && root.selectedIndex > 0) {
+                root.selectedIndex--;
+                appGrid.positionViewAtIndex(root.selectedIndex, GridView.Contain);
+            }
+        }
+
+        function moveSelectionRight() {
+            if (viewMode === "grid" && root.selectedIndex < root.apps.count - 1) {
+                root.selectedIndex++;
+                appGrid.positionViewAtIndex(root.selectedIndex, GridView.Contain);
+            }
+        }
+
+        Item {
+            id: keybinds
+            Keys.onUpPressed: moveSelectionUp()
+            Keys.onDownPressed: moveSelectionDown()
+            Keys.onLeftPressed: moveSelectionLeft()
+            Keys.onRightPressed: moveSelectionRight()
+            Keys.onReturnPressed: launchSelected()
+            Keys.onEnterPressed: launchSelected()
+            Keys.onEscapePressed: root.close()
+            Keys.forwardTo: [searchContainer]
+        }
 
         Behavior on scale {
             NumberAnimation {
@@ -237,41 +230,6 @@ Popout {
                         radius: 8
                         color: Theme.surfaceContainer
 
-                        Rectangle {
-                            id: overlay
-                            height: 28
-                            width: 32
-                            radius: 6
-                            z: 999
-                            color: Qt.alpha(Theme.surfaceContainerHighest, Settings.blurEnabled ? Settings.blurOpacity : 1)
-                            x: root.viewMode === "grid" ? rightButton.x : leftButton.x
-                            y: leftButton.y
-
-                            Behavior on x {
-                                ParallelAnimation {
-                                    NumberAnimation {
-                                        property: "x"
-                                        duration: 300
-                                        easing.type: Easing.OutCubic
-                                    }
-                                    NumberAnimation {
-                                        property: "opacity"
-                                        from: 0
-                                        to: 1
-                                        easing.type: Easing.OutBack
-                                        duration: 300
-                                    }
-                                }
-                            }
-
-                            StyledText {
-                                anchors.centerIn: parent
-                                name: root.viewMode === "grid" ? "grid_view" : "list"
-                                size: 14
-                                color: Theme.primary
-                            }
-                        }
-
                         RowLayout {
                             anchors.fill: parent
                             anchors.margins: 3
@@ -279,11 +237,10 @@ Popout {
 
                             // List button
                             Rectangle {
-                                id: leftButton
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 radius: 6
-                                color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                                color: root.viewMode === "list" ? Theme.surfaceContainerHighest : "transparent"
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -292,11 +249,10 @@ Popout {
                                 }
 
                                 StyledText {
-                                    visible: root.viewMode == "grid"
                                     anchors.centerIn: parent
                                     name: "list"
                                     size: 14
-                                    color: Theme.surfaceVariantFg
+                                    color: root.viewMode === "list" ? Theme.primary : Theme.surfaceVariantFg
                                 }
 
                                 MouseArea {
@@ -311,11 +267,10 @@ Popout {
 
                             // Grid button
                             Rectangle {
-                                id: rightButton
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 radius: 6
-                                color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                                color: root.viewMode === "grid" ? Theme.surfaceContainerHighest : "transparent"
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -324,11 +279,10 @@ Popout {
                                 }
 
                                 StyledText {
-                                    visible: root.viewMode == "list"
                                     anchors.centerIn: parent
                                     name: "grid_view"
                                     size: 14
-                                    color: Theme.surfaceVariantFg
+                                    color: root.viewMode === "grid" ? Theme.primary : Theme.surfaceVariantFg
                                 }
 
                                 MouseArea {
@@ -477,7 +431,7 @@ Popout {
                         }
                     }
 
-                    color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                    color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Theme.surfaceContainer
 
                     Behavior on color {
                         ColorAnimation {
@@ -620,7 +574,7 @@ Popout {
                         anchors.margins: root.gridCellPadding / 2
                         radius: (isSelected || isHovered) ? Settings.radius : 8
 
-                        color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                        color: isSelected ? Theme.surfaceContainerHighest : isHovered ? Theme.surfaceContainerHigh : Theme.surfaceContainer
 
                         Behavior on color {
                             ColorAnimation {

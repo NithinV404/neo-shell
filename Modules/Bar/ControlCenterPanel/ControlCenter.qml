@@ -19,7 +19,7 @@ Item {
             implicitHeight: 32
             implicitWidth: 32
             radius: Settings.radius
-            color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+            color: Theme.surfaceContainer
 
             RowLayout {
                 anchors {
@@ -101,7 +101,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignCenter
                 subItems: (AudioService.appStreams?.length ?? 0) > 0
-                color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                color: Theme.surfaceContainer
                 main: Slider {
                     Layout.margins: 12
                     Layout.fillWidth: true
@@ -188,7 +188,7 @@ Item {
                 id: revealBrightness
                 Layout.fillWidth: true
                 Layout.columnSpan: 2
-                color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                color: Theme.surfaceContainer
                 subItems: BrightnessService.monitors.length > 1
                 property var currentScreen: BrightnessService && BrightnessService.getMonitorForScreen(root.screen)
                 property real mainBrightness: currentScreen ? currentScreen.brightness : 0.0

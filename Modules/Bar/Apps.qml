@@ -12,7 +12,7 @@ Rectangle {
 
     implicitWidth: windowsRow.implicitWidth + 10
     implicitHeight: 28
-    color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+    color: Theme.surfaceContainer
     radius: Settings.radius
     visible: groupedApps.length > 0
 

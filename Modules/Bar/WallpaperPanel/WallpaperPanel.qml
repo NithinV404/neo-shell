@@ -46,9 +46,9 @@ Popout {
             Rectangle {
                 anchors.fill: parent
                 radius: 26
-                color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                color: Theme.surface
                 border.width: 1
-                border.color: Theme.outline
+                border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
             }
 
             WallpaperGrid {

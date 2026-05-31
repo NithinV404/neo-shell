@@ -29,7 +29,7 @@ Item {
             Layout.fillWidth: true
             implicitHeight: 42
             radius: Settings.radius
-            color: Qt.alpha(Theme.surfaceContainerHigh, Settings.blurEnabled ? Settings.blurOpacity : 1)
+            color: Theme.surfaceContainerHighest
 
             RowLayout {
                 anchors {

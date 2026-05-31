@@ -26,7 +26,7 @@ Rectangle {
 
     width: workspaceRow.implicitWidth + 8
     height: 28
-    color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+    color: Theme.surfaceContainer
     radius: Settings.radius
 
     Behavior on width {

@@ -43,16 +43,15 @@ PanelWindow {
     function open(type) {
         root.type = type;
         root.isOpen = true;
+
         shouldShowOsd = true;
         animating = true;
+
         hideTimer.restart();
     }
 
     function close() {
         root.animating = true;
-        Utils.timer(300, () => {
-            root.animating = false;
-        }, this);
         root.shouldShowOsd = false;
     }
 
@@ -101,21 +100,11 @@ PanelWindow {
     implicitWidth: 150
     implicitHeight: 150
     color: "transparent"
+    mask: Region {}
 
-    BackgroundEffect.blurRegion: Region {
-        item: osdWrapper
-        radius: osdWrapper.height / 2
-    }
-
-    Component.onCompleted: {
-        if (this.WlrLayershell != null) {
-            this.WlrLayershell.layer = WlrLayer.Overlay;
-            this.WlrLayershell.namespace = "neoshell:osd";
-        }
-    }
+    WlrLayershell.layer: WlrLayer.Overlay
 
     Item {
-        id: osdWrapper
         anchors.centerIn: parent
         width: 100
         height: 100
@@ -123,9 +112,9 @@ PanelWindow {
         Rectangle {
             id: osdContent
             anchors.fill: parent
-            scale: shouldShowOsd ? 1 : 0
+            color: Theme.surface
+            scale: root.shouldShowOsd ? 1 : 0
             opacity: root.shouldShowOsd ? 1 : 0
-            color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
             radius: height / 2
 
             WavyCircle {
@@ -137,8 +126,8 @@ PanelWindow {
                 waveHeight: 2
                 animate: false
                 frequency: 0
-                startDegree: 160
-                degree: 300
+                startDegree: 180
+                degree: 270
 
                 Text {
                     text: Math.floor(root.getValue() * 100)
@@ -146,9 +135,9 @@ PanelWindow {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     font.pixelSize: 18
-                    font.weight: 700
+                    font.weight: 800
                     font.family: Settings.fontFamily
-                    anchors.leftMargin: 8
+                    anchors.leftMargin: 1
                     anchors.bottomMargin: 8
                 }
             }
@@ -159,6 +148,7 @@ PanelWindow {
                 text: root.getIcon()
                 color: Theme.secondary
             }
+
             Behavior on opacity {
                 NumberAnimation {
                     easing.type: Easing.OutBack

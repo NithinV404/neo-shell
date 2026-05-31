@@ -23,7 +23,7 @@ Item {
         anchors.fill: parent
         border.color: Theme.primary
         radius: Settings.radius
-        color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+        color: Theme.surfaceContainer
 
         function serializeModel() {
             var order = [];

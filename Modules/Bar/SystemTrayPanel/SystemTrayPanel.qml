@@ -19,11 +19,6 @@ PanelWindow {
 
     signal menuClosed
 
-    BackgroundEffect.blurRegion: Region {
-        item: menuContainer
-        radius: Settings.radius
-    }
-
     onMenuHandlerChanged: {
         if (menuHandler) {
             const opener = menuItemsRetriver(menuHandler.menu);
@@ -87,7 +82,7 @@ PanelWindow {
         y: Utils.clampScreenY(root.menuY, height, 0, root.screen)
         clip: true
         width: 224
-        height: root.isVisible ? backgroundRect.height : 0
+        height: root.isVisible ? backgroundRect.height + 24 : 0
         scale: root.isVisible ? 1 : 0
         opacity: root.isVisible ? 1 : 0
         transformOrigin: Item.Top
@@ -122,10 +117,10 @@ PanelWindow {
 
             height: outerColumn.implicitHeight
 
-            color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
+            color: Theme.surface
             radius: Settings.radius
             border.width: 1
-            border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 1)
+            border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
             clip: true
 
             MouseArea {
@@ -159,7 +154,7 @@ PanelWindow {
                                     id: item
                                     property point pos: item.mapFromGlobal(0, null)
                                     implicitHeight: 30
-                                    color: itemHover.containsMouse ? Theme.surfaceContainerHighest : "transparent"
+                                    color: itemHover.containsMouse ? Theme.surfaceContainerHighest : Theme.surface
                                     radius: Settings.radius
                                     clip: true
 
@@ -224,7 +219,7 @@ PanelWindow {
                     Layout.leftMargin: 2
                     Layout.rightMargin: 2
                     height: 38
-                    color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                    color: Theme.surfaceContainer
                     radius: Settings.radius - 2
 
                     RowLayout {

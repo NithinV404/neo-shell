@@ -37,8 +37,8 @@ Item {
 
     property color activeColor: Theme.primary
     property color activeHoverColor: Qt.darker(Theme.primary)
-    property color inactiveColor: Qt.alpha(Theme.surfaceContainerHigh, Settings.blurEnabled ? Settings.blurOpacity : 1)
-    property color inactiveHoverColor: Qt.darker(Qt.alpha(Theme.surfaceContainerHigh, Settings.blurEnabled ? Settings.blurOpacity : 1))
+    property color inactiveColor: Theme.surfaceContainerHigh
+    property color inactiveHoverColor: Qt.darker(Theme.surfaceContainerHigh)
 
     property bool isIconHovered: toggleButtonMouse.containsMouse
     property bool isTextHovered: textAreaMouse.containsMouse

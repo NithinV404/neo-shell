@@ -44,13 +44,6 @@ PanelWindow {
         }
     }
 
-    WlrLayershell.exclusionMode: ExclusionMode.Auto
-
-    BackgroundEffect.blurRegion: Region {
-        item: barContainer
-        radius: Settings.radius
-    }
-
     function openPanel(panel, parent, alignment, verticalMargin) {
         if (panel.active && panel.item && panel.item.visible) {
             panel.item.close();
@@ -60,8 +53,7 @@ PanelWindow {
         panel.active = true;
         var pos = parent.mapToGlobal(0, 0);
 
-        panel.item.openAt(alignment === "center" ? pos.x + (parent.width / 2) : alignment === "right" ? pos.x + parent.width : pos.x // default (left)
-        , pos.y + parent.height + verticalMargin);
+        panel.item.openAt(alignment === "center" ? pos.x + (parent.width / 2) : alignment === "right" ? pos.x + parent.width : pos.x, pos.y + verticalMargin);
     }
 
     function closePanel(panel) {
@@ -74,9 +66,8 @@ PanelWindow {
     }
 
     Rectangle {
-        id: barContainer
         anchors.fill: parent
-        color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
+        color: Theme.surface
         radius: Settings.radius
         border.width: 1
         border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
@@ -105,7 +96,7 @@ PanelWindow {
                 id: centerRect
                 width: centerLayout.width
                 height: centerLayout.height
-                color: centerRectMouse.containsMouse ? Qt.alpha(Theme.tertiaryContainer, Settings.blurEnabled ? Settings.blurOpacity : 1) : Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                color: centerRectMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainer
                 radius: Settings.radius
 
                 Behavior on color {
@@ -148,7 +139,7 @@ PanelWindow {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: mouse => {
                         if (mouse.button === Qt.LeftButton) {
-                            bar.openPanel(wallpaperPanel, centerRect, "center", 8);
+                            bar.openPanel(wallpaperPanel, centerRect, "center", bar.height);
                         }
                     }
                 }
@@ -166,7 +157,7 @@ PanelWindow {
                 anchors.verticalCenter: parent.verticalCenter
                 width: backgroundApps.visible ? backgroundApps.width : 0
                 height: backgroundApps.height
-                color: Qt.alpha(Theme.surfaceContainer, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                color: Theme.surfaceContainer
                 radius: Settings.radius
                 SystemTray {
                     id: backgroundApps
@@ -191,7 +182,7 @@ PanelWindow {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: mouse => {
                         if (mouse.button === Qt.LeftButton) {
-                            bar.openPanel(controlCenterPanel, quickControls, "left", 8);
+                            bar.openPanel(controlCenterPanel, quickControls, "left", bar.height);
                         }
                     }
                 }
@@ -232,7 +223,6 @@ PanelWindow {
 
     LazyLoader {
         id: osdLoader
-        active: false
         OSD {
             id: osdPanel
             screen: bar.modelData
@@ -252,12 +242,12 @@ PanelWindow {
 
             function onToggle() {
                 launcherPanel.active = true;
-                launcherPanel.item?.openAt((bar.modelData.width / 2) - (launcherPanel.item.panelWidth / 2), bar.modelData.height);
+                launcherPanel.item.openAt((bar.modelData.width / 2), bar.modelData.height);
             }
 
             function onOpen() {
                 launcherPanel.active = true;
-                launcherPanel.item?.openAt(bar.modelData.width / 2, bar.modelData.height / 2);
+                launcherPanel.item.openAt((bar.modelData.width / 2) - bar.modelData.height);
             }
 
             function onClose() {

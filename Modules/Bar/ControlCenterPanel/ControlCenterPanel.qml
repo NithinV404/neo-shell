@@ -34,9 +34,9 @@ Popout {
             id: panelRect
             anchors.fill: parent
             radius: Settings.radius
-            color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
+            color: Theme.surface
             border.width: 1
-            border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.8)
+            border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
         }
 
         StackLayout {

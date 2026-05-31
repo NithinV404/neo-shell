@@ -28,12 +28,6 @@ PanelWindow {
         }
     }
 
-    BackgroundEffect.blurRegion: Region {
-        item: modalContainer
-        radius: Settings.radius
-    }
-
-    // Signals
     signal connectRequested(string ssid, string password)
     signal cancelRequested(string ssid)
     signal menuClosed
@@ -89,13 +83,10 @@ PanelWindow {
     Rectangle {
         id: modalContainer
         width: 420
-        height: contentColumn.implicitHeight + 48 // 24 top margin + 24 bottom margin
-
+        height: contentColumn.implicitHeight + 48
+        color: Theme.surface
         anchors.centerIn: parent
-        color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
         radius: Settings.radius
-
-        // Clean animation using Behavior instead of States/Transitions
         opacity: root.opened ? 1 : 0
         scale: root.opened ? 1 : 0.94
 

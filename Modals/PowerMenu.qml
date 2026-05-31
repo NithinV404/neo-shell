@@ -97,11 +97,6 @@ Scope {
 
             exclusionMode: ExclusionMode.Ignore
 
-            BackgroundEffect.blurRegion: Region {
-                item: logoutMenuContainer
-                radius: Settings.radius
-            }
-
             anchors {
                 top: true
                 bottom: true
@@ -164,11 +159,9 @@ Scope {
                     anchors.centerIn: parent
                     height: root.visible ? (root.items.length * 50) + 40 : 0
                     width: 300
-                    color: Qt.alpha(Theme.surface, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                    color: Theme.surface
                     radius: Settings.radius
                     clip: true
-                    border.width: 1
-                    border.color: Qt.alpha(Theme.outline, 1)
 
                     Behavior on height {
                         SequentialAnimation {
@@ -198,7 +191,7 @@ Scope {
                                 required property var modelData
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 42
-                                color: Qt.alpha(Theme.surfaceContainerHighest, Settings.blurEnabled ? Settings.blurOpacity : 1)
+                                color: Theme.surfaceContainerHighest
                                 radius: Settings.radius
 
                                 property real progress: 0.0
