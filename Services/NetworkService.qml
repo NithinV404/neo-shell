@@ -228,7 +228,7 @@ Singleton {
         // Get existing profiles first, then scan
         profileCheckProcess.running = true;
         root.scanningActive = true;
-    // Logger.d("Network", "Scanning Wi-Fi networks...");
+        // Logger.d("Network", "Scanning Wi-Fi networks...");
     }
 
     function connect(ssid, password = "", isHidden = false, securityKey = "", identity = "", enterpriseConfig = {}) {

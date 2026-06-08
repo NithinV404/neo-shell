@@ -28,6 +28,10 @@ Singleton {
         return;
     }
 
+    function refreshApplications() {
+        _getApplications();
+    }
+
     // Get icon path for an app
     function getIconPath(app) {
         if (!app.icon)

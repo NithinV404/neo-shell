@@ -92,6 +92,7 @@ Popout {
 
         function launchApp(app) {
             AppService.launchApp(app);
+            AppService.refreshApplications();
             root.close();
         }
 
@@ -99,6 +100,7 @@ Popout {
             if (root.apps.count > 0 && selectedIndex >= 0 && selectedIndex < root.apps.count) {
                 AppService.launchApp(root.apps.get(selectedIndex));
             }
+            AppService.refreshApplications();
             root.close();
         }
 
@@ -619,8 +621,8 @@ Popout {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: root.launchApp(gridDelegateWrapper.modelData)
-                            onEntered: root.selectedIndex = gridDelegateWrapper.index
+                            onClicked: launchApp(gridDelegateWrapper.modelData)
+                            onEntered: selectedIndex = gridDelegateWrapper.index
                         }
                     }
                 }
