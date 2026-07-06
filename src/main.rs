@@ -24,7 +24,7 @@ use wayland_protocols_wlr::layer_shell::v1::client::{
 mod widgets;
 use widgets::Rectangle;
 
-use crate::widgets::{Widget, RGBA};
+use crate::widgets::{Label, Widget, RGBA};
 
 struct RenderPool {
     width: u32,
@@ -125,21 +125,53 @@ impl Neoshell {
         cr.set_source_rgba(0.1, 0.1, 0.1, 0.0);
         cr.paint()?;
 
-        let component = Rectangle::new(
-            0.0,
-            0.0,
-            pool.width as f64,
-            (pool.height - 4) as f64,
-            8.0,
-            RGBA {
-                r: 1.0,
-                g: 1.0,
-                b: 1.0,
-                a: 0.9,
-            },
-        );
+        let components: Vec<Box<dyn Widget>> = vec![
+            Box::new(Rectangle::new(
+                0.0,
+                0.0,
+                pool.width as f64,
+                (pool.height - 4) as f64,
+                12.0,
+                RGBA {
+                    r: 1.0,
+                    g: 1.0,
+                    b: 1.0,
+                    a: 0.9,
+                },
+                Some(2.0),
+                Some(RGBA {
+                    r: 1.0,
+                    g: 0.6,
+                    b: 0.5,
+                    a: 0.4,
+                }),
+            )),
+            Box::new(
+                Label::new(
+                    "Workspace".to_string(),
+                    30.0,
+                    8.0,
+                    20.0,
+                    12.0,
+                    RGBA {
+                        r: 0.0,
+                        g: 0.0,
+                        b: 0.0,
+                        a: 1.0,
+                    },
+                )
+                .set_font_values(
+                    12.0,
+                    "Adwaita Sans".to_string(),
+                    cairo::FontSlant::Normal,
+                    cairo::FontWeight::Normal,
+                ),
+            ),
+        ];
 
-        let _ = component.draw(&cr);
+        for component in components {
+            let _ = component.draw(&cr);
+        }
 
         pool.cairo_surface.flush();
 
