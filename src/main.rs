@@ -22,9 +22,7 @@ use wayland_protocols_wlr::layer_shell::v1::client::{
 };
 
 mod widgets;
-use widgets::Rectangle;
-
-use crate::widgets::{Label, Widget, RGBA};
+use crate::widgets::{Label, Node, Rectangle, RGBA};
 
 struct RenderPool {
     width: u32,
@@ -122,39 +120,37 @@ impl Neoshell {
         let pool = self.pool.as_mut().ok_or("Pool not initialized")?;
         let surface = self.surface.as_ref().ok_or("Surface not initialized")?;
         let cr = Context::new(&pool.cairo_surface)?;
-        cr.set_source_rgba(0.1, 0.1, 0.1, 0.);
+        cr.set_source_rgba(0.0, 0.0, 0.0, 0.0);
         cr.paint()?;
 
-        let components: Vec<Box<dyn Widget>> = vec![
-            Box::new(Rectangle::new(
-                0,
-                0,
+        let mut components: Vec<Box<dyn Node>> = vec![Box::new(
+            Rectangle::new(
                 pool.width as i32,
-                (pool.height - 4) as i32,
-                12,
-                Some((10, 0, 10, 0)),
+                pool.height as i32,
                 RGBA {
-                    r: 255,
-                    g: 255,
+                    r: 200,
+                    g: 200,
                     b: 255,
                     a: 1.0,
                 },
-                Some(2),
-                Some(RGBA {
-                    r: 200,
+            )
+            .radius(12)
+            .padding(10, 0, 0, 12)
+            .margin(0, 0, 0, 0)
+            .border(
+                2,
+                RGBA {
+                    r: 100,
                     g: 100,
-                    b: 100,
+                    b: 200,
                     a: 1.0,
-                }),
-            )),
-            Box::new(
+                },
+            )
+            .child(Box::new(
                 Label::new(
                     "Workspace".to_string(),
-                    30,
-                    8,
-                    20,
-                    12,
-                    Some((15, 0, 0, 0)),
+                    0,
+                    0,
                     RGBA {
                         r: 0,
                         g: 0,
@@ -162,16 +158,22 @@ impl Neoshell {
                         a: 1.0,
                     },
                 )
-                .set_font_values(
-                    14,
+                .position(0, 0)
+                .margin(0, 0, 12, 0)
+                .align_h(widgets::TextAlignH::Center)
+                .align_v(widgets::TextAlignV::Center)
+                .font(
+                    12,
                     "Adwaita Sans".to_string(),
                     cairo::FontSlant::Normal,
                     cairo::FontWeight::Normal,
                 ),
-            ),
-        ];
+            )),
+        )];
 
-        for component in components {
+        for component in &mut components {
+            component.measure(pool.width as i32, pool.height as i32);
+            component.layout(0, 0, pool.width as i32, pool.height as i32);
             let _ = component.draw(&cr);
         }
 
