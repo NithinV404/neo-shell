@@ -1,19 +1,7 @@
-use cairo::{Context, ImageSurface};
-use memmap2::MmapMut;
-use rustix::fs::{memfd_create, MemfdFlags};
-use std::fs::File;
-use std::os::fd::AsFd;
 use wayland_client::{
     delegate_noop,
     globals::{registry_queue_init, GlobalListContents},
-    protocol::{
-        wl_buffer::{self, WlBuffer},
-        wl_compositor::WlCompositor,
-        wl_registry::WlRegistry,
-        wl_shm::WlShm,
-        wl_shm_pool::WlShmPool,
-        wl_surface::WlSurface,
-    },
+    protocol::{wl_compositor::WlCompositor, wl_registry::WlRegistry, wl_surface::WlSurface},
     Connection, Dispatch, QueueHandle,
 };
 use wayland_protocols_wlr::layer_shell::v1::client::{
@@ -21,177 +9,31 @@ use wayland_protocols_wlr::layer_shell::v1::client::{
     zwlr_layer_surface_v1::{self, ZwlrLayerSurfaceV1},
 };
 
-mod widgets;
-use crate::widgets::{Label, Node, Rectangle, RGBA};
+use glow::HasContext;
 
-struct RenderPool {
-    width: u32,
-    height: u32,
-    _file: File,
-    _mmap: MmapMut,
-    cairo_surface: ImageSurface,
-    _pool: WlShmPool,
-    buffer: WlBuffer,
-}
+mod glContext;
+use glContext::GlContext;
 
 struct Neoshell {
     compositor: Option<WlCompositor>,
-    shm: Option<WlShm>,
     layershell: Option<ZwlrLayerShellV1>,
     surface: Option<WlSurface>,
-    layersurface: Option<ZwlrLayerSurfaceV1>,
-    configured: bool,
     running: bool,
-    pool: Option<RenderPool>,
-    buffer_released: bool,
+    gl_ctx: Option<glContext::GlContext>,
+    conn: Connection,
 }
 
 impl Neoshell {
-    fn new() -> Self {
-        Neoshell {
-            compositor: None,
-            shm: None,
-            layershell: None,
-            surface: None,
-            layersurface: None,
-            configured: false,
-            running: true,
-            pool: None,
-            buffer_released: true,
+    fn draw(&mut self) {
+        let Some(ctx) = self.gl_ctx.as_ref() else {
+            return;
+        };
+        unsafe {
+            ctx.gl.viewport(0, 0, ctx.width, ctx.height);
+            ctx.gl.clear_color(0.12, 0.12, 0.18, 1.0);
+            ctx.gl.clear(glow::COLOR_BUFFER_BIT);
         }
-    }
-
-    fn setup_pool(
-        &mut self,
-        qh: &QueueHandle<Self>,
-        width: &u32,
-        height: &u32,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        let shm = self.shm.as_ref().ok_or("Failed to create shm")?;
-        let stride = width * 4;
-        let size: u64 = (stride * height) as u64;
-
-        let fd = memfd_create("neoshell", MemfdFlags::CLOEXEC)?;
-        let file = File::from(fd);
-        file.set_len(size)?;
-        let mut mmap = unsafe { MmapMut::map_mut(&file) }?;
-
-        let pool = shm.create_pool(file.as_fd(), size as i32, qh, ());
-
-        let buffer = pool.create_buffer(
-            0,
-            *width as i32,
-            *height as i32,
-            stride as i32,
-            wayland_client::protocol::wl_shm::Format::Argb8888,
-            qh,
-            (),
-        );
-
-        // SAFETY: the slice borrows the same memory as `mmap`. We don't touch
-        // `mmap` directly again after this; all writes go through cairo.
-        let slice = unsafe { std::slice::from_raw_parts_mut(mmap.as_mut_ptr(), size as usize) };
-        let cairo_surface = ImageSurface::create_for_data(
-            slice,
-            cairo::Format::ARgb32,
-            *width as i32,
-            *height as i32,
-            stride as i32,
-        )?;
-
-        self.pool = Some(RenderPool {
-            width: *width,
-            height: *height,
-            _file: file,
-            _mmap: mmap,
-            _pool: pool,
-            buffer,
-            cairo_surface,
-        });
-        Ok(())
-    }
-
-    fn draw(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        // If buffer isnt released skip the frame
-        if !self.buffer_released {
-            return Result::<(), Box<dyn std::error::Error>>::Ok(());
-        }
-
-        let pool = self.pool.as_mut().ok_or("Pool not initialized")?;
-        let surface = self.surface.as_ref().ok_or("Surface not initialized")?;
-        let cr = Context::new(&pool.cairo_surface)?;
-        cr.set_source_rgba(0.0, 0.0, 0.0, 0.0);
-        cr.paint()?;
-
-        let mut components: Vec<Box<dyn Node>> = vec![Box::new(
-            Rectangle::new(
-                pool.width as i32,
-                pool.height as i32,
-                RGBA {
-                    r: 200,
-                    g: 200,
-                    b: 255,
-                    a: 1.0,
-                },
-            )
-            .radius(12)
-            .padding(10, 0, 0, 12)
-            .margin(0, 0, 0, 0)
-            .border(
-                2,
-                RGBA {
-                    r: 100,
-                    g: 100,
-                    b: 200,
-                    a: 1.0,
-                },
-            )
-            .child(Box::new(
-                Label::new(
-                    "Workspace".to_string(),
-                    0,
-                    0,
-                    RGBA {
-                        r: 0,
-                        g: 0,
-                        b: 0,
-                        a: 1.0,
-                    },
-                )
-                .position(0, 0)
-                .margin(0, 0, 12, 0)
-                .align_h(widgets::TextAlignH::Center)
-                .align_v(widgets::TextAlignV::Center)
-                .font(
-                    12,
-                    "Adwaita Sans".to_string(),
-                    cairo::FontSlant::Normal,
-                    cairo::FontWeight::Normal,
-                ),
-            )),
-        )];
-
-        for component in &mut components {
-            component.measure(pool.width as i32, pool.height as i32);
-            component.layout(0, 0, pool.width as i32, pool.height as i32);
-            let _ = component.draw(&cr);
-        }
-
-        pool.cairo_surface.flush();
-
-        // Locking buffer before commiting
-        self.buffer_released = false;
-
-        surface.attach(Some(&pool.buffer), 0, 0);
-        surface.damage(
-            0,
-            0,
-            self.pool.as_ref().unwrap().width as i32,
-            self.pool.as_ref().unwrap().height as i32,
-        );
-        surface.commit();
-
-        Ok(())
+        ctx.swap_buffers().expect("swap_buffers failed");
     }
 }
 
@@ -199,26 +41,8 @@ impl Neoshell {
 
 // Globals we never need events from: no-op dispatch.
 delegate_noop!(Neoshell: ignore WlCompositor);
-delegate_noop!(Neoshell: ignore WlShm);
-delegate_noop!(Neoshell: ignore WlShmPool);
 delegate_noop!(Neoshell: ignore WlSurface);
 delegate_noop!(Neoshell: ignore ZwlrLayerShellV1);
-
-impl Dispatch<WlBuffer, ()> for Neoshell {
-    fn event(
-        state: &mut Self,
-        _: &WlBuffer,
-        event: <WlBuffer as wayland_client::Proxy>::Event,
-        _: &(),
-        _: &Connection,
-        _: &QueueHandle<Self>,
-    ) {
-        match event {
-            wl_buffer::Event::Release => state.buffer_released = true,
-            _ => (),
-        }
-    }
-}
 
 impl Dispatch<WlRegistry, GlobalListContents> for Neoshell {
     fn event(
@@ -240,7 +64,7 @@ impl Dispatch<ZwlrLayerSurfaceV1, ()> for Neoshell {
         event: zwlr_layer_surface_v1::Event,
         _data: &(),
         _conn: &Connection,
-        qh: &QueueHandle<Self>,
+        _: &QueueHandle<Self>,
     ) {
         match event {
             zwlr_layer_surface_v1::Event::Configure {
@@ -250,17 +74,25 @@ impl Dispatch<ZwlrLayerSurfaceV1, ()> for Neoshell {
                 ..
             } => {
                 proxy.ack_configure(serial);
-                state.configured = true;
-                if state.pool.is_none() {
-                    state
-                        .setup_pool(qh, &width, &height)
-                        .expect("failed to set up shm pool");
+                let (w, h) = (width.max(1) as i32, height.max(1) as i32);
+
+                if let Some(ctx) = state.gl_ctx.as_mut() {
+                    ctx.resize(w, h);
+                } else {
+                    let display_ptr = state.conn.backend().display_ptr() as *mut std::ffi::c_void;
+                    let wl_surface = state.surface.as_ref().unwrap();
+                    match glContext::GlContext::new(display_ptr, wl_surface, w, h) {
+                        Ok(ctx) => state.gl_ctx = Some(ctx),
+                        Err(e) => {
+                            eprintln!("failed to create GL context: {e}");
+                            state.running = false;
+                            return;
+                        }
+                    }
                 }
-                state.draw().expect("failed to draw");
+                state.draw();
             }
-            zwlr_layer_surface_v1::Event::Closed => {
-                state.running = false;
-            }
+            zwlr_layer_surface_v1::Event::Closed => state.running = false,
             _ => {}
         }
     }
@@ -273,10 +105,16 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let (globals, mut event_queue) = registry_queue_init::<Neoshell>(&conn)?;
     let qh = event_queue.handle();
 
-    let mut state = Neoshell::new();
+    let mut state = Neoshell {
+        compositor: None,
+        layershell: None,
+        surface: None,
+        running: true,
+        gl_ctx: None,
+        conn: conn.clone(),
+    };
 
     state.compositor = Some(globals.bind::<WlCompositor, _, _>(&qh, 1..=5, ())?);
-    state.shm = Some(globals.bind::<WlShm, _, _>(&qh, 1..=1, ())?);
     state.layershell = Some(globals.bind::<ZwlrLayerShellV1, _, _>(&qh, 1..=4, ())?);
 
     let surface = state.compositor.as_ref().unwrap().create_surface(&qh, ());
@@ -298,8 +136,6 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     );
 
     state.surface = Some(surface.clone());
-    state.layersurface = Some(layer_surface);
-
     surface.commit();
 
     // Initial roundtrip so the server sends globals/events we just requested.
