@@ -1,7 +1,2 @@
-settings.json
-/quickshell.json
-test.qml
-
-# Added by cargo
-
-/target
+.cache
+build
