@@ -71,12 +71,11 @@ bool NiriIpc::isConnected() const {
 };
 
 void NiriIpc::onReadyRead() {
-    m_buffer.append(m_socket->readAll());
-    int idx;
-    while((idx = m_buffer.indexOf("\n")) != -1) {
-        QByteArray line = m_buffer.left(idx).trimmed();
-        m_buffer.remove(0, idx+1);
-        if(!line.isEmpty()) {
+    while(m_socket->canReadLine())
+    {
+        QByteArray line = m_socket->readLine().trimmed();
+        if(!line.isEmpty())
+        {
             processLine(line);
         }
     }

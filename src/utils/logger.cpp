@@ -1,7 +1,6 @@
 #include "logger.hpp"
 #include <exception>
 #include <iostream>
-#include <ostream>
 
 void Logger::info(const std::string &value) {
   std::cout << "neoshell " << COLOR_GREEN << "[info]:" << value << COLOR_RESET << '\n';

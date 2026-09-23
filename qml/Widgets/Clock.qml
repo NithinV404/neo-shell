@@ -9,7 +9,9 @@ Rectangle {
     property date time_date: new Date();
     width: timeRow.implicitWidth + 30
     height: 28
-    color: "transparent"
+
+    // I updated this so the color actually changes when hovered
+    color: hovered ? Qt.rgba(255, 255, 255, 0.1) : "transparent"
     radius: 12
 
     Behavior on color {
@@ -17,6 +19,19 @@ Rectangle {
             duration: 200
             easing.type: Easing.OutCubic
         }
+    }
+
+    // 1. Add a MouseArea to handle clicks and hover
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        onClicked: {
+            // Toggle the panel visibility when clicked
+            clockPanel.visible = !clockPanel.visible;
+        }
+        onEntered: root.hovered = true
+        onExited: root.hovered = false
     }
 
     RowLayout {
@@ -27,8 +42,8 @@ Rectangle {
         // Time
         Text {
             id: textTime
-            text: Qt.formatDateTime(root.time_date, "hh:mm AP")
-            color: ThemeManager.onSurface
+            text: ClockService.time
+            color: Theme.onSurface
             font.pixelSize: Math.round(root.height * 0.4)
             font.weight: 500
             font.family: "Adwaita Sans"
@@ -41,20 +56,20 @@ Rectangle {
             Layout.preferredWidth: 4
             Layout.preferredHeight: 4
             radius: 12
-            color: ThemeManager.onSurface
+            color: Theme.onSurface
             opacity: 0.5
             Layout.alignment: Qt.AlignVCenter
         }
 
         // Date
         Text {
-            text: Qt.formatDateTime(root.time_date, "ddd MM/dd")
-            color: ThemeManager.onSurface
-            font.pixelSize: Math.round(root.height * 0.4)
+            text: ClockService.date
+            color: Theme.onSurface
+            font.pixelSize: 12
             font.weight: 500
             font.family: "Adwaita Sans"
             Layout.alignment: Qt.AlignCenter
-            renderType: Text.NativeRendering
+            renderType: Text.QtRendering
             font.hintingPreference: Font.PreferFullHinting
         }
     }

@@ -2,8 +2,10 @@
 #include "logger.hpp"
 #include <QColor>
 #include <QImage>
+#include <QImageReader>
 #include <algorithm>
 #include <cmath>
+#include <qsize.h>
 
 auto &logger = Logger::getInstance();
 
@@ -87,14 +89,17 @@ RGB Matugen::hsl_to_rgb(const HSL& c) const {
 }
 
 std::optional<std::vector<RGB>> Matugen::extract_pixels(const std::string* path) {
-    QImage image(QString::fromStdString(*path));
-    if(image.isNull()) {
-        logger.warning("Failed to load the image");
+    QImageReader reader(QString::fromStdString(*path));
+    // 128x128 provides an excellent sample size for hue detection
+    reader.setScaledSize(QSize(64,64));
+    reader.setClipRect(QRect(0, 0, 64, 64));
+    QImage scaled = reader.read();
+    if(scaled.isNull()) {
+        logger.warning("Failed to read the image");
         return std::nullopt;
     }
-    // 128x128 provides an excellent sample size for hue detection
-    QImage scaled = image.scaled(128, 128, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)
-                        .convertToFormat(QImage::Format_RGB32);
+
+    scaled = scaled.convertToFormat(QImage::Format_RGB32);
 
     if(scaled.isNull()) {
         logger.warning("Failed to scale the image");

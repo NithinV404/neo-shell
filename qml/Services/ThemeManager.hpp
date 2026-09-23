@@ -2,17 +2,10 @@
 
 #include <QObject>
 #include <QtGui/QColor>
-#include <QQmlEngine>
-#include <qqmlregistration.h>
-#include <qtmetamacros.h>
-#include "../../src/Utils/matugen.hpp"
+#include "../../src/utils/matugen.hpp"
 
 class ThemeManager : public QObject {
       Q_OBJECT
-      QML_ELEMENT
-      QML_SINGLETON
-
-
       Q_PROPERTY(QColor primary READ primary NOTIFY themeChanged)
       Q_PROPERTY(QColor onPrimary READ onPrimary NOTIFY themeChanged)
       Q_PROPERTY(QColor primaryContainer READ primaryContainer NOTIFY themeChanged)
@@ -57,17 +50,6 @@ class ThemeManager : public QObject {
       Q_PROPERTY(QColor shadow READ shadow NOTIFY themeChanged)
 
       public: explicit ThemeManager(QObject *parent = nullptr) : QObject(parent) {}
-
-      static ThemeManager* instance() {
-          static ThemeManager inst;
-          return &inst;
-      }
-
-      static ThemeManager* create(QQmlEngine *qmlEngine, QJSEngine *jsEngine) {
-          Q_UNUSED(qmlEngine);
-          Q_UNUSED(jsEngine);
-          return instance();
-      }
 
       // --- Primary ---
         QColor primary()              const { return toQColor(m_colors.primary); }
@@ -121,19 +103,11 @@ class ThemeManager : public QObject {
         QColor shadow()           const { return toQColor(m_colors.shadow); }
 
 
-      Q_INVOKABLE void loadWallpaperColors(QString path, bool is_dark_mode) {
-          Matugen matugen;
-          std::string qmlpath = path.toStdString();
-          m_colors = matugen.extract_colors(&qmlpath, is_dark_mode);
-
-          emit themeChanged();
-      }
+        Q_INVOKABLE void loadWallpaperColors(QString path, bool is_dark_mode);
 
       signals: void themeChanged();
 
       private:
-          static QColor toQColor(const RGB& c) {
-                  return QColor(c.r, c.g, c.b);
-          }
+          static QColor toQColor(const RGB& c);
           Matugen_colors m_colors;
   };
