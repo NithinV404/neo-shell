@@ -1,9 +1,9 @@
-#include "ipc/niri.hpp"
-#include "utils/logger.hpp"
-#include "qml/Services/Clock.hpp"
-#include "qml/Services/Compositor.hpp"
-#include "qml/Services/ThemeManager.hpp"
-#include "qml/Services/WorkspaceModel.hpp"
+#include "ipc/niri.h"
+#include <logger/logger.h>
+#include "qml/Services/Clock.h"
+#include "qml/Services/Compositor.h"
+#include "qml/Services/ThemeManager.h"
+#include "qml/Services/WorkspaceModel.h"
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -12,7 +12,7 @@
 #include <qquickwindow.h>
 #include <qsgrendererinterface.h>
 
-Logger *g_logger = nullptr;
+neoshell::Logger *g_logger = nullptr;
 void qtMessageHandler(QtMsgType type, const QMessageLogContext &, const QString &str) {
   std::string text = str.toStdString();
   switch (type) {
@@ -25,7 +25,7 @@ void qtMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 }
 
 int main(int argc, char *argv[]) {
-  auto &logger = Logger::getInstance();
+  auto &logger = neoshell::Logger::getInstance();
   g_logger = &logger;
   qInstallMessageHandler(qtMessageHandler);
 
@@ -53,9 +53,9 @@ int main(int argc, char *argv[]) {
   qmlRegisterSingletonInstance<ClockService>("Shell.Services", 1, 0, "ClockService", &clock);
 
 
-  theme.loadWallpaperColors("/mnt/vault/Pictures/Wallpapers/wallhaven-qrgl87_3840x2160.png", true);
+  theme.loadWallpaperColors("/mnt/vault/Pictures/Wallpapers/wallhaven-ly8l7p_3840x2160.png", true);
 
-  engine.loadFromModule("Shell", "Bar");
+  engine.loadFromModule("Shell", "Main");
 
 
   if (engine.rootObjects().isEmpty()) {

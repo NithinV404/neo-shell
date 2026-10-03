@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QtGui/QColor>
-#include "../../src/utils/matugen.hpp"
+#include "../../src/utils/matugen.h"
 
 class ThemeManager : public QObject {
       Q_OBJECT

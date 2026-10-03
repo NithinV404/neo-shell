@@ -1,4 +1,4 @@
-#include "niri.hpp"
+#include "niri.h"
 #include <qjsonobject.h>
 #include <qjsondocument.h>
 #include <qlocalsocket.h>

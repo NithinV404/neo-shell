@@ -1,4 +1,4 @@
-#include "Compositor.hpp"
+#include "Compositor.h"
 #include <qprocess.h>
 
 CompositorType Compositor::detectCompositor() {

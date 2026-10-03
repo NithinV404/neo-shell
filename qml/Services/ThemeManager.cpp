@@ -1,4 +1,4 @@
-#include "ThemeManager.hpp"
+#include "ThemeManager.h"
 
 void ThemeManager::loadWallpaperColors(QString path, bool is_dark_mode) {
     Matugen matugen;

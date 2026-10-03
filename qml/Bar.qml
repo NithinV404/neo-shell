@@ -6,22 +6,13 @@ import Shell.Widgets
 
 PanelWindow {
     id: root
-    visible: true // Changed to true so the layer shell surface actually maps/shows
-
-    // --- LayerShell Configuration ---
+    visible: true
     layer: PanelWindow.Top
-    // Stretch across the top of the screen
     anchors: PanelWindow.AnchorTop | PanelWindow.AnchorLeft | PanelWindow.AnchorRight
-    // Reserve space at the top so windows don't hide behind it
     exclusionZone: 32
-    // Only take keyboard focus when interacted with (or PanelWindow.None if you don't want focus at all)
-    keyboardInteractivity: PanelWindow.OnDemand
-
-    color: "transparent" // Window background transparent so Rectangle handles the drawing
-
-    // Width is ignored because anchors Left and Right stretch it automatically.
-    width: 400
-    height: 32   // Must have a height! LayerShell Top/Left/Right anchors don't set height.
+    keyboardInteractivity: PanelWindow.None
+    color: "transparent"
+    height: 32
 
     Rectangle {
         id: bar
@@ -69,6 +60,7 @@ PanelWindow {
                 color: Theme.surface
 
                 Text {
+                    width: 400
                     text: NiriWorkspaces.focusedWindowTitle || " "
                     font.family: "Adwaita Sans"
                     font.pixelSize: 12

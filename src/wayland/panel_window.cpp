@@ -1,4 +1,4 @@
-#include "panel_window.hpp"
+#include "panel_window.h"
 
 PanelWindow::PanelWindow(QWindow *parent): QQuickWindow(parent), m_window(LayerShellQt::Window::get(this)) {}
 

@@ -2,6 +2,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Shell.Services
+import Shell.Panels
 
 Rectangle {
     id: root
@@ -27,8 +28,7 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         onClicked: {
-            // Toggle the panel visibility when clicked
-            clockPanel.visible = !clockPanel.visible;
+            clockPanelLd.item.toggle();
         }
         onEntered: root.hovered = true
         onExited: root.hovered = false
@@ -72,5 +72,10 @@ Rectangle {
             renderType: Text.QtRendering
             font.hintingPreference: Font.PreferFullHinting
         }
+    }
+
+    Loader {
+        id: clockPanelLd
+        sourceComponent: WallpaperP {}
     }
 }

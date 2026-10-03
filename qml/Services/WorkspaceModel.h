@@ -1,5 +1,5 @@
 
-#include "../utils/logger.hpp"
+#include "logger/logger.h"
 #include <QAbstractListModel>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -88,7 +88,7 @@ class WorkspaceModel : public QAbstractListModel {
 public:
   explicit WorkspaceModel(QObject *parent = nullptr);
   ~WorkspaceModel() override = default;
-  Logger &logger = Logger::getInstance();
+  neoshell::Logger &logger = neoshell::Logger::getInstance();
   int rowCount(const QModelIndex &parent = QModelIndex()) const override;
   QVariant data(const QModelIndex &index,
                 int role = Qt::DisplayRole) const override;

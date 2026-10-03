@@ -1,4 +1,4 @@
-#include "Clock.hpp"
+#include "Clock.h"
 
 ClockService::ClockService(QObject *parent) : QObject(parent) {
     m_dateTime = QDateTime::currentDateTime();

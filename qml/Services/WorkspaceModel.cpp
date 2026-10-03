@@ -1,4 +1,4 @@
-#include "WorkspaceModel.hpp"
+#include "WorkspaceModel.h"
 
 WorkspaceModel::WorkspaceModel(QObject *parent) : QAbstractListModel(parent), m_windowModel(new WindowModel(this)) {};
 

@@ -1,13 +1,14 @@
-#include "matugen.hpp"
-#include "logger.hpp"
+#include "matugen.h"
+#include "logger/logger.h"
 #include <QColor>
 #include <QImage>
 #include <QImageReader>
 #include <algorithm>
 #include <cmath>
+#include <malloc.h>
 #include <qsize.h>
 
-auto &logger = Logger::getInstance();
+auto &logger = neoshell::Logger::getInstance();
 
 std::ostream& operator<<(std::ostream& os, const RGB& color){
     os << "RGB(" << static_cast<int>(color.r) << "," << static_cast<int>(color.g) << "," << static_cast<int>(color.b) << ") \n";
@@ -89,22 +90,19 @@ RGB Matugen::hsl_to_rgb(const HSL& c) const {
 }
 
 std::optional<std::vector<RGB>> Matugen::extract_pixels(const std::string* path) {
-    QImageReader reader(QString::fromStdString(*path));
-    // 128x128 provides an excellent sample size for hue detection
-    reader.setScaledSize(QSize(64,64));
-    reader.setClipRect(QRect(0, 0, 64, 64));
-    QImage scaled = reader.read();
+    QImage scaled = [&]() 
+    {
+        QImageReader reader(QString::fromStdString(*path));
+        reader.setScaledSize(QSize(64,64));
+        return reader.read();
+    }();
+
     if(scaled.isNull()) {
         logger.warning("Failed to read the image");
         return std::nullopt;
     }
 
-    scaled = scaled.convertToFormat(QImage::Format_RGB32);
-
-    if(scaled.isNull()) {
-        logger.warning("Failed to scale the image");
-        return std::nullopt;
-    }
+    scaled.convertTo(QImage::Format_ARGB32);
 
     std::vector<RGB> pixels;
     pixels.reserve(scaled.width() * scaled.height());
@@ -122,6 +120,7 @@ std::optional<std::vector<RGB>> Matugen::extract_pixels(const std::string* path)
         }
     }
     logger.info("Extracted pixels successfully");
+    scaled = QImage();  
     return pixels;
 }
 
