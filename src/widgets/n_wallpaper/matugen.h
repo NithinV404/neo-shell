@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <QImage>
 
 struct HSL {
     float h, s, l;
@@ -72,15 +73,12 @@ struct Matugen_colors {
     RGB shadow                 = {0, 0, 0};
 };
 
-std::ostream& operator<<(std::ostream& os, const RGB& color);
-std::ostream& operator<<(std::ostream& os, const Matugen_colors& colors);
-
 class Matugen {
     public:
-        Matugen_colors extract_colors(const std::string* path, bool is_darkmode=false);
+        Matugen_colors extract_colors(const QImage &image, bool is_darkmode=false);
         std::string to_hex(RGB rgb);
     private:
         HSL rgb_to_hsl(const RGB& c) const;
         RGB hsl_to_rgb(const HSL& c) const;
-        std::optional<std::vector<RGB>> extract_pixels(const std::string* path);
+        std::optional<std::vector<RGB>> extract_pixels(const QImage &image);
 };

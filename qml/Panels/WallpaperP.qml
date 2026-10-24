@@ -45,7 +45,7 @@ PanelWindow {
         width: 200
         height: root.isVisible ? 100 : 0
         radius: 12
-        color: Theme.surface
+        color: ThemeManager.surface
 
         Behavior on height {
             NumberAnimation {

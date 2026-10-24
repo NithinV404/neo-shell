@@ -1,5 +1,4 @@
-add_library(stb_image SHARED
-    stb_image.h
+add_library(stb SHARED
     stb_dxt.h
 )
 

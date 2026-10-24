@@ -18,9 +18,13 @@ PanelWindow {
         id: bar
         anchors.fill: parent
         radius: 12
-        color: Theme.surface
+        color: ThemeManager.surface
         border.width: 1
-        border.color: Theme.primary
+        border.color: ThemeManager.primary
+
+        Component.onCompleted: {
+            console.info(ThemeManager.primary.r, ThemeManager.primary.g, ThemeManager.primary.b, ThemeManager.primary.a )
+        }
 
         RowLayout {
             id: workspaceRow
@@ -42,12 +46,12 @@ PanelWindow {
                     width: 20
                     height: 22
                     radius: 4
-                    color: model.isActive ? Theme.tertiary : Theme.surfaceContainerHighest
+                    color: model.isActive ? ThemeManager.tertiary : ThemeManager.surfaceContainerHighest
 
                     Text {
                         anchors.centerIn: parent
                         text: model.wsIndex
-                        color: model.isActive ? Theme.onTertiary : Theme.onSurface
+                        color: model.isActive ? ThemeManager.onTertiary : ThemeManager.onSurface
                     }
                 }
             }
@@ -57,14 +61,14 @@ PanelWindow {
                 Layout.topMargin: 3
                 Layout.preferredHeight: 20
                 Layout.rightMargin: 8
-                color: Theme.surface
+                color: ThemeManager.surface
 
                 Text {
                     width: 400
                     text: NiriWorkspaces.focusedWindowTitle || " "
                     font.family: "Adwaita Sans"
                     font.pixelSize: 12
-                    color: Theme.onSurface
+                    color: ThemeManager.onSurface
                     elide: Text.ElideRight
                     renderType: Text.QtRendering
                 }

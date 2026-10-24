@@ -54,6 +54,8 @@ class PanelWindow : public QQuickWindow {
         KeyboardInteractivity keyboardInteractivity() const;
         void setKeyboardInteractivity(KeyboardInteractivity keyboardInteractivity);
 
+        
+
         signals:
             void exclusionZoneChanged();
             void layerChanged();

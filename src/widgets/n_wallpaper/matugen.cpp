@@ -1,22 +1,23 @@
 #include "matugen.h"
-#include "logger/logger.h"
 #include <QColor>
 #include <QImage>
 #include <QImageReader>
 #include <algorithm>
 #include <cmath>
 #include <malloc.h>
+#include <qlogging.h>
 #include <qsize.h>
+#include <qdebug.h>
 
-auto &logger = neoshell::Logger::getInstance();
-
-std::ostream& operator<<(std::ostream& os, const RGB& color){
-    os << "RGB(" << static_cast<int>(color.r) << "," << static_cast<int>(color.g) << "," << static_cast<int>(color.b) << ") \n";
-    return os;
+QDebug operator<<(QDebug debug, const RGB& color){
+    QDebugStateSaver saver(debug);
+    debug << "RGB(" << static_cast<int>(color.r) << "," << static_cast<int>(color.g) << "," << static_cast<int>(color.b) << ") \n";
+    return debug;
 };
 
-std::ostream& operator<<(std::ostream& os, const Matugen_colors& c) {
-    os << "Matugen_colors {\n"
+QDebug operator<<(QDebug debug, const Matugen_colors& c) {
+    QDebugStateSaver saver(debug);
+    debug << "Matugen_colors {\n"
        << "  mode: " << c.mode << "\n"
        << "  Primary: " << c.primary << "  on_primary: " << c.on_primary
        << "  primary_container: " << c.primary_container
@@ -31,7 +32,7 @@ std::ostream& operator<<(std::ostream& os, const Matugen_colors& c) {
        << "  surface_variant: " << c.surface_variant
        << "  on_surface_variant: " << c.on_surface_variant << "\n"
        << "}\n";
-    return os;
+    return debug;
 }
 
 // ---------------------------------------------------------------------
@@ -89,27 +90,18 @@ RGB Matugen::hsl_to_rgb(const HSL& c) const {
     };
 }
 
-std::optional<std::vector<RGB>> Matugen::extract_pixels(const std::string* path) {
-    QImage scaled = [&]() 
-    {
-        QImageReader reader(QString::fromStdString(*path));
-        reader.setScaledSize(QSize(64,64));
-        return reader.read();
-    }();
-
-    if(scaled.isNull()) {
-        logger.warning("Failed to read the image");
+std::optional<std::vector<RGB>> Matugen::extract_pixels(const QImage &image) {
+    if(image.isNull()) {
+        qWarning() << "Failed to read the image";
         return std::nullopt;
     }
 
-    scaled.convertTo(QImage::Format_ARGB32);
-
     std::vector<RGB> pixels;
-    pixels.reserve(scaled.width() * scaled.height());
+    pixels.reserve(image.width() * image.height());
 
-    for (int y = 0; y < scaled.height(); ++y) {
-        const QRgb* scan = reinterpret_cast<const QRgb*>(scaled.scanLine(y));
-        for (int x = 0; x < scaled.width(); ++x) {
+    for (int y = 0; y < image.height(); ++y) {
+        const QRgb* scan = reinterpret_cast<const QRgb*>(image.scanLine(y));
+        for (int x = 0; x < image.width(); ++x) {
             QRgb px = scan[x];
             if (qAlpha(px) < 16) continue; // skip transparent
             pixels.push_back(RGB{
@@ -119,14 +111,12 @@ std::optional<std::vector<RGB>> Matugen::extract_pixels(const std::string* path)
             });
         }
     }
-    logger.info("Extracted pixels successfully");
-    scaled = QImage();  
+    qDebug("Extracted pixels successfully");
     return pixels;
 }
 
-Matugen_colors Matugen::extract_colors(const std::string* path, bool is_darkmode) {
-    logger.debug("Loaded image path:" + *path);
-    auto pixels_opt = extract_pixels(path);
+Matugen_colors Matugen::extract_colors(const QImage &image, bool is_darkmode) {
+    auto pixels_opt = extract_pixels(image);
     if(!pixels_opt.has_value()) return Matugen_colors{};
     auto& all_pixels = *pixels_opt;
 
@@ -332,8 +322,8 @@ Matugen_colors Matugen::extract_colors(const std::string* path, bool is_darkmode
 
     colors.shadow = RGB{0, 0, 0};
 
-    logger.info("Successfully extracted matugen colors");
-    logger.debug(colors);
+    qInfo() << "Successfully extracted matugen colors";
+    qDebug() << colors;
     return colors;
 }
 

@@ -1,8 +1,6 @@
 #include "ipc/niri.h"
-#include <logger/logger.h>
-#include "qml/Services/Clock.h"
+#include <logger.h>
 #include "qml/Services/Compositor.h"
-#include "qml/Services/ThemeManager.h"
 #include "qml/Services/WorkspaceModel.h"
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -28,14 +26,11 @@ int main(int argc, char *argv[]) {
   auto &logger = neoshell::Logger::getInstance();
   g_logger = &logger;
   qInstallMessageHandler(qtMessageHandler);
-
   QGuiApplication app(argc, argv);
   QQmlApplicationEngine engine;
   Compositor comp;
 
-  ThemeManager theme;
   WorkspaceModel workspaceModel;
-  ClockService clock;
   NiriIpc *niri = nullptr;
   if (comp.detectCompositor() == CompositorType::Niri) {
     niri = new NiriIpc(&app);
@@ -48,12 +43,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  qmlRegisterSingletonInstance<ThemeManager>("Shell.Services", 1, 0, "Theme", &theme);
   qmlRegisterSingletonInstance<WorkspaceModel>("Shell.Services", 1, 0, "NiriWorkspaces", &workspaceModel);
-  qmlRegisterSingletonInstance<ClockService>("Shell.Services", 1, 0, "ClockService", &clock);
-
-
-  theme.loadWallpaperColors("/mnt/vault/Pictures/Wallpapers/wallhaven-ly8l7p_3840x2160.png", true);
 
   engine.loadFromModule("Shell", "Main");
 

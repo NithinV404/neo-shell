@@ -1,12 +1,11 @@
 
-#include "logger/logger.h"
+#include "logger.h"
 #include <QAbstractListModel>
 #include <QJsonObject>
 #include <QJsonArray>
 
 struct WindowInfo {
   Q_GADGET
-
   Q_PROPERTY(int id MEMBER id)
   Q_PROPERTY(QString app_id MEMBER app_id)
   Q_PROPERTY(QString title MEMBER title)

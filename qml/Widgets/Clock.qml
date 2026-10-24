@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import Shell.Services
 import Shell.Panels
+import Shell.Widgets
 
 Rectangle {
     id: root
@@ -43,7 +44,7 @@ Rectangle {
         Text {
             id: textTime
             text: ClockService.time
-            color: Theme.onSurface
+            color: ThemeManager.onSurface
             font.pixelSize: Math.round(root.height * 0.4)
             font.weight: 500
             font.family: "Adwaita Sans"
@@ -56,7 +57,7 @@ Rectangle {
             Layout.preferredWidth: 4
             Layout.preferredHeight: 4
             radius: 12
-            color: Theme.onSurface
+            color: ThemeManager.onSurface
             opacity: 0.5
             Layout.alignment: Qt.AlignVCenter
         }
@@ -64,7 +65,7 @@ Rectangle {
         // Date
         Text {
             text: ClockService.date
-            color: Theme.onSurface
+            color: ThemeManager.onSurface
             font.pixelSize: 12
             font.weight: 500
             font.family: "Adwaita Sans"

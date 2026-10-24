@@ -31,19 +31,6 @@ target_link_libraries(shellIpc PUBLIC
     Qt6::Network
 )
 
-# ----------- Utils Library -----------
-add_library(neoshell_matugen SHARED
-    src/utils/matugen.cpp
-)
-target_include_directories(neoshell_matugen PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/utils
-)
-target_link_libraries(neoshell_matugen PRIVATE
-    Qt6::Gui
-    Qt6::Core
-    neoshell_logger
-)
-
 # Services QML Module
 add_library(shellServices STATIC)
 
@@ -51,24 +38,37 @@ qt_add_qml_module(shellServices
     URI Shell.Services
     VERSION 1.0
     SOURCES
-        qml/Services/Compositor.cpp
-        qml/Services/ThemeManager.cpp
-        qml/Services/WorkspaceModel.cpp
-        qml/Services/Clock.cpp
+        ${CMAKE_SOURCE_DIR}/src/widgets/n_wallpaper/wallpaper.h
+        ${CMAKE_SOURCE_DIR}/src/widgets/n_wallpaper/wallpaper.cpp
+        ${CMAKE_SOURCE_DIR}/src/widgets/n_wallpaper/matugen.cpp
+        ${CMAKE_SOURCE_DIR}/src/widgets/n_wallpaper/matugen.h
+        ${CMAKE_SOURCE_DIR}/src/widgets/n_wallpaper/bc1_compression.h
+        ${CMAKE_SOURCE_DIR}/src/widgets/n_wallpaper/bc1_compression.cpp
+        ${CMAKE_SOURCE_DIR}/src/widgets/n_wallpaper/theme_manager.h
+        ${CMAKE_SOURCE_DIR}/src/widgets/n_wallpaper/theme_manager.cpp
+        ${CMAKE_SOURCE_DIR}/qml/Services/Compositor.cpp
+        ${CMAKE_SOURCE_DIR}/qml/Services/Compositor.h
+        ${CMAKE_SOURCE_DIR}/qml/Services/WorkspaceModel.cpp
+        ${CMAKE_SOURCE_DIR}/qml/Services/WorkspaceModel.h
+        ${CMAKE_SOURCE_DIR}/qml/Services/Clock.cpp
+        ${CMAKE_SOURCE_DIR}/qml/Services/Clock.h
     OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Shell/Services
 )
 
 target_include_directories(shellServices PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/qml/Services
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/widgets/n_wallpaper
 )
 
 target_link_libraries(shellServices PRIVATE
-    neoshell_matugen
     neoshell_logger
     Qt6::Core
     Qt6::Gui
     Qt6::Quick
-    Qt6::Widgets
+    Qt6::Concurrent
+    Qt6::GuiPrivate
+    stb
+    neoshell_logger
 )
 
 # Main Executable
@@ -101,7 +101,6 @@ target_include_directories(neoshell PRIVATE
 
 target_link_libraries(neoshell PRIVATE
     shellIpc
-    neoshell_matugen
     neoshell_logger
     Qt6::Core
     Qt6::Gui

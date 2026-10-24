@@ -1,6 +1,7 @@
 import QtQuick
+import QtQuick.Effects
 import Shell
-import Shell.Widgets
+import Shell.Services
 
 PanelWindow {
     id: root
@@ -17,6 +18,7 @@ PanelWindow {
         id: wallpaper
         anchors.fill: parent
         source: "file:///mnt/vault/Pictures/Wallpapers/wallhaven-ly8l7p_3840x2160.png"
+        size: Qt.size(1920,1080)
     }
 
     PanelWindow {
@@ -30,8 +32,10 @@ PanelWindow {
         color: "transparent"
 
         WallpaperItem {
+            id: backdropSource
             anchors.fill: parent
             source: "file:///mnt/vault/Pictures/Wallpapers/wallhaven-ly8l7p_3840x2160.png"
+            size: Qt.size(1920,1080)
         }
     }
 }
